@@ -9,10 +9,13 @@ kotlinCollectionsImmutable = "0.3.7"
 navigationCompose = "2.8.5"
 serialization = "1.6.3"
 datastorePreferences = "1.1.1"
+dagger-hilt = "2.51.1"
+hiltNavigationCompose = "1.2.0"
 
 # Plugins
 agp = "8.6.1"
 kotlin = "2.0.20"
+ksp = "2.0.20-1.0.25"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,6 +34,9 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 androidx-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 androidx-datastore = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
+dagger-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "dagger-hilt" }
+dagger-hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "dagger-hilt" }
+hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 
 kotlin-collections-immutable = { group = "org.jetbrains.kotlinx", name = "kotlinx-collections-immutable", version.ref = "kotlinCollectionsImmutable" }
 kotlin-serialization-json = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
@@ -41,3 +47,5 @@ jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "k
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+dagger-hilt = { id = "com.google.dagger.hilt.android", version.ref = "dagger-hilt" }

@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.dagger.hilt)
 }
 
 android {
@@ -70,14 +72,19 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
+    // Hilt DI
+    implementation(libs.dagger.hilt.android)
+    ksp(libs.dagger.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
+
+    // Data layer
+    implementation(libs.androidx.datastore)
+
     // Kotlin
     implementation(libs.kotlin.collections.immutable)
 
     // Serialization
     implementation(libs.kotlin.serialization.json)
-
-    // Data layer
-    implementation(libs.androidx.datastore)
 
     // Other
     debugImplementation(libs.androidx.ui.tooling)

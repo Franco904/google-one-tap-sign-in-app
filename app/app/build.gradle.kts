@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.dagger.hilt)
+    alias(libs.plugins.daggerHilt)
 }
 
 android {
@@ -77,8 +77,13 @@ dependencies {
     ksp(libs.dagger.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
 
-    // Data layer
+    // DataStore
     implementation(libs.androidx.datastore)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp3.urlconnection)
 
     // Kotlin
     implementation(libs.kotlin.collections.immutable)

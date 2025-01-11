@@ -5,5 +5,5 @@ plugins {
     alias(libs.plugins.composeCompiler) apply false
     alias(libs.plugins.kotlinParcelize) apply false
     alias(libs.plugins.ksp) apply false
-    alias(libs.plugins.dagger.hilt) apply false
+    alias(libs.plugins.daggerHilt) apply false
 }

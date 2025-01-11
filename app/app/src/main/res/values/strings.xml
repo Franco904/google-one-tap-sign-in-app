@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">One-Tap Sign-In</string>
+
+    <!-- Sign-in -->
+    <string name="sign_in_screen_title_1">Boas-vindas</string>
+    <string name="sign_in_screen_title_2">Para começar a usar o aplicativo, primeiro você precisa fazer login.</string>
+
+    <string name="sign_in_screen_sign_in_with_google_desc">Entrar com Google</string>
+    <string name="sign_in_screen_sign_in_with_google_desc_progress">Um momento…</string>
+
+    <!-- Profile -->
+    <string name="profile_screen_">Minha conta</string>
+    <string name="profile_screen_google_sign_out_text">Sair</string>
+    <string name="profile_screen_unlink_account_text">Desvincular conta</string>
+    <string name="profile_screen_save_success_text">Conta salva com sucesso.</string>
+    <string name="profile_screen_unauthorized_text">Acesso desautorizado ao recurso.</string>
+
+    <!-- Dialog -->
+    <string name="dialog_internet_connection_failed_title">Conexão perdida</string>
+    <string name="dialog_internet_connection_failed_description">Garanta que você esteja conectado com a Internet e tente novamente.</string>
+
+    <string name="dialog_unauthorized_title">Acesso desautorizado</string>
+    <string name="dialog_screen_unauthorized_description">Você não tem permissão para acessar este recurso.</string>
+
 </resources>

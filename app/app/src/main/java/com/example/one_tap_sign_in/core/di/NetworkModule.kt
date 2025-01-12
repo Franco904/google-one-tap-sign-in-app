@@ -1,43 +1,31 @@
 package com.example.one_tap_sign_in.core.di
 
 import com.example.one_tap_sign_in.core.constants.BASE_URL
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
+import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.CookieHandler
 import java.net.CookieManager
 import java.util.concurrent.TimeUnit
-import javax.inject.Singleton
 
-@Module
-@InstallIn(SingletonComponent::class)
-class NetworkModule {
-    @Provides
-    @Singleton
-    fun provideCookieManager(): CookieManager {
-        return CookieManager()
-    }
+val networkModule = module {
+    // Network
+    single<CookieHandler> { CookieManager() }
 
-    @Provides
-    @Singleton
-    fun provideHttpClient(cookieManager: CookieManager): OkHttpClient {
-        return OkHttpClient.Builder()
+    single {
+        OkHttpClient.Builder()
             .readTimeout(15, TimeUnit.SECONDS)
             .connectTimeout(15, TimeUnit.SECONDS)
-            .cookieJar(JavaNetCookieJar(cookieManager))
+            .cookieJar(JavaNetCookieJar(get()))
             .build()
     }
 
-    @Provides
-    @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
+    single {
+        Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(okHttpClient)
+            .client(get())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

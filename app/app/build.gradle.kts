@@ -4,8 +4,6 @@ plugins {
     alias(libs.plugins.composeCompiler)
     alias(libs.plugins.kotlinParcelize)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.ksp)
-    alias(libs.plugins.daggerHilt)
 }
 
 android {
@@ -56,7 +54,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // Compose
+    // Jetpack Compose
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
 
@@ -72,15 +70,14 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
-    // Hilt DI
-    implementation(libs.dagger.hilt.android)
-    ksp(libs.dagger.hilt.compiler)
-    implementation(libs.hilt.navigation.compose)
+    // Koin (DI)
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.android)
 
-    // DataStore
+    // DataStore (User Preferences)
     implementation(libs.androidx.datastore)
 
-    // Retrofit
+    // Retrofit (HTTP Client)
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp3.urlconnection)
@@ -94,4 +91,7 @@ dependencies {
     // Other
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Test
+    testImplementation(libs.koin.test)
 }

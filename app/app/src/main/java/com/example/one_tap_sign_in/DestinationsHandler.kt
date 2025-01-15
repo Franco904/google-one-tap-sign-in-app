@@ -5,9 +5,9 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.one_tap_sign_in.signin.SignInScreen
 
-object RouteHandler {
-    fun NavGraphBuilder.routes(navController: NavController) {
-        composable<Routes.SignIn> {
+object DestinationsHandler {
+    fun NavGraphBuilder.destinations(navController: NavController) {
+        composable<Destinations.SignIn> {
             SignInScreen()
         }
     }

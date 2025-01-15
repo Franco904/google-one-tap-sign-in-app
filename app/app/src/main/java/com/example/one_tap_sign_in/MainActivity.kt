@@ -6,7 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.example.one_tap_sign_in.RouteHandler.routes
+import com.example.one_tap_sign_in.DestinationsHandler.destinations
 import com.example.one_tap_sign_in.core.theme.AppTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,8 +21,8 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = Routes.SignIn,
-                    builder = { routes(navController) },
+                    startDestination = Destinations.SignIn,
+                    builder = { destinations(navController) },
                 )
             }
         }

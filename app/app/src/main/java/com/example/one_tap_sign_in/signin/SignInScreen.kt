@@ -102,7 +102,11 @@ fun SignInScreen(
             SignInBackground()
             SignInBox(
                 isSigningIn = isSigningIn,
-                onSignIn = viewModel::onSignIn,
+                onSignIn = {
+                    if (!isSigningIn) {
+                        viewModel.onSignIn()
+                    }
+                },
             )
         }
     }

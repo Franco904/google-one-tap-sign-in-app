@@ -73,6 +73,7 @@ dependencies {
     // Koin (DI)
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.android)
+    implementation(libs.koin.compose)
 
     // DataStore (User Preferences)
     implementation(libs.androidx.datastore)
@@ -91,7 +92,4 @@ dependencies {
     // Other
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-
-    // Test
-    testImplementation(libs.koin.test)
 }

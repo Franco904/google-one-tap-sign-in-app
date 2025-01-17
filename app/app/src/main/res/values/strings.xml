@@ -18,5 +18,6 @@
     <!-- Snackbar -->
     <string name="snackbar_internet_connection_failed">Internet connection failed</string>
     <string name="snackbar_unauthorized">Unauthorized access</string>
+    <string name="snackbar_internal_server_error">Internal server error</string>
 
 </resources>

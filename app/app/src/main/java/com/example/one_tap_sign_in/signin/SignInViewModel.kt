@@ -27,7 +27,7 @@ class SignInViewModel : ViewModel() {
             delay(1.seconds)
 
             val snackbarEvent = UiEvents.Snackbar(
-                messageId = R.string.snackbar_internet_connection_failed,
+                messageId = R.string.snackbar_internal_server_error,
                 isError = true,
             )
             _uiEvents.emit(snackbarEvent)

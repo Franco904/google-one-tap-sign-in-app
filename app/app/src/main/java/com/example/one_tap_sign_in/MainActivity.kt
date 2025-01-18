@@ -22,7 +22,7 @@ class MainActivity : ComponentActivity() {
                 NavHost(
                     navController = navController,
                     startDestination = Destinations.SignIn,
-                    builder = { destinations(navController) },
+                    builder = { destinations() },
                 )
             }
         }

@@ -45,11 +45,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.theme.AppCustomColors
 import com.example.one_tap_sign_in.core.theme.AppTheme
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun SignInScreen(
     modifier: Modifier = Modifier,
-    viewModel: SignInViewModel,
+    viewModel: SignInViewModel = koinViewModel(),
 ) {
     val context = LocalContext.current
     val errorColor = MaterialTheme.colorScheme.error
@@ -232,8 +233,6 @@ fun SignInScreenPreview(
     modifier: Modifier = Modifier,
 ) {
     AppTheme {
-        SignInScreen(
-            viewModel = SignInViewModel(),
-        )
+        SignInScreen()
     }
 }

@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.one_tap_sign_in.R
+import com.example.one_tap_sign_in.core.data.repository.UserRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.seconds
 
-class SignInViewModel : ViewModel() {
+class SignInViewModel(
+    private val userRepository: UserRepository,
+) : ViewModel() {
     private val _uiEvents = MutableSharedFlow<UiEvents>()
     val uiEvents = _uiEvents.asSharedFlow()
 
@@ -30,6 +33,7 @@ class SignInViewModel : ViewModel() {
                 messageId = R.string.snackbar_internal_server_error,
                 isError = true,
             )
+
             _uiEvents.emit(snackbarEvent)
             _isSigningIn.update { false }
         }

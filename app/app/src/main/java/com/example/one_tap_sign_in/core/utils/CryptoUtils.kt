@@ -7,38 +7,45 @@ import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
-import javax.crypto.spec.IvParameterSpec
+import javax.crypto.spec.GCMParameterSpec
 
 class CryptoUtils {
+    private val cipher = Cipher.getInstance(TRANSFORMATION)
+
+    private val encoder = Base64.getEncoder()
+    private val decoder = Base64.getDecoder()
+
     private val keyStore = KeyStore
         .getInstance(KEY_STORE_TYPE)
         .apply {
             load(null)
         }
 
-    fun encrypt(plainTextBytes: ByteArray): String {
-        val cipher = Cipher.getInstance(TRANSFORMATION)
-
+    fun encrypt(plainTextBytes: ByteArray): ByteArray {
         val cipherTextBytes = cipher
             .apply { init(Cipher.ENCRYPT_MODE, getSecretKey()) }
             .doFinal(plainTextBytes)
 
         // IV here is always 12 bytes for GCM
         val cipherTextAndIvBytes = cipher.iv + cipherTextBytes
-        val cipherTextAndIvBytesBase64 = Base64.getEncoder().encodeToString(cipherTextAndIvBytes)
+        val cipherTextAndIvEncodedBytes = encoder.encode(cipherTextAndIvBytes)
 
-        return cipherTextAndIvBytesBase64
+        return cipherTextAndIvEncodedBytes
     }
 
-    fun decrypt(cipherTextAndIvBase64Bytes: ByteArray): ByteArray {
-        val cipherTextAndIvBytes = Base64.getDecoder().decode(cipherTextAndIvBase64Bytes)
+    fun decrypt(cipherTextAndIvEncodedBytes: ByteArray): ByteArray {
+        val cipherTextAndIvBytes = decoder.decode(cipherTextAndIvEncodedBytes)
         val iv = cipherTextAndIvBytes.copyOfRange(0, 12)
         val cipherTextBytes = cipherTextAndIvBytes.copyOfRange(12, cipherTextAndIvBytes.size)
 
-        val cipher = Cipher.getInstance(TRANSFORMATION)
-
         val plainTextBytes = cipher
-            .apply { init(Cipher.DECRYPT_MODE, getSecretKey(), IvParameterSpec(iv)) }
+            .apply {
+                init(
+                    Cipher.DECRYPT_MODE,
+                    getSecretKey(),
+                    GCMParameterSpec(AUTH_TAG_LENGTH_BITS, iv)
+                )
+            }
             .doFinal(cipherTextBytes)
 
         return plainTextBytes
@@ -60,11 +67,10 @@ class CryptoUtils {
                         KEY_ALIAS,
                         KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT,
                     )
-                        .setKeySize(256)
+                        .setKeySize(KEY_LENGTH_BITS)
                         .setBlockModes(BLOCK_MODE)
                         .setEncryptionPaddings(PADDING_SCHEME)
                         .setRandomizedEncryptionRequired(true) // Ensures new random IV on every encryption
-                        .setUserAuthenticationRequired(false)
                         .build()
                 )
             }
@@ -79,5 +85,8 @@ class CryptoUtils {
         private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
         private const val PADDING_SCHEME = KeyProperties.ENCRYPTION_PADDING_NONE
         private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING_SCHEME"
+
+        private const val KEY_LENGTH_BITS = 256
+        private const val AUTH_TAG_LENGTH_BITS = 128
     }
 }

@@ -3,6 +3,7 @@ package com.example.one_tap_sign_in.core.utils
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
 import java.security.KeyStore
+import java.security.SecureRandom
 import java.util.Base64
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
@@ -11,9 +12,6 @@ import javax.crypto.spec.GCMParameterSpec
 
 class CryptoUtils {
     private val cipher = Cipher.getInstance(TRANSFORMATION)
-
-    private val encoder = Base64.getEncoder()
-    private val decoder = Base64.getDecoder()
 
     private val keyStore = KeyStore
         .getInstance(KEY_STORE_TYPE)
@@ -28,13 +26,13 @@ class CryptoUtils {
 
         // IV here is always 12 bytes for GCM
         val cipherTextAndIvBytes = cipher.iv + cipherTextBytes
-        val cipherTextAndIvEncodedBytes = encoder.encode(cipherTextAndIvBytes)
+        val cipherTextAndIvEncodedBytes = Base64.getEncoder().encode(cipherTextAndIvBytes)
 
         return cipherTextAndIvEncodedBytes
     }
 
     fun decrypt(cipherTextAndIvEncodedBytes: ByteArray): ByteArray {
-        val cipherTextAndIvBytes = decoder.decode(cipherTextAndIvEncodedBytes)
+        val cipherTextAndIvBytes = Base64.getDecoder().decode(cipherTextAndIvEncodedBytes)
         val iv = cipherTextAndIvBytes.copyOfRange(0, 12)
         val cipherTextBytes = cipherTextAndIvBytes.copyOfRange(12, cipherTextAndIvBytes.size)
 
@@ -75,6 +73,15 @@ class CryptoUtils {
                 )
             }
             .generateKey()
+    }
+
+    fun generateNonce(): String {
+        val nonceBytes = ByteArray(16).apply {
+            SecureRandom().nextBytes(this)
+        }
+
+        val encodedNonce = Base64.getUrlEncoder().withoutPadding().encodeToString(nonceBytes)
+        return encodedNonce
     }
 
     companion object {

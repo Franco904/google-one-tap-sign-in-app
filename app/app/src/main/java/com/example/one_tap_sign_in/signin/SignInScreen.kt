@@ -1,5 +1,7 @@
 package com.example.one_tap_sign_in.signin
 
+import android.app.Activity
+import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -32,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,8 +46,11 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.one_tap_sign_in.R
+import com.example.one_tap_sign_in.core.infra.auth.GoogleCredentialManager
 import com.example.one_tap_sign_in.core.theme.AppCustomColors
 import com.example.one_tap_sign_in.core.theme.AppTheme
+import com.example.one_tap_sign_in.core.utils.getActivity
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -55,9 +61,10 @@ fun SignInScreen(
     val context = LocalContext.current
     val errorColor = MaterialTheme.colorScheme.error
 
+    val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val isSigningIn by viewModel.isSigningIn.collectAsStateWithLifecycle()
+    var isSigningIn by remember { mutableStateOf(false) }
 
     var snackbarContainerColor by remember { mutableStateOf(AppCustomColors.green300) }
 
@@ -65,12 +72,8 @@ fun SignInScreen(
         viewModel.uiEvents.collect { uiEvent ->
             when (uiEvent) {
                 is SignInViewModel.UiEvents.Snackbar -> {
-                    snackbarContainerColor =
-                        if (uiEvent.isError) errorColor else AppCustomColors.green300
-
-                    snackbarHostState.showSnackbar(
-                        message = context.getString(uiEvent.messageId),
-                    )
+                    snackbarContainerColor = if (uiEvent.isError) errorColor else AppCustomColors.green300
+                    snackbarHostState.showSnackbar(message = context.getString(uiEvent.messageId))
                 }
             }
         }
@@ -105,7 +108,28 @@ fun SignInScreen(
                 isSigningIn = isSigningIn,
                 onSignIn = {
                     if (!isSigningIn) {
-                        viewModel.onSignIn()
+                        isSigningIn = true
+
+                        coroutineScope.launch {
+                            val idToken = GoogleCredentialManager.chooseGoogleAccountForSignIn(
+                                activityContext = context.getActivity(),
+                                isSignIn = true,
+                            ) ?: GoogleCredentialManager.chooseGoogleAccountForSignIn(
+                                activityContext = context.getActivity(),
+                                isSignIn = false, // sign up
+                            )
+
+                            isSigningIn = false
+
+                            if (idToken != null) {
+                                viewModel.handleSignInCredential(idToken = idToken)
+                            } else {
+                                snackbarContainerColor = errorColor
+                                snackbarHostState.showSnackbar(
+                                    message = context.getString(R.string.snackbar_sign_in_failed),
+                                )
+                            }
+                        }
                     }
                 },
             )

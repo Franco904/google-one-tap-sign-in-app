@@ -67,6 +67,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
 
+    // Coil (Image loading)
+    implementation(libs.coil)
+
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
@@ -82,6 +85,11 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.converter.gson)
     implementation(libs.okhttp3.urlconnection)
+
+    // Auth
+    implementation(libs.credentials.core)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.google.identity)
 
     // Kotlin
     implementation(libs.kotlin.collections.immutable)

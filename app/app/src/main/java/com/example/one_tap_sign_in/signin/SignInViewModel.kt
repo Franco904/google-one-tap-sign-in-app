@@ -1,10 +1,12 @@
 package com.example.one_tap_sign_in.signin
 
+import android.util.Log
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.data.repository.UserRepository
+import com.google.android.libraries.identity.googleid.GoogleIdTokenParsingException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,22 +22,16 @@ class SignInViewModel(
     private val _uiEvents = MutableSharedFlow<UiEvents>()
     val uiEvents = _uiEvents.asSharedFlow()
 
-    private val _isSigningIn = MutableStateFlow(false)
-    val isSigningIn = _isSigningIn.asStateFlow()
+    fun handleSignInCredential(idToken: String) {
+        Log.i("view model", "Id token received from Google: $idToken")
 
-    fun onSignIn() {
         viewModelScope.launch {
-            _isSigningIn.update { true }
+            userRepository.authenticateUser(idToken = idToken)
 
-            delay(1.seconds)
-
-            val snackbarEvent = UiEvents.Snackbar(
-                messageId = R.string.snackbar_internal_server_error,
-                isError = true,
-            )
-
-            _uiEvents.emit(snackbarEvent)
-            _isSigningIn.update { false }
+            _uiEvents.emit(UiEvents.Snackbar(
+                messageId = R.string.snackbar_sign_in_succeded,
+                isError = false,
+            ))
         }
     }
 

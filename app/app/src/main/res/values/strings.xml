@@ -16,6 +16,8 @@
     <string name="profile_screen_unauthorized_text">Acesso desautorizado ao recurso.</string>
 
     <!-- Snackbar -->
+    <string name="snackbar_sign_in_succeded">Sign in successed</string>
+    <string name="snackbar_sign_in_failed">Sign in failed</string>
     <string name="snackbar_internet_connection_failed">Internet connection failed</string>
     <string name="snackbar_unauthorized">Unauthorized access</string>
     <string name="snackbar_internal_server_error">Internal server error</string>

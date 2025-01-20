@@ -9,15 +9,13 @@
     <string name="please_wait">Please wait…</string>
 
     <!-- Profile -->
-    <string name="profile_screen_">Minha conta</string>
-    <string name="profile_screen_google_sign_out_text">Sair</string>
-    <string name="profile_screen_unlink_account_text">Desvincular conta</string>
-    <string name="profile_screen_save_success_text">Conta salva com sucesso.</string>
-    <string name="profile_screen_unauthorized_text">Acesso desautorizado ao recurso.</string>
+    <string name="profile_screen_top_bar_title">Profile</string>
+    <string name="profile_screen_google_sign_out_text">Sign out</string>
 
     <!-- Snackbar -->
-    <string name="snackbar_sign_in_succeded">Sign in successed</string>
+    <string name="snackbar_sign_in_succeded">Sign in succeeded</string>
     <string name="snackbar_sign_in_failed">Sign in failed</string>
+    <string name="snackbar_sign_out_succeded">Sign out succeeded</string>
     <string name="snackbar_internet_connection_failed">Internet connection failed</string>
     <string name="snackbar_unauthorized">Unauthorized access</string>
     <string name="snackbar_internal_server_error">Internal server error</string>

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.data.repository.UserRepository
+import com.example.one_tap_sign_in.signin.models.GoogleUserCredentials
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,10 +17,14 @@ class SignInViewModel(
     private val _uiEvents = MutableSharedFlow<UiEvents>()
     val uiEvents = _uiEvents.asSharedFlow()
 
-    fun signInUser(idToken: String) {
+    fun signInUser(credentials: GoogleUserCredentials) {
         viewModelScope.launch {
             try {
-                userRepository.authenticateUser(idToken = idToken)
+                userRepository.authenticateUser(idToken = credentials.idToken)
+                userRepository.saveUserCredentials(
+                    displayName = credentials.displayName,
+                    profilePictureUrl = credentials.profilePictureUrl,
+                )
 
                 _uiEvents.emit(UiEvents.SignInSuccessed)
 
@@ -36,7 +41,7 @@ class SignInViewModel(
                 _uiEvents.emit(
                     UiEvents.Snackbar(
                         messageId = R.string.snackbar_sign_in_failed,
-                        isError = false,
+                        isError = true,
                     )
                 )
             }

@@ -8,7 +8,8 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import androidx.credentials.exceptions.GetCredentialException
 import com.example.one_tap_sign_in.core.constants.CLIENT_ID
-import com.example.one_tap_sign_in.core.utils.CryptoUtils
+import com.example.one_tap_sign_in.core.utils.data.CryptoUtils
+import com.example.one_tap_sign_in.signin.models.GoogleUserCredentials
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 
@@ -17,7 +18,7 @@ object GoogleCredentialManager {
         activityContext: Activity,
         isSignIn: Boolean = true,
         mustEnableAutoSelectAccount: Boolean = true,
-    ): String? {
+    ): GoogleUserCredentials? {
         val credentialManager = CredentialManager.create(activityContext)
 
         val googleIdOption: GetGoogleIdOption = if (isSignIn) {
@@ -53,7 +54,11 @@ object GoogleCredentialManager {
                 val googleIdTokenCredential = GoogleIdTokenCredential
                     .createFrom(credential.data)
 
-                googleIdTokenCredential.idToken
+                GoogleUserCredentials(
+                    idToken = googleIdTokenCredential.idToken,
+                    displayName = googleIdTokenCredential.displayName,
+                    profilePictureUrl = googleIdTokenCredential.profilePictureUri?.toString(),
+                )
             } else {
                 Log.e("SignInScreen", "Unexpected type of credential.")
                 null

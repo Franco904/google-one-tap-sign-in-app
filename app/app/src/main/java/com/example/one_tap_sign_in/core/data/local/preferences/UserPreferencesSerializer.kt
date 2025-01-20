@@ -1,7 +1,7 @@
 package com.example.one_tap_sign_in.core.data.local.preferences
 
 import androidx.datastore.core.Serializer
-import com.example.one_tap_sign_in.core.utils.CryptoUtils
+import com.example.one_tap_sign_in.core.utils.data.CryptoUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString

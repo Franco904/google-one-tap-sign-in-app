@@ -1,4 +1,4 @@
-package com.example.one_tap_sign_in.core.utils
+package com.example.one_tap_sign_in.core.utils.presentation
 
 import android.app.Activity
 import android.content.Context

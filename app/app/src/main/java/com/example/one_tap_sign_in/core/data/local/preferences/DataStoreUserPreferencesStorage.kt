@@ -8,8 +8,8 @@ import kotlinx.coroutines.flow.Flow
 class DataStoreUserPreferencesStorage(
     private val dataStore: DataStore<UserPreferences>
 ) : UserPreferencesStorage {
-    override suspend fun savePreferences(preferences: UserPreferences) {
-        dataStore.updateData { preferences }
+    override suspend fun savePreferences(onPreferencesFile: (UserPreferences) -> UserPreferences) {
+        dataStore.updateData { preferences -> onPreferencesFile(preferences) }
     }
 
     override suspend fun readPreferences(): Flow<UserPreferences> {

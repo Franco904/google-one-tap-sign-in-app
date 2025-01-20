@@ -23,8 +23,6 @@ class SignInViewModel(
     val uiEvents = _uiEvents.asSharedFlow()
 
     fun handleSignInCredential(idToken: String) {
-        Log.i("view model", "Id token received from Google: $idToken")
-
         viewModelScope.launch {
             userRepository.authenticateUser(idToken = idToken)
 

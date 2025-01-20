@@ -1,7 +1,5 @@
 package com.example.one_tap_sign_in.signin
 
-import android.app.Activity
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -44,7 +42,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.infra.auth.GoogleCredentialManager
 import com.example.one_tap_sign_in.core.theme.AppCustomColors
@@ -57,12 +54,13 @@ import org.koin.androidx.compose.koinViewModel
 fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = koinViewModel(),
+    onSignInSuccessed: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val errorColor = MaterialTheme.colorScheme.error
 
     val coroutineScope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() } // TODO: mover para cima para tentar fazer aparecer entre diferentes telas
 
     var isSigningIn by remember { mutableStateOf(false) }
 
@@ -72,8 +70,13 @@ fun SignInScreen(
         viewModel.uiEvents.collect { uiEvent ->
             when (uiEvent) {
                 is SignInViewModel.UiEvents.Snackbar -> {
-                    snackbarContainerColor = if (uiEvent.isError) errorColor else AppCustomColors.green300
+                    snackbarContainerColor =
+                        if (uiEvent.isError) errorColor else AppCustomColors.green300
                     snackbarHostState.showSnackbar(message = context.getString(uiEvent.messageId))
+                }
+
+                is SignInViewModel.UiEvents.SignInSuccessed -> {
+                    onSignInSuccessed()
                 }
             }
         }
@@ -122,7 +125,7 @@ fun SignInScreen(
                             isSigningIn = false
 
                             if (idToken != null) {
-                                viewModel.handleSignInCredential(idToken = idToken)
+                                viewModel.signInUser(idToken = idToken)
                             } else {
                                 snackbarContainerColor = errorColor
                                 snackbarHostState.showSnackbar(

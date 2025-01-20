@@ -5,4 +5,7 @@ import kotlinx.serialization.Serializable
 sealed interface Destinations {
     @Serializable
     data object SignIn
+
+    @Serializable
+    data object Profile
 }

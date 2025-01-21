@@ -59,7 +59,7 @@ fun SignInScreen(
                     isSigningIn = false
 
                     showSnackbar(
-                        context.getString(R.string.snackbar_sign_in_failed),
+                        context.getString(uiEvent.messageId),
                         errorColor,
                     )
                 }

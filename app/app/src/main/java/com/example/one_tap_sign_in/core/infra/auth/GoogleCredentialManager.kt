@@ -6,7 +6,6 @@ import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
-import androidx.credentials.exceptions.GetCredentialException
 import com.example.one_tap_sign_in.core.constants.CLIENT_ID
 import com.example.one_tap_sign_in.core.utils.data.CryptoUtils
 import com.example.one_tap_sign_in.signin.models.GoogleUserCredentials
@@ -62,7 +61,7 @@ object GoogleCredentialManager {
                 Log.e("SignInScreen", "Unexpected type of credential.")
                 null
             }
-        } catch (e: GetCredentialException) {
+        } catch (e: Exception) {
             e.printStackTrace()
             return null
         }

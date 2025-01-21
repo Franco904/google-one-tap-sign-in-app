@@ -14,11 +14,12 @@
 
     <!-- Snackbar -->
     <string name="snackbar_sign_in_succeded">Sign in succeeded</string>
+    <string name="snackbar_sign_in_no_google_accounts">No Google accounts found in your device</string>
+    <string name="snackbar_sign_in_unauthorized">Unauthorized access</string>
     <string name="snackbar_sign_in_failed">Sign in failed</string>
     <string name="snackbar_sign_out_succeded">Sign out succeeded</string>
     <string name="snackbar_sign_out_failed">Sign out failed</string>
     <string name="snackbar_internet_connection_failed">Internet connection failed</string>
-    <string name="snackbar_unauthorized">Unauthorized access</string>
     <string name="snackbar_internal_server_error">Internal server error</string>
 
 </resources>

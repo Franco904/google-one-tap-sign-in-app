@@ -54,7 +54,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // Compose
+    // Jetpack Compose
     implementation(libs.androidx.activity.compose)
     implementation(platform(libs.androidx.compose.bom))
 
@@ -67,17 +67,35 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.material.icons.extended)
 
+    // Coil (Image loading)
+    implementation(libs.coil.compose)
+
     // Navigation
     implementation(libs.androidx.navigation.compose)
+
+    // Koin (DI)
+    implementation(project.dependencies.platform(libs.koin.bom))
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+
+    // DataStore (User Preferences)
+    implementation(libs.androidx.datastore)
+
+    // Retrofit (HTTP Client)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.converter.gson)
+    implementation(libs.okhttp3.urlconnection)
+
+    // Auth
+    implementation(libs.credentials.core)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.google.identity)
 
     // Kotlin
     implementation(libs.kotlin.collections.immutable)
 
     // Serialization
     implementation(libs.kotlin.serialization.json)
-
-    // Data layer
-    implementation(libs.androidx.datastore)
 
     // Other
     debugImplementation(libs.androidx.ui.tooling)

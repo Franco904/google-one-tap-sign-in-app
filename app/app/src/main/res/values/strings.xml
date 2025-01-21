@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">One-Tap Sign-In</string>
+
+    <!-- Sign-in -->
+    <string name="sign_in_to_continue">Sign in to Continue</string>
+    <string name="to_use_this_app_first_you_need_to_sign_in">To use this app, first you need to sign in.</string>
+
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="please_wait">Please wait…</string>
+
+    <!-- Profile -->
+    <string name="profile_screen_top_bar_title">Profile</string>
+    <string name="profile_screen_google_sign_out_text">Sign out</string>
+
+    <!-- Snackbar -->
+    <string name="snackbar_sign_in_succeded">Sign in succeeded</string>
+    <string name="snackbar_sign_in_no_google_accounts">No Google accounts found in your device</string>
+    <string name="snackbar_sign_in_unauthorized">Unauthorized access</string>
+    <string name="snackbar_sign_in_failed">Sign in failed</string>
+    <string name="snackbar_sign_out_succeded">Sign out succeeded</string>
+    <string name="snackbar_sign_out_failed">Sign out failed</string>
+    <string name="snackbar_internet_connection_failed">Internet connection failed</string>
+    <string name="snackbar_internal_server_error">Internal server error</string>
+
 </resources>

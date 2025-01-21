@@ -1,4 +1,4 @@
-package com.example.one_tap_sign_in
+package com.example.one_tap_sign_in.core.navigation
 
 import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavController
@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import com.example.one_tap_sign_in.core.utils.presentation.invokeAfterComposition
 import com.example.one_tap_sign_in.profile.ProfileScreen
 import com.example.one_tap_sign_in.profile.ProfileViewModel
+import com.example.one_tap_sign_in.root.RootScreen
+import com.example.one_tap_sign_in.root.RootViewModel
 import com.example.one_tap_sign_in.signin.SignInScreen
 import com.example.one_tap_sign_in.signin.SignInViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -16,6 +18,16 @@ object DestinationsHandler {
         navController: NavController,
         showSnackbar: (String, Color) -> Unit,
     ) {
+        composable<Destinations.Root> {
+            RootScreen(
+                viewModel = koinViewModel<RootViewModel>()
+                    .invokeAfterComposition { init() },
+                onNavigateToFirstDestination = { firstDestination ->
+                    navController.navigate(firstDestination)
+                }
+            )
+        }
+
         composable<Destinations.SignIn> {
             SignInScreen(
                 viewModel = koinViewModel<SignInViewModel>(),

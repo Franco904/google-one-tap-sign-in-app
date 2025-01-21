@@ -42,6 +42,7 @@ class ProfileViewModel(
                 GoogleCredentialManager.clearStateOnSignUp(activityContext)
 
                 userRepository.deleteUserCredentials()
+                userRepository.saveIsSignedIn(isSignedIn = false)
 
                 _uiEvents.emit(UiEvents.SignOutSucceded)
             } catch (e: Exception) {

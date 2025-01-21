@@ -18,8 +18,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.example.one_tap_sign_in.DestinationsHandler.destinations
 import com.example.one_tap_sign_in.core.composables.AppSnackbarHost
+import com.example.one_tap_sign_in.core.navigation.Destinations
+import com.example.one_tap_sign_in.core.navigation.DestinationsHandler.destinations
 import com.example.one_tap_sign_in.core.theme.AppCustomColors
 import com.example.one_tap_sign_in.core.theme.AppTheme
 import kotlinx.coroutines.launch
@@ -49,7 +50,7 @@ class MainActivity : ComponentActivity() {
                 ) { contentPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = Destinations.SignIn,
+                        startDestination = Destinations.Root,
                         builder = {
                             destinations(
                                 navController = navController,

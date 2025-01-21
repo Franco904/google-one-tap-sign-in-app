@@ -39,6 +39,7 @@ import com.example.one_tap_sign_in.core.theme.AppTheme
 import com.example.one_tap_sign_in.core.utils.presentation.getActivity
 import com.example.one_tap_sign_in.profile.composables.ProfileScreenTopBar
 import com.example.one_tap_sign_in.profile.composables.SignOutButton
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -57,7 +58,7 @@ fun ProfileScreen(
     var isSigningOut by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.uiEvents.collect { uiEvent ->
+        viewModel.uiEvents.collectLatest { uiEvent ->
             when (uiEvent) {
                 is ProfileViewModel.UiEvents.SignOutSucceded -> {
                     isSigningOut = false

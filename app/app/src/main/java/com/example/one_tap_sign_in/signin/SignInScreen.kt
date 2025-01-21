@@ -26,6 +26,7 @@ import com.example.one_tap_sign_in.core.theme.AppCustomColors
 import com.example.one_tap_sign_in.core.theme.AppTheme
 import com.example.one_tap_sign_in.core.utils.presentation.getActivity
 import com.example.one_tap_sign_in.signin.composables.SignInBox
+import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -41,7 +42,7 @@ fun SignInScreen(
     var isSigningIn by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.uiEvents.collect { uiEvent ->
+        viewModel.uiEvents.collectLatest { uiEvent ->
             when (uiEvent) {
                 is SignInViewModel.UiEvents.SignInSucceded -> {
                     isSigningIn = false

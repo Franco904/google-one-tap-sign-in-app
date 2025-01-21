@@ -33,10 +33,12 @@ class SignInViewModel(
                 }
 
                 userRepository.authenticateUser(idToken = credentials.idToken)
+
                 userRepository.saveUserCredentials(
                     displayName = credentials.displayName,
                     profilePictureUrl = credentials.profilePictureUrl,
                 )
+                userRepository.saveIsSignedIn(isSignedIn = true)
 
                 _uiEvents.emit(UiEvents.SignInSucceded)
             } catch (e: Exception) {

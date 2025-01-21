@@ -15,17 +15,17 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,13 +33,12 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
-import com.example.one_tap_sign_in.core.infra.auth.GoogleCredentialManager
+import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.theme.AppCustomColors
 import com.example.one_tap_sign_in.core.theme.AppTheme
 import com.example.one_tap_sign_in.core.utils.presentation.getActivity
 import com.example.one_tap_sign_in.profile.composables.ProfileScreenTopBar
 import com.example.one_tap_sign_in.profile.composables.SignOutButton
-import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -47,30 +46,54 @@ fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = koinViewModel(),
     onNavigateUp: () -> Unit = {},
+    onSignOutSucceded: () -> Unit = {},
+    showSnackbar: (String, Color) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
-
-    val coroutineScope = rememberCoroutineScope()
-    val snackbarHostState =
-        remember { SnackbarHostState() } // TODO: mover para cima para tentar fazer aparecer entre diferentes telas
+    val errorColor = MaterialTheme.colorScheme.error
 
     val userCredentialsUiState by viewModel.userCredentialsUiState.collectAsStateWithLifecycle()
 
     var isSigningOut by remember { mutableStateOf(false) }
 
-    var snackbarContainerColor by remember { mutableStateOf(AppCustomColors.green300) }
+    LaunchedEffect(Unit) {
+        viewModel.uiEvents.collect { uiEvent ->
+            when (uiEvent) {
+                is ProfileViewModel.UiEvents.SignOutSucceded -> {
+                    isSigningOut = false
+
+                    showSnackbar(
+                        context.getString(R.string.snackbar_sign_out_succeded),
+                        AppCustomColors.green300,
+                    )
+
+                    onSignOutSucceded()
+                }
+
+                is ProfileViewModel.UiEvents.SignOutFailed -> {
+                    isSigningOut = false
+
+                    showSnackbar(
+                        context.getString(R.string.snackbar_sign_out_failed),
+                        errorColor,
+                    )
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
             ProfileScreenTopBar(
                 onNavigateUp = onNavigateUp,
             )
-        }
+        },
+        modifier = modifier
     ) { contentPadding ->
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(
                     start = contentPadding.calculateStartPadding(LayoutDirection.Ltr) + 32.dp,
@@ -109,23 +132,9 @@ fun ProfileScreen(
                     if (!isSigningOut) {
                         isSigningOut = true
 
-                        // TODO: Move logic to view model
-                        coroutineScope.launch {
-                            GoogleCredentialManager.clearStateOnSignUp(
-                                activityContext = context.getActivity(),
-                            )
-
-                            isSigningOut = false
-
-                            viewModel.signOutUser()
-
-//                            snackbarContainerColor = AppCustomColors.green300
-//                            snackbarHostState.showSnackbar(
-//                                message = context.getString(R.string.snackbar_sign_out_succeded),
-//                            )
-
-                            onNavigateUp()
-                        }
+                        viewModel.signOutUser(
+                            activityContext = context.getActivity(),
+                        )
                     }
                 }
             )

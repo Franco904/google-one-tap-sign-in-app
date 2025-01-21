@@ -1,11 +1,10 @@
 package com.example.one_tap_sign_in.signin
 
-import androidx.annotation.StringRes
+import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.data.repository.UserRepository
-import com.example.one_tap_sign_in.signin.models.GoogleUserCredentials
+import com.example.one_tap_sign_in.core.infra.auth.GoogleCredentialManager
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -17,43 +16,41 @@ class SignInViewModel(
     private val _uiEvents = MutableSharedFlow<UiEvents>()
     val uiEvents = _uiEvents.asSharedFlow()
 
-    fun signInUser(credentials: GoogleUserCredentials) {
+    fun signInUser(activityContext: Activity) {
         viewModelScope.launch {
             try {
+                val credentials = GoogleCredentialManager.chooseGoogleAccountForSignIn(
+                    activityContext = activityContext,
+                    isSignIn = true,
+                ) ?: GoogleCredentialManager.chooseGoogleAccountForSignIn(
+                    activityContext = activityContext,
+                    isSignIn = false, // sign up
+                )
+
+                if (credentials == null) {
+                    _uiEvents.emit(UiEvents.SignInFailed)
+                    return@launch
+                }
+
                 userRepository.authenticateUser(idToken = credentials.idToken)
                 userRepository.saveUserCredentials(
                     displayName = credentials.displayName,
                     profilePictureUrl = credentials.profilePictureUrl,
                 )
 
-                _uiEvents.emit(UiEvents.SignInSuccessed)
-
-                _uiEvents.emit(
-                    UiEvents.Snackbar(
-                        messageId = R.string.snackbar_sign_in_succeded,
-                        isError = false,
-                    )
-                )
+                _uiEvents.emit(UiEvents.SignInSucceded)
             } catch (e: Exception) {
                 e.printStackTrace()
-                viewModelScope.ensureActive() // checks for CancellationException
+                ensureActive() // checks for CancellationException
 
-                _uiEvents.emit(
-                    UiEvents.Snackbar(
-                        messageId = R.string.snackbar_sign_in_failed,
-                        isError = true,
-                    )
-                )
+                _uiEvents.emit(UiEvents.SignInFailed)
             }
         }
     }
 
     sealed interface UiEvents {
-        data class Snackbar(
-            @StringRes val messageId: Int,
-            val isError: Boolean,
-        ) : UiEvents
+        data object SignInSucceded : UiEvents
 
-        data object SignInSuccessed : UiEvents
+        data object SignInFailed : UiEvents
     }
 }

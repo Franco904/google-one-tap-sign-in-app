@@ -1,2 +1,4 @@
 
 *.salive
+/back-end/build
+/back-end/.gradle

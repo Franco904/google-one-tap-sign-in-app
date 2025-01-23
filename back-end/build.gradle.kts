@@ -35,6 +35,10 @@ dependencies {
     // Security
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.sessions)
+    implementation(libs.google.api.client)
+
+    // Data
+    implementation(libs.mongodb.driver.kotlin)
 
     // Monitoring
     implementation(libs.logback.classic)

@@ -13,7 +13,7 @@ class ApplicationTest {
             module()
         }
 
-        client.get("/sign-in/session-increment").apply {
+        client.get("/").apply {
             assertEquals(HttpStatusCode.OK, status)
         }
     }

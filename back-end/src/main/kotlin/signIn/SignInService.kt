@@ -1,5 +1,9 @@
 package com.example.signIn
 
-class SignInService {
+import com.example.core.data.repositories.apis.UserRepository
+
+class SignInService(
+    private val userRepository: UserRepository,
+) {
     fun signInWithGoogle() {}
 }

@@ -4,7 +4,8 @@ import com.example.core.di.configureDependencyInjection
 import com.example.core.exceptionHandling.configureExceptionHandling
 import com.example.core.monitoring.configureMonitoring
 import com.example.core.negotiation.configureContentNegotiation
-import com.example.core.security.configureSecurity
+import com.example.core.security.configureAuthentication
+import com.example.core.security.configureSessions
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
 
@@ -17,7 +18,11 @@ fun Application.module() {
 
     configureContentNegotiation()
     configureExceptionHandling()
-    configureDependencyInjection()
-    configureSecurity()
+
+    configureAuthentication()
+    configureSessions()
+
     configureMonitoring()
+
+    configureDependencyInjection()
 }

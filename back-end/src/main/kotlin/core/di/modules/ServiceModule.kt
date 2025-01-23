@@ -1,11 +1,11 @@
 package com.example.core.di.modules
 
-import com.example.signIn.SignInService
+import com.example.user.UserService
 import org.koin.dsl.module
 
 val serviceModule = module {
-    single<SignInService> {
-        SignInService(
+    single<UserService> {
+        UserService(
             userRepository = get(),
         )
     }

@@ -1,6 +1,7 @@
 package com.example.one_tap_sign_in.core.di
 
 import com.example.one_tap_sign_in.core.constants.BASE_URL
+import com.example.one_tap_sign_in.core.data.remote.apis.UserApi
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
@@ -28,5 +29,10 @@ val networkModule = module {
             .client(get())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
+
+    single {
+        val retrofit = get<Retrofit>()
+        retrofit.create(UserApi::class.java)
     }
 }

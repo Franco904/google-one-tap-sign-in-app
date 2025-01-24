@@ -5,5 +5,5 @@ import com.example.core.data.repositories.apis.UserRepository
 class UserService(
     private val userRepository: UserRepository,
 ) {
-    fun signInWithGoogle() {}
+    fun signInWithGoogle(idToken: String) {}
 }

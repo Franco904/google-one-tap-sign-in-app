@@ -10,14 +10,14 @@ fun Application.configureExceptionHandling() {
     install(StatusPages) {
         exception<Throwable> { call, cause ->
             call.respondText(
-                text = "500: $cause",
+                text = "[500] InternalServerError: ${cause.message}",
                 status = HttpStatusCode.InternalServerError,
             )
         }
 
         exception<UnauthorizedException> { call, cause ->
             call.respondText(
-                text = "401: $cause",
+                text = "[401] UnauthorizedException: ${cause.message}",
                 status = HttpStatusCode.Unauthorized,
             )
         }

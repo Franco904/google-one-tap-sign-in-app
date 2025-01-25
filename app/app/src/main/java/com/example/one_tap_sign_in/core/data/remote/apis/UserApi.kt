@@ -1,13 +1,15 @@
 package com.example.one_tap_sign_in.core.data.remote.apis
 
-import retrofit2.http.GET
-import retrofit2.http.Header
+import com.example.one_tap_sign_in.core.data.remote.requestDtos.SignInRequestDto
+import com.example.one_tap_sign_in.core.data.remote.responseDtos.SignInResponseDto
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 interface UserApi {
-    @GET("$ROUTE/sign-in")
+    @POST("$ROUTE/sign-in")
     suspend fun signInUser(
-        @Header("Authorization") authorization: String,
-    )
+        @Body signInRequestDto: SignInRequestDto,
+    ): SignInResponseDto
 
     companion object {
         private const val ROUTE = "/user"

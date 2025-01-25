@@ -1,22 +1,31 @@
 package com.example.core.data.daos
 
-import com.example.core.data.daos.apis.UserDao
+import com.example.core.data.daos.interfaces.UserDao
 import com.example.core.data.entities.UserEntity
-import com.mongodb.client.model.Filters.eq
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import kotlinx.coroutines.flow.firstOrNull
-import org.bson.types.ObjectId
 
 class UserDaoImpl(
-    private val database: MongoDatabase
+//    private val database: MongoDatabase,
 ) : UserDao {
-    override suspend fun findById(objectId: ObjectId): UserEntity? {
-        val user = database.getCollection<UserEntity>(USERS_COLLECTION)
-            .withDocumentClass<UserEntity>()
-            .find(eq("_id", objectId))
-            .firstOrNull()
+    override suspend fun create(
+        email: String,
+        name: String?,
+        profilePictureUrl: String?,
+    ): UserEntity {
+        return UserEntity(
+            email = email,
+            name = name,
+            profilePictureUrl = profilePictureUrl,
+        )
+    }
 
-        return user
+    override suspend fun getByEmail(email: String): UserEntity? {
+//        val user = database.getCollection<UserEntity>(USERS_COLLECTION)
+//            .withDocumentClass<UserEntity>()
+//            .find(eq("email", email))
+//            .firstOrNull()
+
+        return null
     }
 
     companion object {

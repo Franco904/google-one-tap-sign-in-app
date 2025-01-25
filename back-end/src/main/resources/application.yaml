@@ -4,3 +4,8 @@ ktor:
       - com.example.ApplicationKt.module
   deployment:
     port: 8080
+oauth2:
+  audience: 400313030888-1snvsm2glcgp03b8gb4es4lofv1gv3ua.apps.googleusercontent.com
+mongodb:
+  database_server_uri: "mongodb://localhost:27017"
+  database_name: one_tap_sign_in_db

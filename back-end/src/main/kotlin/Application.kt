@@ -14,15 +14,13 @@ fun main(args: Array<String>) {
 }
 
 fun Application.module() {
-    configureRouting()
-
-    configureContentNegotiation()
-    configureExceptionHandling()
+    configureDependencyInjection()
 
     configureAuthentication()
     configureSessions()
-
     configureMonitoring()
 
-    configureDependencyInjection()
+    configureRouting()
+    configureContentNegotiation()
+    configureExceptionHandling()
 }

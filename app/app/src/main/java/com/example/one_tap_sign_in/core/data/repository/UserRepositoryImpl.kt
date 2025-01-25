@@ -2,6 +2,7 @@ package com.example.one_tap_sign_in.core.data.repository
 
 import com.example.one_tap_sign_in.core.data.local.preferences.UserPreferencesStorage
 import com.example.one_tap_sign_in.core.data.remote.apis.UserApi
+import com.example.one_tap_sign_in.core.data.remote.requestDtos.SignInRequestDto
 import kotlinx.coroutines.flow.first
 
 class UserRepositoryImpl(
@@ -9,7 +10,10 @@ class UserRepositoryImpl(
     private val userPreferencesStorage: UserPreferencesStorage,
 ) : UserRepository {
     override suspend fun authenticateUser(idToken: String) {
-        userApi.signInUser(authorization = "Bearer $idToken")
+        val requestDto = SignInRequestDto(idToken = idToken)
+        val responseDto = userApi.signInUser(signInRequestDto = requestDto)
+
+        val sessionId = responseDto.sessionId
     }
 
     override suspend fun saveUserCredentials(

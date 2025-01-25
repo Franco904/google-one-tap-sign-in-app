@@ -16,8 +16,8 @@ fun main(args: Array<String>) {
 fun Application.module() {
     configureDependencyInjection()
 
-    configureAuthentication()
     configureSessions()
+    configureAuthentication()
     configureMonitoring()
 
     configureRouting()

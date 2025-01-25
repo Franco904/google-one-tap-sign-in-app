@@ -4,7 +4,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserEntity(
-    val email: String? = null,
-    val name: String? = null,
-    val profilePictureUrl: String? = null,
+    val id: String,
+    val email: String,
+    val name: String,
+    val profilePictureUrl: String,
 )

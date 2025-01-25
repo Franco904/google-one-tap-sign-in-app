@@ -7,7 +7,6 @@ val serviceModule = module {
     single<UserService> {
         UserService(
             userRepository = get(),
-            sessionProvider = get(),
         )
     }
 }

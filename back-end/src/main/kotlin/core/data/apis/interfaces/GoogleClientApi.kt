@@ -1,7 +1,7 @@
 package com.example.core.data.apis.interfaces
 
-import com.example.core.data.apiModels.UserCredentials
+import com.example.core.data.apis.models.UserCredentials
 
 interface GoogleClientApi {
-    fun verifyIdToken(idToken: String): UserCredentials?
+    fun verifyIdToken(idToken: String): UserCredentials
 }

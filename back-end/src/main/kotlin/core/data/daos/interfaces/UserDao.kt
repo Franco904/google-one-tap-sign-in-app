@@ -3,11 +3,11 @@ package com.example.core.data.daos.interfaces
 import com.example.core.data.entities.UserEntity
 
 interface UserDao {
-    suspend fun create(
-        email: String,
-        name: String?,
-        profilePictureUrl: String?,
-    ): UserEntity
+    suspend fun createOrIgnore(user: UserEntity): UserEntity
 
-    suspend fun getByEmail(email: String): UserEntity?
+    suspend fun findById(id: String): UserEntity?
+
+    suspend fun update(user: UserEntity): UserEntity
+
+    suspend fun delete(id: String): String?
 }

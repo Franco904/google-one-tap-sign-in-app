@@ -2,7 +2,7 @@ package com.example.core.di.modules
 
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import io.ktor.server.application.Application
+import io.ktor.server.application.*
 import org.koin.dsl.module
 
 val databaseModule = module {

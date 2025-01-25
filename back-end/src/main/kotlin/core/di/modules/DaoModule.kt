@@ -7,7 +7,7 @@ import org.koin.dsl.module
 val daoModule = module {
     single<UserDao> {
         UserDaoImpl(
-//            database = get(),
+            database = get(),
         )
     }
 }

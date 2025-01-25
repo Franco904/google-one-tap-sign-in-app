@@ -1,5 +1,6 @@
 package com.example.core.security
 
+import com.example.core.constants.SESSION_NAME
 import com.example.core.security.session.UserSession
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
@@ -9,7 +10,7 @@ import kotlin.time.Duration.Companion.minutes
 fun Application.configureSessions() {
     install(Sessions) {
         cookie<UserSession>(
-            name = "user_session",
+            name = SESSION_NAME,
             storage = directorySessionStorage(File(".sessions")),
         ) {
             cookie.apply {

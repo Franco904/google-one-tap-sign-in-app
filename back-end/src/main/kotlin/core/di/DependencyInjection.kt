@@ -17,7 +17,6 @@ fun Application.configureDependencyInjection() {
             databaseModule,
             webApiModule,
             monitoringModule,
-            securityModule,
         )
     }
 }

@@ -47,9 +47,7 @@ fun Route.userRoutes(
                     status = HttpStatusCode.OK,
                 )
             }
-        }
 
-        authenticate(SESSION_NAME) {
             put("/update") {
                 val session = call.principal<UserSession>()
                 val updateBody = call.receive<UpdateUserRequestDto>()

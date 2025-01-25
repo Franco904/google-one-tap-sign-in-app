@@ -21,4 +21,8 @@ class UserRepositoryImpl(
             )
         )
     }
+
+    override suspend fun getUser(userId: String): UserEntity? {
+        return userDao.findById(id = userId)
+    }
 }

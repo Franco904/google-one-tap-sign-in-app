@@ -1,6 +1,5 @@
 package com.example
 
-import com.example.foo.fooRoutes
 import com.example.user.UserService
 import com.example.user.userRoutes
 import io.ktor.server.application.*
@@ -14,7 +13,6 @@ fun Application.configureRouting() {
     routing {
         rootRoute()
 
-        fooRoutes()
         userRoutes(userService)
     }
 }

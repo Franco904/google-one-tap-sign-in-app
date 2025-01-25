@@ -12,67 +12,96 @@ fun Application.configureExceptionHandling() {
     val logger by inject<Logger>()
 
     install(StatusPages) {
-        exception<BlankTokenException> { call, cause ->
-            logger.error("[Token Verification] - ${cause.message}")
+        configure400Responses(logger = logger)
+        configure500Responses(logger = logger)
+    }
+}
 
-            call.respondText(
-                text = "[400] Bad request error: ${cause.message}",
-                status = HttpStatusCode.BadRequest,
-            )
-        }
+fun StatusPagesConfig.configure400Responses(
+    logger: Logger,
+) {
+    exception<BlankTokenException> { call, cause ->
+        logger.error("[Token Verification] - ${cause.message}")
 
-        exception<InvalidTokenException> { call, cause ->
-            logger.error("[Token Verification] - ${cause.message}")
+        call.respondText(
+            text = "[400] Bad request error: ${cause.message}",
+            status = HttpStatusCode.BadRequest,
+        )
+    }
 
-            call.respondText(
-                text = "[400] Bad request error: ${cause.message}",
-                status = HttpStatusCode.BadRequest,
-            )
-        }
+    exception<InvalidTokenException> { call, cause ->
+        logger.error("[Token Verification] - ${cause.message}")
 
-        exception<UnauthorizedException> { call, cause ->
-            logger.error("[Resource Access] - ${cause.message}")
+        call.respondText(
+            text = "[400] Bad request error: ${cause.message}",
+            status = HttpStatusCode.BadRequest,
+        )
+    }
 
-            call.respondText(
-                text = "[401] Unauthorized error: ${cause.message}",
-                status = HttpStatusCode.Unauthorized,
-            )
-        }
+    exception<InvalidSessionException> { call, cause ->
+        logger.error("[Session verification] - ${cause.message}")
 
-        exception<CreateUserFailedException> { call, cause ->
-            logger.error("[Create User] - ${cause.message}")
+        call.respondText(
+            text = "[401] Unauthorized error: User is unauthorized to access this resource.",
+            status = HttpStatusCode.Unauthorized,
+        )
+    }
 
-            call.respondText(
-                text = "[500] Internal server error: ${cause.message}",
-                status = HttpStatusCode.InternalServerError,
-            )
-        }
+    exception<UnauthorizedException> { call, cause ->
+        logger.error("[Resource Access] - ${cause.message}")
 
-        exception<UpdateUserFailedException> { call, cause ->
-            logger.error("[Create User] - ${cause.message}")
+        call.respondText(
+            text = "[401] Unauthorized error: ${cause.message}",
+            status = HttpStatusCode.Unauthorized,
+        )
+    }
 
-            call.respondText(
-                text = "[500] Internal server error: ${cause.message}",
-                status = HttpStatusCode.InternalServerError,
-            )
-        }
+    exception<UserNotFoundException> { call, cause ->
+        logger.error("[Get user] - ${cause.message}")
 
-        exception<DeleteUserFailedException> { call, cause ->
-            logger.error("[Create User] - ${cause.message}")
+        call.respondText(
+            text = "[404] Resource not found error: ${cause.message}",
+            status = HttpStatusCode.NotFound,
+        )
+    }
+}
 
-            call.respondText(
-                text = "[500] Internal server error: ${cause.message}",
-                status = HttpStatusCode.InternalServerError,
-            )
-        }
+fun StatusPagesConfig.configure500Responses(
+    logger: Logger,
+) {
+    exception<CreateUserFailedException> { call, cause ->
+        logger.error("[Create User] - ${cause.message}")
 
-        exception<Throwable> { call, cause ->
-            logger.error("[Unknown error] - ${cause.message}")
+        call.respondText(
+            text = "[500] Internal server error: ${cause.message}",
+            status = HttpStatusCode.InternalServerError,
+        )
+    }
 
-            call.respondText(
-                text = "[500] Internal server error: ${cause.message}",
-                status = HttpStatusCode.InternalServerError,
-            )
-        }
+    exception<UpdateUserFailedException> { call, cause ->
+        logger.error("[Update User] - ${cause.message}")
+
+        call.respondText(
+            text = "[500] Internal server error: ${cause.message}",
+            status = HttpStatusCode.InternalServerError,
+        )
+    }
+
+    exception<DeleteUserFailedException> { call, cause ->
+        logger.error("[Delete User] - ${cause.message}")
+
+        call.respondText(
+            text = "[500] Internal server error: ${cause.message}",
+            status = HttpStatusCode.InternalServerError,
+        )
+    }
+
+    exception<Throwable> { call, cause ->
+        logger.error("[Unknown error] - ${cause.message}")
+
+        call.respondText(
+            text = "[500] Internal server error: ${cause.message}",
+            status = HttpStatusCode.InternalServerError,
+        )
     }
 }

@@ -3,8 +3,10 @@ package com.example.user
 import com.example.core.constants.SESSION_NAME
 import com.example.core.security.session.UserSession
 import com.example.user.requestDtos.SignInRequestDto
+import com.example.user.responseDtos.GetUserResponseDto
 import com.example.user.responseDtos.SignInResponseDto
 import io.ktor.http.*
+import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -28,6 +30,22 @@ fun Route.userRoutes(
                 message = SignInResponseDto(sessionId = session.id),
                 status = HttpStatusCode.OK,
             )
+        }
+
+        authenticate(SESSION_NAME) {
+            get {
+                val session = call.principal<UserSession>()
+                val user = userService.getUserFromSession(session = session)
+
+                call.respond(
+                    message = GetUserResponseDto(
+                        email = user.email,
+                        name = user.name,
+                        profilePictureUrl = user.profilePictureUrl,
+                    ),
+                    status = HttpStatusCode.OK,
+                )
+            }
         }
     }
 }

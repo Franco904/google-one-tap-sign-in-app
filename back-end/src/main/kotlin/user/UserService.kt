@@ -39,4 +39,12 @@ class UserService(
             newName = user.name,
         )
     }
+
+    suspend fun deleteUser(session: UserSession?) {
+        if (session == null || session.id.isBlank()) {
+            throw InvalidSessionException()
+        }
+
+        userRepository.deleteUser(userId = session.id)
+    }
 }

@@ -11,4 +11,6 @@ interface UserRepository {
         userId: String,
         newName: String,
     )
+
+    suspend fun deleteUser(userId: String)
 }

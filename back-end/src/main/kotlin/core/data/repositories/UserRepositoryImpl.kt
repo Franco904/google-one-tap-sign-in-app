@@ -30,4 +30,8 @@ class UserRepositoryImpl(
 
         userDao.update(user = updatedUser)
     }
+
+    override suspend fun deleteUser(userId: String) {
+        userDao.delete(id = userId)
+    }
 }

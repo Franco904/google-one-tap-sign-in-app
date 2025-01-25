@@ -62,6 +62,17 @@ fun Route.userRoutes(
                     status = HttpStatusCode.OK,
                 )
             }
+
+            delete("/delete") {
+                val session = call.principal<UserSession>()
+
+                userService.deleteUser(session = session)
+
+                call.respond(
+                    message = true,
+                    status = HttpStatusCode.OK,
+                )
+            }
         }
     }
 }

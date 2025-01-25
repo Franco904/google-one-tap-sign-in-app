@@ -4,8 +4,8 @@ import com.example.core.data.entities.UserEntity
 import com.example.core.data.repositories.interfaces.UserRepository
 import com.example.core.exceptionHandling.exceptions.BlankTokenException
 import com.example.core.exceptionHandling.exceptions.InvalidSessionException
-import com.example.core.exceptionHandling.exceptions.UserNotFoundException
 import com.example.core.security.session.UserSession
+import com.example.user.requestDtos.UpdateUserRequestDto
 
 class UserService(
     private val userRepository: UserRepository,
@@ -18,13 +18,25 @@ class UserService(
         return user.id to user.name
     }
 
-    suspend fun getUserFromSession(session: UserSession?): UserEntity {
+    suspend fun getUser(session: UserSession?): UserEntity {
         if (session == null || session.id.isBlank()) {
             throw InvalidSessionException()
         }
 
-        val user = userRepository.getUser(userId = session.id) ?: throw UserNotFoundException()
+        return userRepository.getUser(userId = session.id)
+    }
 
-        return user
+    suspend fun updateUser(
+        session: UserSession?,
+        user: UpdateUserRequestDto,
+    ) {
+        if (session == null || session.id.isBlank()) {
+            throw InvalidSessionException()
+        }
+
+        userRepository.updateUserName(
+            userId = session.id,
+            newName = user.name,
+        )
     }
 }

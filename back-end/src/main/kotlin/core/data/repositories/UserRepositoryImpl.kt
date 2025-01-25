@@ -13,16 +13,21 @@ class UserRepositoryImpl(
         val userCredentials = googleClientApi.verifyIdToken(idToken)
 
         return userDao.createOrIgnore(
-            user = UserEntity(
-                id = userCredentials.sub,
-                email = userCredentials.email,
-                name = userCredentials.name,
-                profilePictureUrl = userCredentials.profilePictureUrl,
-            )
+            user = UserEntity.fromUserCredentials(userCredentials)
         )
     }
 
-    override suspend fun getUser(userId: String): UserEntity? {
+    override suspend fun getUser(userId: String): UserEntity {
         return userDao.findById(id = userId)
+    }
+
+    override suspend fun updateUserName(
+        userId: String,
+        newName: String,
+    ) {
+        val user = userDao.findById(id = userId)
+        val updatedUser = user.copy(name = newName)
+
+        userDao.update(user = updatedUser)
     }
 }

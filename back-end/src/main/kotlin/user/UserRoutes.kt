@@ -2,9 +2,10 @@ package com.example.user
 
 import com.example.core.constants.SESSION_NAME
 import com.example.core.security.session.UserSession
-import com.example.user.requestDtos.SignInRequestDto
+import com.example.user.requestDtos.SignInUserRequestDto
+import com.example.user.requestDtos.UpdateUserRequestDto
 import com.example.user.responseDtos.GetUserResponseDto
-import com.example.user.responseDtos.SignInResponseDto
+import com.example.user.responseDtos.SignInUserResponseDto
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
@@ -19,7 +20,7 @@ fun Route.userRoutes(
 ) {
     route(USER_ROUTE) {
         post("/sign-in") {
-            val signInRequest = call.receive<SignInRequestDto>()
+            val signInRequest = call.receive<SignInUserRequestDto>()
 
             val (userSub, userName) = userService.startSession(idToken = signInRequest.idToken)
 
@@ -27,7 +28,7 @@ fun Route.userRoutes(
             call.sessions.set(name = SESSION_NAME, value = session)
 
             call.respond(
-                message = SignInResponseDto(sessionId = session.id),
+                message = SignInUserResponseDto(sessionId = session.id),
                 status = HttpStatusCode.OK,
             )
         }
@@ -35,7 +36,7 @@ fun Route.userRoutes(
         authenticate(SESSION_NAME) {
             get {
                 val session = call.principal<UserSession>()
-                val user = userService.getUserFromSession(session = session)
+                val user = userService.getUser(session = session)
 
                 call.respond(
                     message = GetUserResponseDto(
@@ -43,6 +44,23 @@ fun Route.userRoutes(
                         name = user.name,
                         profilePictureUrl = user.profilePictureUrl,
                     ),
+                    status = HttpStatusCode.OK,
+                )
+            }
+        }
+
+        authenticate(SESSION_NAME) {
+            put("/update") {
+                val session = call.principal<UserSession>()
+                val updateBody = call.receive<UpdateUserRequestDto>()
+
+                userService.updateUser(
+                    session = session,
+                    user = updateBody,
+                )
+
+                call.respond(
+                    message = true,
                     status = HttpStatusCode.OK,
                 )
             }

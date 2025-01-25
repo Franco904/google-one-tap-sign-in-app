@@ -5,6 +5,7 @@ import com.example.core.data.entities.UserEntity
 import com.example.core.exceptionHandling.exceptions.CreateUserFailedException
 import com.example.core.exceptionHandling.exceptions.DeleteUserFailedException
 import com.example.core.exceptionHandling.exceptions.UpdateUserFailedException
+import com.example.core.exceptionHandling.exceptions.UserNotFoundException
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import kotlinx.coroutines.flow.firstOrNull
@@ -17,25 +18,25 @@ class UserDaoImpl(
     )
 
     override suspend fun createOrIgnore(user: UserEntity): UserEntity {
-        val existingUser = findById(id = user.id)
-
-        return existingUser ?: run {
+        return try {
+            val existingUser = findById(id = user.id)
+            existingUser
+        } catch (_: UserNotFoundException) {
             val success = users.insertOne(document = user).wasAcknowledged()
 
             if (!success) throw CreateUserFailedException()
-
             user
         }
     }
 
-    override suspend fun findById(id: String): UserEntity? {
+    override suspend fun findById(id: String): UserEntity {
         return users
             .find<UserEntity>(filter = eq(UserEntity::id.name, id))
             .limit(1)
-            .firstOrNull()
+            .firstOrNull() ?: throw UserNotFoundException()
     }
 
-    override suspend fun update(user: UserEntity): UserEntity {
+    override suspend fun update(user: UserEntity) {
         val success = users
             .replaceOne(
                 filter = eq(UserEntity::id.name, user.id),
@@ -44,17 +45,13 @@ class UserDaoImpl(
             .wasAcknowledged()
 
         if (!success) throw UpdateUserFailedException()
-
-        return user
     }
 
-    override suspend fun delete(id: String): String? {
+    override suspend fun delete(id: String) {
         val success = users
             .deleteOne(filter = eq(UserEntity::id.name, id)).wasAcknowledged()
 
         if (!success) throw DeleteUserFailedException()
-
-        return id
     }
 
     companion object {

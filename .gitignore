@@ -1,2 +1,7 @@
 
 *.salive
+/back-end/build
+/back-end/.gradle
+.DS_Store
+/app/.idea
+/back-end/.sessions

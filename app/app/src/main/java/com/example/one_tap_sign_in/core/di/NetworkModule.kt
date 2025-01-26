@@ -1,7 +1,10 @@
 package com.example.one_tap_sign_in.core.di
 
 import com.example.one_tap_sign_in.core.constants.BASE_URL
+import com.example.one_tap_sign_in.core.data.local.preferences.UserPreferencesStorage
 import com.example.one_tap_sign_in.core.data.remote.apis.UserApi
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import org.koin.dsl.module
@@ -12,7 +15,6 @@ import java.net.CookieManager
 import java.util.concurrent.TimeUnit
 
 val networkModule = module {
-    // Network
     single<CookieHandler> { CookieManager() }
 
     single {

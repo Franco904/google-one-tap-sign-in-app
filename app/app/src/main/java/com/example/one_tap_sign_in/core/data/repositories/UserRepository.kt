@@ -1,5 +1,8 @@
 package com.example.one_tap_sign_in.core.data.repositories
 
+import com.example.one_tap_sign_in.core.data.models.User
+import kotlinx.coroutines.flow.Flow
+
 interface UserRepository {
     suspend fun isSignedIn(): Boolean
 
@@ -9,7 +12,11 @@ interface UserRepository {
         profilePictureUrl: String?,
     )
 
-    suspend fun readUserCredentials(): Pair<String?, String?>
+    suspend fun getUser(): Flow<User>
+
+    suspend fun updateUser(newName: String)
+
+    suspend fun deleteUser()
 
     suspend fun signOutUser()
 }

@@ -24,28 +24,37 @@ class ProfileViewModel(
     val userCredentialsUiState = _userCredentialsUiState.asStateFlow()
 
     fun init() {
-        readUserCredentials()
+        getUserCredentials()
     }
 
-    private fun readUserCredentials() {
+    private fun getUserCredentials() {
         viewModelScope.launch {
-            val (displayName, profilePictureUrl) = userRepository.readUserCredentials()
-
-            _userCredentialsUiState.update {
-                UserCredentialsUiState(
-                    displayName = displayName,
-                    profilePictureUrl = profilePictureUrl,
-                )
+            userRepository.getUser().collect { user ->
+                _userCredentialsUiState.update {
+                    UserCredentialsUiState(
+                        email = user.email,
+                        displayName = user.name,
+                        profilePictureUrl = user.profilePictureUrl,
+                    )
+                }
             }
         }
     }
 
     fun onEditUser(newDisplayName: String) {
+        viewModelScope.launch {
+            if (newDisplayName.length > 20) return@launch
 
+            userRepository.updateUser(newName = newDisplayName)
+        }
     }
 
-    fun onDeleteUser() {
+    fun onDeleteUser(activityContext: Activity) {
+        viewModelScope.launch {
+            GoogleCredentialManager.clearStateOnSignUp(activityContext)
 
+            userRepository.deleteUser()
+        }
     }
 
     fun onSignOutUser(activityContext: Activity) {

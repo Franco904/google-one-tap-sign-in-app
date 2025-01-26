@@ -1,9 +1,12 @@
 package com.example.one_tap_sign_in.core.data.repositories
 
 import com.example.one_tap_sign_in.core.data.local.preferences.UserPreferencesStorage
+import com.example.one_tap_sign_in.core.data.models.User
 import com.example.one_tap_sign_in.core.data.remote.apis.UserApi
 import com.example.one_tap_sign_in.core.data.remote.requestDtos.SignInRequestDto
+import com.example.one_tap_sign_in.core.data.remote.requestDtos.UpdateUserRequestDto
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 
 class UserRepositoryImpl(
     private val userApi: UserApi,
@@ -32,13 +35,46 @@ class UserRepositoryImpl(
         }
     }
 
-    override suspend fun readUserCredentials(): Pair<String?, String?> {
+    override suspend fun getUser() = flow {
         val preferences = userPreferencesStorage.readPreferences().first()
 
-        return Pair(
-            preferences.displayName,
-            preferences.profilePictureUrl,
+        emit(
+            User(
+                name = preferences.displayName,
+                profilePictureUrl = preferences.profilePictureUrl,
+            )
         )
+
+        val responseDto = userApi.getUser()
+
+        emit(
+            User(
+                email = responseDto.email,
+                name = responseDto.name,
+                profilePictureUrl = responseDto.profilePictureUrl,
+            )
+        )
+    }
+
+    override suspend fun updateUser(newName: String) {
+        val updateUserRequestDto = UpdateUserRequestDto(name = newName)
+        userApi.updateUser(updateUserRequestDto = updateUserRequestDto)
+
+        userPreferencesStorage.savePreferences { preferences ->
+            preferences.copy(displayName = newName)
+        }
+    }
+
+    override suspend fun deleteUser() {
+        userApi.deleteUser()
+
+        userPreferencesStorage.savePreferences { preferences ->
+            preferences.copy(
+                sessionId = null,
+                displayName = null,
+                profilePictureUrl = null,
+            )
+        }
     }
 
     override suspend fun signOutUser() {

@@ -73,6 +73,15 @@ fun Route.userRoutes(
                     status = HttpStatusCode.OK,
                 )
             }
+
+            get("/sign-out") {
+                call.sessions.clear<UserSession>()
+
+                call.respond(
+                    message = true,
+                    status = HttpStatusCode.OK,
+                )
+            }
         }
     }
 }

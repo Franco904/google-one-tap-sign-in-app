@@ -22,4 +22,13 @@
     <string name="snackbar_internet_connection_failed">Internet connection failed</string>
     <string name="snackbar_internal_server_error">Internal server error</string>
 
+    <!-- Dialog -->
+    <string name="dialog_edit_user_title">Edit user</string>
+    <string name="dialog_edit_user_edit_name_placeholder">Name</string>
+    <string name="dialog_edit_user_primary_button">Save</string>
+    <string name="dialog_edit_user_secondary_button">Cancel</string>
+    <string name="dialog_delete_user_title">Delete user?</string>
+    <string name="dialog_delete_user_description">User will be unregistered from app\'s database</string>
+    <string name="dialog_delete_user_primary_button">Confirm</string>
+    <string name="dialog_delete_user_secondary_button">Cancel</string>
 </resources>

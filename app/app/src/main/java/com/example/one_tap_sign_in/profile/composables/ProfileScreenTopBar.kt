@@ -1,8 +1,14 @@
 package com.example.one_tap_sign_in.profile.composables
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,6 +28,8 @@ import com.example.one_tap_sign_in.R
 @Composable
 fun ProfileScreenTopBar(
     onNavigateUp: () -> Unit,
+    onEditUser: () -> Unit,
+    onDeleteUser: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val outlineVariantColor = MaterialTheme.colorScheme.outlineVariant
@@ -43,6 +51,29 @@ fun ProfileScreenTopBar(
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                 )
+            }
+        },
+        actions = {
+            Row {
+                IconButton(
+                    onClick = onEditUser,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+                Spacer(modifier = Modifier.width(4.dp))
+                IconButton(
+                    onClick = onDeleteUser,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(

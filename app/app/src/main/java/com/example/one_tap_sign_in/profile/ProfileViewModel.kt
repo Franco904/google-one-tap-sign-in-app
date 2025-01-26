@@ -24,6 +24,10 @@ class ProfileViewModel(
     val userCredentialsUiState = _userCredentialsUiState.asStateFlow()
 
     fun init() {
+        readUserCredentials()
+    }
+
+    private fun readUserCredentials() {
         viewModelScope.launch {
             val (displayName, profilePictureUrl) = userRepository.readUserCredentials()
 
@@ -36,7 +40,15 @@ class ProfileViewModel(
         }
     }
 
-    fun signOutUser(activityContext: Activity) {
+    fun onEditUser(newDisplayName: String) {
+
+    }
+
+    fun onDeleteUser() {
+
+    }
+
+    fun onSignOutUser(activityContext: Activity) {
         viewModelScope.launch {
             try {
                 GoogleCredentialManager.clearStateOnSignUp(activityContext)

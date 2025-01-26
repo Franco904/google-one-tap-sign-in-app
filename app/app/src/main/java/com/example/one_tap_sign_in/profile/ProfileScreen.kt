@@ -6,16 +6,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -25,22 +33,32 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.theme.AppCustomColors
 import com.example.one_tap_sign_in.core.theme.AppTheme
 import com.example.one_tap_sign_in.core.utils.presentation.getActivity
+import com.example.one_tap_sign_in.profile.composables.DeleteUserDialog
+import com.example.one_tap_sign_in.profile.composables.EditUserDialog
+import com.example.one_tap_sign_in.profile.composables.ProfilePictureSection
 import com.example.one_tap_sign_in.profile.composables.ProfileScreenTopBar
 import com.example.one_tap_sign_in.profile.composables.SignOutButton
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun ProfileScreen(
@@ -56,6 +74,8 @@ fun ProfileScreen(
     val userCredentialsUiState by viewModel.userCredentialsUiState.collectAsStateWithLifecycle()
 
     var isSigningOut by remember { mutableStateOf(false) }
+    var isEditingUser by remember { mutableStateOf(false) }
+    var isDeletingUser by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.uiEvents.collectLatest { uiEvent ->
@@ -87,6 +107,8 @@ fun ProfileScreen(
         topBar = {
             ProfileScreenTopBar(
                 onNavigateUp = onNavigateUp,
+                onEditUser = { isEditingUser = true },
+                onDeleteUser = { isDeletingUser = true },
             )
         },
         modifier = modifier
@@ -103,24 +125,31 @@ fun ProfileScreen(
                     bottom = contentPadding.calculateBottomPadding(),
                 )
         ) {
-            if (userCredentialsUiState.profilePictureUrl != null) {
-                AsyncImage(
-                    model = userCredentialsUiState.profilePictureUrl,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)
+            if (isEditingUser) {
+                EditUserDialog(
+                    displayName = userCredentialsUiState.displayName,
+                    onEdit = { newDisplayName ->
+                        viewModel.onEditUser(newDisplayName = newDisplayName)
+                        isEditingUser = false
+                    },
+                    onCancel = { isEditingUser = false },
                 )
             }
+            if (isDeletingUser) {
+                DeleteUserDialog(
+                    onDelete = {
+                        viewModel.onDeleteUser()
+                        isDeletingUser = false
+                    },
+                    onCancel = { isDeletingUser = false },
+                )
+            }
+            ProfilePictureSection(
+                profilePictureUrl = userCredentialsUiState.profilePictureUrl,
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = userCredentialsUiState.displayName ?: "Anonymous",
@@ -133,7 +162,7 @@ fun ProfileScreen(
                     if (!isSigningOut) {
                         isSigningOut = true
 
-                        viewModel.signOutUser(
+                        viewModel.onSignOutUser(
                             activityContext = context.getActivity(),
                         )
                     }

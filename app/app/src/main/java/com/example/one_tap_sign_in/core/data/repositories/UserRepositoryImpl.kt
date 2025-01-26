@@ -1,4 +1,4 @@
-package com.example.one_tap_sign_in.core.data.repository
+package com.example.one_tap_sign_in.core.data.repositories
 
 import com.example.one_tap_sign_in.core.data.local.preferences.UserPreferencesStorage
 import com.example.one_tap_sign_in.core.data.remote.apis.UserApi
@@ -9,19 +9,23 @@ class UserRepositoryImpl(
     private val userApi: UserApi,
     private val userPreferencesStorage: UserPreferencesStorage,
 ) : UserRepository {
-    override suspend fun authenticateUser(idToken: String) {
+    override suspend fun isSignedIn(): Boolean {
+        return !userPreferencesStorage.readPreferences().first().sessionId.isNullOrBlank()
+    }
+
+    override suspend fun signInUser(
+        idToken: String,
+        displayName: String?,
+        profilePictureUrl: String?,
+    ) {
         val requestDto = SignInRequestDto(idToken = idToken)
         val responseDto = userApi.signInUser(signInRequestDto = requestDto)
 
         val sessionId = responseDto.sessionId
-    }
 
-    override suspend fun saveUserCredentials(
-        displayName: String?,
-        profilePictureUrl: String?,
-    ) {
         userPreferencesStorage.savePreferences { preferences ->
             preferences.copy(
+                sessionId = sessionId,
                 displayName = displayName,
                 profilePictureUrl = profilePictureUrl,
             )
@@ -37,24 +41,15 @@ class UserRepositoryImpl(
         )
     }
 
-    override suspend fun deleteUserCredentials() {
+    override suspend fun signOutUser() {
+        userApi.signOutUser()
+
         userPreferencesStorage.savePreferences { preferences ->
             preferences.copy(
+                sessionId = null,
                 displayName = null,
                 profilePictureUrl = null,
             )
         }
-    }
-
-    override suspend fun saveIsSignedIn(isSignedIn: Boolean) {
-        userPreferencesStorage.savePreferences { preferences ->
-            preferences.copy(
-                isSignedIn = isSignedIn,
-            )
-        }
-    }
-
-    override suspend fun readIsSignedIn(): Boolean? {
-        return userPreferencesStorage.readPreferences().first().isSignedIn
     }
 }

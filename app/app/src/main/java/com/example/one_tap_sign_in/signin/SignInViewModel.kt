@@ -5,7 +5,7 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.one_tap_sign_in.R
-import com.example.one_tap_sign_in.core.data.repository.UserRepository
+import com.example.one_tap_sign_in.core.data.repositories.UserRepository
 import com.example.one_tap_sign_in.core.infra.auth.GoogleCredentialManager
 import com.example.one_tap_sign_in.signin.models.GoogleUserCredentials
 import kotlinx.coroutines.ensureActive
@@ -32,13 +32,11 @@ class SignInViewModel(
                     return@launch
                 }
 
-                userRepository.authenticateUser(idToken = credentials.idToken)
-
-                userRepository.saveUserCredentials(
+                userRepository.signInUser(
+                    idToken = credentials.idToken,
                     displayName = credentials.displayName,
                     profilePictureUrl = credentials.profilePictureUrl,
                 )
-                userRepository.saveIsSignedIn(isSignedIn = true)
 
                 _uiEvents.emit(UiEvents.SignInSucceded)
             } catch (e: Exception) {

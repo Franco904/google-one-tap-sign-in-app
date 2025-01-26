@@ -3,7 +3,7 @@ package com.example.one_tap_sign_in.profile
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.one_tap_sign_in.core.data.repository.UserRepository
+import com.example.one_tap_sign_in.core.data.repositories.UserRepository
 import com.example.one_tap_sign_in.core.infra.auth.GoogleCredentialManager
 import com.example.one_tap_sign_in.profile.models.UserCredentialsUiState
 import kotlinx.coroutines.ensureActive
@@ -41,8 +41,7 @@ class ProfileViewModel(
             try {
                 GoogleCredentialManager.clearStateOnSignUp(activityContext)
 
-                userRepository.deleteUserCredentials()
-                userRepository.saveIsSignedIn(isSignedIn = false)
+                userRepository.signOutUser()
 
                 _uiEvents.emit(UiEvents.SignOutSucceded)
             } catch (e: Exception) {

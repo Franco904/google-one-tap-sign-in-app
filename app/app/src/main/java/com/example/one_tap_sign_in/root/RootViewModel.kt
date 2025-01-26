@@ -2,7 +2,7 @@ package com.example.one_tap_sign_in.root
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.one_tap_sign_in.core.data.repository.UserRepository
+import com.example.one_tap_sign_in.core.data.repositories.UserRepository
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -21,7 +21,7 @@ class RootViewModel(
     private fun checkIsUserSignedIn() {
         viewModelScope.launch {
             try {
-                val isUserSignedIn = userRepository.readIsSignedIn() ?: false
+                val isUserSignedIn = userRepository.isSignedIn()
 
                 _uiEvents.emit(UiEvents.SignInState(isUserSignedIn))
             } catch (e: Exception) {

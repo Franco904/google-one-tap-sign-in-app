@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserPreferences(
-    val isSignedIn: Boolean? = null,
+    val sessionId: String? = null,
     val displayName: String? = null,
     val profilePictureUrl: String? = null,
 )

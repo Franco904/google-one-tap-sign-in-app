@@ -41,6 +41,7 @@ android {
     }
 
     buildFeatures {
+        buildConfig = true
         compose = true
     }
 }
@@ -81,10 +82,12 @@ dependencies {
     // DataStore (User Preferences)
     implementation(libs.androidx.datastore)
 
-    // Retrofit (HTTP Client)
-    implementation(libs.retrofit)
-    implementation(libs.retrofit.converter.gson)
-    implementation(libs.okhttp3.urlconnection)
+    // HTTP Client
+    implementation(libs.ktor.core)
+    implementation(libs.ktor.engine)
+    implementation(libs.ktor.content.negotiation)
+    implementation(libs.ktor.serialization)
+    implementation(libs.ktor.logging)
 
     // Auth
     implementation(libs.credentials.core)

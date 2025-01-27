@@ -10,9 +10,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,11 +29,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.theme.AppCustomColors
 import com.example.one_tap_sign_in.core.theme.AppTheme
 import com.example.one_tap_sign_in.core.utils.presentation.getActivity
+import com.example.one_tap_sign_in.profile.composables.DeleteUserDialog
+import com.example.one_tap_sign_in.profile.composables.EditUserDialog
+import com.example.one_tap_sign_in.profile.composables.ProfilePictureSection
 import com.example.one_tap_sign_in.profile.composables.ProfileScreenTopBar
 import com.example.one_tap_sign_in.profile.composables.SignOutButton
 import kotlinx.coroutines.flow.collectLatest
@@ -46,7 +45,6 @@ import org.koin.androidx.compose.koinViewModel
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = koinViewModel(),
-    onNavigateUp: () -> Unit = {},
     onSignOutSucceded: () -> Unit = {},
     showSnackbar: (String, Color) -> Unit = { _, _ -> },
 ) {
@@ -56,6 +54,8 @@ fun ProfileScreen(
     val userCredentialsUiState by viewModel.userCredentialsUiState.collectAsStateWithLifecycle()
 
     var isSigningOut by remember { mutableStateOf(false) }
+    var isEditingUser by remember { mutableStateOf(false) }
+    var isDeletingUser by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.uiEvents.collectLatest { uiEvent ->
@@ -86,7 +86,8 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             ProfileScreenTopBar(
-                onNavigateUp = onNavigateUp,
+                onEditUser = { isEditingUser = true },
+                onDeleteUser = { isDeletingUser = true },
             )
         },
         modifier = modifier
@@ -103,24 +104,33 @@ fun ProfileScreen(
                     bottom = contentPadding.calculateBottomPadding(),
                 )
         ) {
-            if (userCredentialsUiState.profilePictureUrl != null) {
-                AsyncImage(
-                    model = userCredentialsUiState.profilePictureUrl,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)
-                )
-            } else {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(CircleShape)
+            if (isEditingUser) {
+                EditUserDialog(
+                    displayName = userCredentialsUiState.displayName,
+                    onEdit = { newDisplayName ->
+                        viewModel.onEditUser(newDisplayName = newDisplayName)
+                        isEditingUser = false
+                    },
+                    onCancel = { isEditingUser = false },
                 )
             }
+            if (isDeletingUser) {
+                DeleteUserDialog(
+                    onDelete = {
+                        viewModel.onDeleteUser(
+                            activityContext = context.getActivity(),
+                        )
+                        isDeletingUser = false
+                    },
+                    onCancel = { isDeletingUser = false },
+                )
+            }
+            ProfilePictureSection(
+                profilePictureUrl = userCredentialsUiState.profilePictureUrl,
+                modifier = Modifier
+                    .size(64.dp)
+                    .clip(CircleShape)
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = userCredentialsUiState.displayName ?: "Anonymous",
@@ -133,7 +143,7 @@ fun ProfileScreen(
                     if (!isSigningOut) {
                         isSigningOut = true
 
-                        viewModel.signOutUser(
+                        viewModel.onSignOutUser(
                             activityContext = context.getActivity(),
                         )
                     }

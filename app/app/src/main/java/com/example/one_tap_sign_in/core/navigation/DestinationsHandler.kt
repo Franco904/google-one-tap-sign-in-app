@@ -44,9 +44,6 @@ object DestinationsHandler {
             ProfileScreen(
                 viewModel = koinViewModel<ProfileViewModel>()
                     .invokeAfterComposition { init() },
-                onNavigateUp = {
-                    navController.navigateUp()
-                },
                 onSignOutSucceded = {
                     navController.navigateUp()
                 },

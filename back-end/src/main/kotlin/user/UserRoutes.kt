@@ -1,11 +1,12 @@
 package com.example.user
 
-import com.example.core.constants.SESSION_NAME
+import com.example.core.constants.SESSION_COOKIE_NAME
 import com.example.core.security.session.UserSession
 import com.example.user.requestDtos.SignInUserRequestDto
 import com.example.user.requestDtos.UpdateUserRequestDto
 import com.example.user.responseDtos.GetUserResponseDto
 import com.example.user.responseDtos.SignInUserResponseDto
+import com.example.user.responseDtos.UpdateUserResponseDto
 import io.ktor.http.*
 import io.ktor.server.auth.*
 import io.ktor.server.request.*
@@ -25,15 +26,15 @@ fun Route.userRoutes(
             val (userSub, userName) = userService.startSession(idToken = signInRequest.idToken)
 
             val session = UserSession(id = userSub, name = userName)
-            call.sessions.set(name = SESSION_NAME, value = session)
+            call.sessions.set(name = SESSION_COOKIE_NAME, value = session)
 
             call.respond(
-                message = SignInUserResponseDto(sessionId = session.id),
+                message = true,
                 status = HttpStatusCode.OK,
             )
         }
 
-        authenticate(SESSION_NAME) {
+        authenticate(SESSION_COOKIE_NAME) {
             get {
                 val session = call.principal<UserSession>()
                 val user = userService.getUser(session = session)
@@ -58,7 +59,7 @@ fun Route.userRoutes(
                 )
 
                 call.respond(
-                    message = true,
+                    message = UpdateUserResponseDto(message = "User successfully updated."),
                     status = HttpStatusCode.OK,
                 )
             }

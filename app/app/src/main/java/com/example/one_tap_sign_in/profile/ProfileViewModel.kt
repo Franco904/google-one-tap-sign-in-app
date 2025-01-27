@@ -3,7 +3,7 @@ package com.example.one_tap_sign_in.profile
 import android.app.Activity
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.one_tap_sign_in.core.data.repository.UserRepository
+import com.example.one_tap_sign_in.core.data.repositories.UserRepository
 import com.example.one_tap_sign_in.core.infra.auth.GoogleCredentialManager
 import com.example.one_tap_sign_in.profile.models.UserCredentialsUiState
 import kotlinx.coroutines.ensureActive
@@ -24,25 +24,54 @@ class ProfileViewModel(
     val userCredentialsUiState = _userCredentialsUiState.asStateFlow()
 
     fun init() {
-        viewModelScope.launch {
-            val (displayName, profilePictureUrl) = userRepository.readUserCredentials()
+        getUserCredentials()
+    }
 
-            _userCredentialsUiState.update {
-                UserCredentialsUiState(
-                    displayName = displayName,
-                    profilePictureUrl = profilePictureUrl,
-                )
+    private fun getUserCredentials() {
+        viewModelScope.launch {
+            userRepository.watchUser().collect { user ->
+                _userCredentialsUiState.update {
+                    UserCredentialsUiState(
+                        email = user.email,
+                        displayName = user.name,
+                        profilePictureUrl = user.profilePictureUrl,
+                    )
+                }
             }
         }
     }
 
-    fun signOutUser(activityContext: Activity) {
+    fun onEditUser(newDisplayName: String) {
+        viewModelScope.launch {
+            if (newDisplayName.length > 35) return@launch
+
+            userRepository.updateUser(newName = newDisplayName)
+        }
+    }
+
+    fun onDeleteUser(activityContext: Activity) {
         viewModelScope.launch {
             try {
                 GoogleCredentialManager.clearStateOnSignUp(activityContext)
 
-                userRepository.deleteUserCredentials()
-                userRepository.saveIsSignedIn(isSignedIn = false)
+                userRepository.deleteUser()
+
+                _uiEvents.emit(UiEvents.SignOutSucceded)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ensureActive()
+
+                _uiEvents.emit(UiEvents.SignOutFailed)
+            }
+        }
+    }
+
+    fun onSignOutUser(activityContext: Activity) {
+        viewModelScope.launch {
+            try {
+                GoogleCredentialManager.clearStateOnSignUp(activityContext)
+
+                userRepository.signOutUser()
 
                 _uiEvents.emit(UiEvents.SignOutSucceded)
             } catch (e: Exception) {

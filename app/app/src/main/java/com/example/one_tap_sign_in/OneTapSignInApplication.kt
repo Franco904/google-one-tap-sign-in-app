@@ -19,11 +19,11 @@ class OneTapSignInApplication : Application() {
             androidContext(this@OneTapSignInApplication)
 
             modules(
-                networkModule,
+                viewModelModule,
                 repositoryModule,
                 storageModule,
+                networkModule,
                 utilsModule,
-                viewModelModule,
             )
         }
     }

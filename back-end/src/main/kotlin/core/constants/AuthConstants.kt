@@ -1,3 +1,3 @@
 package com.example.core.constants
 
-const val SESSION_NAME = "auth-session"
+const val SESSION_COOKIE_NAME = "USER_SESSION"

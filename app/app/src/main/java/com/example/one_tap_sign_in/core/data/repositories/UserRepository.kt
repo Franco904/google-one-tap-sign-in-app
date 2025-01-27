@@ -12,7 +12,7 @@ interface UserRepository {
         profilePictureUrl: String?,
     )
 
-    suspend fun getUser(): Flow<User>
+    fun watchUser(): Flow<User>
 
     suspend fun updateUser(newName: String)
 

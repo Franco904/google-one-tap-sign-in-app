@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,7 +25,6 @@ import com.example.one_tap_sign_in.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreenTopBar(
-    onNavigateUp: () -> Unit,
     onEditUser: () -> Unit,
     onDeleteUser: () -> Unit,
     modifier: Modifier = Modifier,
@@ -42,15 +40,6 @@ fun ProfileScreenTopBar(
                 modifier = Modifier
                     .padding(start = 8.dp)
             )
-        },
-        navigationIcon = {
-            IconButton(onClick = { onNavigateUp() }) {
-                Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
         },
         actions = {
             Row {

@@ -29,12 +29,18 @@ object UserPreferencesSerializer : Serializer<UserPreferences> {
             input.use { it.readBytes() }
         }
 
-        val preferencesDecryptedBytes = CryptoUtils().decrypt(preferencesEncryptedBytes)
+        return try {
+            val preferencesDecryptedBytes = CryptoUtils().decrypt(preferencesEncryptedBytes)
 
-        val preferences = Json.decodeFromString<UserPreferences>(
-            string = preferencesDecryptedBytes.decodeToString(),
-        )
+            val preferences = Json.decodeFromString<UserPreferences>(
+                string = preferencesDecryptedBytes.decodeToString(),
+            )
 
-        return preferences
+            preferences
+        } catch (e: Exception) {
+            e.printStackTrace()
+
+            defaultValue
+        }
     }
 }

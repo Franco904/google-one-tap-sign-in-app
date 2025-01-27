@@ -29,7 +29,7 @@ class ProfileViewModel(
 
     private fun getUserCredentials() {
         viewModelScope.launch {
-            userRepository.getUser().collect { user ->
+            userRepository.watchUser().collect { user ->
                 _userCredentialsUiState.update {
                     UserCredentialsUiState(
                         email = user.email,
@@ -43,7 +43,7 @@ class ProfileViewModel(
 
     fun onEditUser(newDisplayName: String) {
         viewModelScope.launch {
-            if (newDisplayName.length > 20) return@launch
+            if (newDisplayName.length > 35) return@launch
 
             userRepository.updateUser(newName = newDisplayName)
         }
@@ -51,9 +51,18 @@ class ProfileViewModel(
 
     fun onDeleteUser(activityContext: Activity) {
         viewModelScope.launch {
-            GoogleCredentialManager.clearStateOnSignUp(activityContext)
+            try {
+                GoogleCredentialManager.clearStateOnSignUp(activityContext)
 
-            userRepository.deleteUser()
+                userRepository.deleteUser()
+
+                _uiEvents.emit(UiEvents.SignOutSucceded)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ensureActive()
+
+                _uiEvents.emit(UiEvents.SignOutFailed)
+            }
         }
     }
 

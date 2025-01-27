@@ -45,7 +45,6 @@ import org.koin.androidx.compose.koinViewModel
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = koinViewModel(),
-    onNavigateUp: () -> Unit = {},
     onSignOutSucceded: () -> Unit = {},
     showSnackbar: (String, Color) -> Unit = { _, _ -> },
 ) {
@@ -87,7 +86,6 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             ProfileScreenTopBar(
-                onNavigateUp = onNavigateUp,
                 onEditUser = { isEditingUser = true },
                 onDeleteUser = { isDeletingUser = true },
             )

@@ -2,7 +2,7 @@ package com.example.one_tap_sign_in.core.data.repositories
 
 import com.example.one_tap_sign_in.core.data.local.preferences.UserPreferencesStorage
 import com.example.one_tap_sign_in.core.data.models.User
-import com.example.one_tap_sign_in.core.data.remote.apis.UserApi
+import com.example.one_tap_sign_in.core.data.remote.apis.interfaces.UserApi
 import com.example.one_tap_sign_in.core.data.remote.requestDtos.SignInRequestDto
 import com.example.one_tap_sign_in.core.data.remote.requestDtos.UpdateUserRequestDto
 import kotlinx.coroutines.flow.first
@@ -13,7 +13,7 @@ class UserRepositoryImpl(
     private val userPreferencesStorage: UserPreferencesStorage,
 ) : UserRepository {
     override suspend fun isSignedIn(): Boolean {
-        return !userPreferencesStorage.readPreferences().first().sessionId.isNullOrBlank()
+        return userPreferencesStorage.readPreferences().first().sessionCookie != null
     }
 
     override suspend fun signInUser(
@@ -22,20 +22,17 @@ class UserRepositoryImpl(
         profilePictureUrl: String?,
     ) {
         val requestDto = SignInRequestDto(idToken = idToken)
-        val responseDto = userApi.signInUser(signInRequestDto = requestDto)
+        userApi.signInUser(signInRequestDto = requestDto)
 
-        val sessionId = responseDto.sessionId
-
-        userPreferencesStorage.savePreferences { preferences ->
-            preferences.copy(
-                sessionId = sessionId,
+        userPreferencesStorage.savePreferences { prefs ->
+            prefs.copy(
                 displayName = displayName,
                 profilePictureUrl = profilePictureUrl,
             )
         }
     }
 
-    override suspend fun getUser() = flow {
+    override fun watchUser() = flow {
         val preferences = userPreferencesStorage.readPreferences().first()
 
         emit(
@@ -45,32 +42,54 @@ class UserRepositoryImpl(
             )
         )
 
-        val responseDto = userApi.getUser()
+        try {
+            val responseDto = userApi.getUser()
 
-        emit(
-            User(
-                email = responseDto.email,
-                name = responseDto.name,
-                profilePictureUrl = responseDto.profilePictureUrl,
+            userPreferencesStorage.savePreferences { prefs ->
+                prefs.copy(
+                    displayName = responseDto.name,
+                    profilePictureUrl = responseDto.profilePictureUrl,
+                )
+            }
+
+            emit(
+                User(
+                    email = responseDto.email,
+                    name = responseDto.name,
+                    profilePictureUrl = responseDto.profilePictureUrl,
+                )
             )
-        )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        userPreferencesStorage.readPreferences().collect { prefs ->
+            emit(
+                User(
+                    name = prefs.displayName,
+                    profilePictureUrl = prefs.profilePictureUrl,
+                )
+            )
+        }
     }
 
     override suspend fun updateUser(newName: String) {
         val updateUserRequestDto = UpdateUserRequestDto(name = newName)
-        userApi.updateUser(updateUserRequestDto = updateUserRequestDto)
+        userApi.updateUser(
+            updateUserRequestDto = updateUserRequestDto
+        )
 
-        userPreferencesStorage.savePreferences { preferences ->
-            preferences.copy(displayName = newName)
+        userPreferencesStorage.savePreferences { prefs ->
+            prefs.copy(displayName = newName)
         }
     }
 
     override suspend fun deleteUser() {
         userApi.deleteUser()
 
-        userPreferencesStorage.savePreferences { preferences ->
-            preferences.copy(
-                sessionId = null,
+        userPreferencesStorage.savePreferences { prefs ->
+            prefs.copy(
+                sessionCookie = null,
                 displayName = null,
                 profilePictureUrl = null,
             )
@@ -80,9 +99,9 @@ class UserRepositoryImpl(
     override suspend fun signOutUser() {
         userApi.signOutUser()
 
-        userPreferencesStorage.savePreferences { preferences ->
-            preferences.copy(
-                sessionId = null,
+        userPreferencesStorage.savePreferences { prefs ->
+            prefs.copy(
+                sessionCookie = null,
                 displayName = null,
                 profilePictureUrl = null,
             )

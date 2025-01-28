@@ -43,7 +43,8 @@ class ProfileViewModel(
 
     fun onEditUser(newDisplayName: String) {
         viewModelScope.launch {
-            if (newDisplayName.length > 35) return@launch
+            if (userCredentialsUiState.value.displayName == newDisplayName) return@launch
+            if (newDisplayName.isBlank() || newDisplayName.length > 35) return@launch
 
             userRepository.updateUser(newName = newDisplayName)
         }

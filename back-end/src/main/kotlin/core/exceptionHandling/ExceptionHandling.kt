@@ -47,7 +47,7 @@ fun StatusPagesConfig.configure400Responses(
         )
     }
 
-    exception<UnauthorizedException> { call, cause ->
+    exception<SessionExpiredException> { call, cause ->
         logger.error("[Resource Access] - ${cause.message}")
 
         call.respondText(

@@ -1,12 +1,14 @@
 package com.example.one_tap_sign_in.profile
 
-import android.app.Activity
+import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.one_tap_sign_in.core.data.repositories.UserRepository
-import com.example.one_tap_sign_in.core.infra.auth.GoogleCredentialManager
+import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
+import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
+import com.example.one_tap_sign_in.core.domain.utils.onError
+import com.example.one_tap_sign_in.core.domain.utils.onSuccess
+import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
 import com.example.one_tap_sign_in.profile.models.UserCredentialsUiState
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -24,69 +26,114 @@ class ProfileViewModel(
     val userCredentialsUiState = _userCredentialsUiState.asStateFlow()
 
     fun init() {
-        getUserCredentials()
+        loadUser()
     }
 
-    private fun getUserCredentials() {
+    private fun loadUser() {
         viewModelScope.launch {
-            userRepository.watchUser().collect { user ->
-                _userCredentialsUiState.update {
-                    UserCredentialsUiState(
-                        email = user.email,
-                        displayName = user.name,
-                        profilePictureUrl = user.profilePictureUrl,
-                    )
-                }
+            userRepository.watchUser().collect { result ->
+                result
+                    .onSuccess { user ->
+                        if (user.isNull()) return@onSuccess
+
+                        _userCredentialsUiState.update {
+                            UserCredentialsUiState(
+                                email = user.email,
+                                displayName = user.name,
+                                profilePictureUrl = user.profilePictureUrl,
+                            )
+                        }
+                    }
+                    .onError { error ->
+                        val redirectErrors = listOf(
+                            DataSourceError.HttpError.Unauthorized,
+                            DataSourceError.HttpError.NotFound,
+                        )
+                        if (error in redirectErrors) {
+                            _uiEvents.emit(UiEvents.RedirectToSignIn)
+                        }
+
+                        _uiEvents.emit(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                    }
             }
         }
     }
 
     fun onEditUser(newDisplayName: String) {
-        viewModelScope.launch {
-            if (userCredentialsUiState.value.displayName == newDisplayName) return@launch
-            if (newDisplayName.isBlank() || newDisplayName.length > 35) return@launch
+        if (userCredentialsUiState.value.displayName == newDisplayName) return
+        if (newDisplayName.isBlank() || newDisplayName.length > 35) return
 
+        viewModelScope.launch {
             userRepository.updateUser(newName = newDisplayName)
+                .onSuccess {
+                    _uiEvents.emit(UiEvents.EditUserSuccess)
+                }
+                .onError { error ->
+                    val redirectErrors = listOf(
+                        DataSourceError.HttpError.Unauthorized,
+                        DataSourceError.HttpError.NotFound,
+                    )
+                    if (error in redirectErrors) {
+                        _uiEvents.emit(UiEvents.RedirectToSignIn)
+                    }
+
+                    _uiEvents.emit(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                }
         }
     }
 
-    fun onDeleteUser(activityContext: Activity) {
+    fun onDeleteUser() {
         viewModelScope.launch {
-            try {
-                GoogleCredentialManager.clearStateOnSignUp(activityContext)
+            userRepository.deleteUser()
+                .onSuccess {
+                    _uiEvents.emit(UiEvents.DeleteUserSuccess)
+                }
+                .onError { error ->
+                    val redirectErrors = listOf(
+                        DataSourceError.HttpError.Unauthorized,
+                        DataSourceError.HttpError.NotFound,
+                    )
+                    if (error in redirectErrors) {
+                        _uiEvents.emit(UiEvents.RedirectToSignIn)
+                    }
 
-                userRepository.deleteUser()
-
-                _uiEvents.emit(UiEvents.SignOutSucceded)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                ensureActive()
-
-                _uiEvents.emit(UiEvents.SignOutFailed)
-            }
+                    _uiEvents.emit(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                }
         }
     }
 
-    fun onSignOutUser(activityContext: Activity) {
+    fun onSignOutUser() {
         viewModelScope.launch {
-            try {
-                GoogleCredentialManager.clearStateOnSignUp(activityContext)
+            userRepository.signOutUser()
+                .onSuccess {
+                    _uiEvents.emit(UiEvents.SignOutUserSuccess)
+                }
+                .onError { error ->
+                    val redirectErrors = listOf(
+                        DataSourceError.HttpError.Unauthorized,
+                        DataSourceError.HttpError.NotFound,
+                    )
 
-                userRepository.signOutUser()
-
-                _uiEvents.emit(UiEvents.SignOutSucceded)
-            } catch (e: Exception) {
-                e.printStackTrace()
-                ensureActive()
-
-                _uiEvents.emit(UiEvents.SignOutFailed)
-            }
+                    if (error in redirectErrors) {
+                        _uiEvents.emit(UiEvents.RedirectToSignIn)
+                    } else {
+                        _uiEvents.emit(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                    }
+                }
         }
     }
 
     sealed interface UiEvents {
-        data object SignOutSucceded : UiEvents
+        data class ValidationError(@StringRes val messageId: Int) : UiEvents
 
-        data object SignOutFailed : UiEvents
+        data class DataSourceError(@StringRes val messageId: Int) : UiEvents
+
+        data object EditUserSuccess : UiEvents
+
+        data object DeleteUserSuccess : UiEvents
+
+        data object SignOutUserSuccess : UiEvents
+
+        data object RedirectToSignIn : UiEvents
     }
 }

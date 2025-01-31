@@ -6,4 +6,5 @@ import kotlinx.serialization.Serializable
 data class UserSession(
     val id: String,
     val name: String,
+    val expirationTimestamp: Long = System.currentTimeMillis() + 10000L,
 )

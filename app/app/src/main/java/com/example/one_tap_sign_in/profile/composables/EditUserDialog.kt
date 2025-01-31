@@ -78,7 +78,7 @@ fun EditUserDialog(
                 singleLine = true,
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        onEdit(currentDisplayName!!)
+                        onEdit(currentDisplayName ?: "")
                     }
                 ),
                 keyboardOptions = KeyboardOptions.Default.copy(
@@ -93,7 +93,7 @@ fun EditUserDialog(
         confirmButton = {
             TextButton(
                 onClick = {
-                    onEdit(currentDisplayName!!)
+                    onEdit(currentDisplayName ?: "")
                     currentDisplayName = null
                 },
             ) {

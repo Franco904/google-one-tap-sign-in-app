@@ -1,5 +1,7 @@
 package com.example.one_tap_sign_in.signin
 
+import android.app.Activity
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,54 +16,54 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
-import com.example.one_tap_sign_in.R
-import com.example.one_tap_sign_in.core.theme.AppCustomColors
-import com.example.one_tap_sign_in.core.theme.AppTheme
-import com.example.one_tap_sign_in.core.utils.presentation.getActivity
+import com.example.one_tap_sign_in.core.presentation.dataSources.credentialManager.AppCredentialManager
+import com.example.one_tap_sign_in.core.presentation.exceptions.CredentialManagerException
+import com.example.one_tap_sign_in.core.presentation.theme.AppTheme
+import com.example.one_tap_sign_in.core.presentation.utils.getActivity
+import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
+import com.example.one_tap_sign_in.signin.SignInViewModel.UiEvents.DataSourceError
+import com.example.one_tap_sign_in.signin.SignInViewModel.UiEvents.SignInSuccess
 import com.example.one_tap_sign_in.signin.composables.SignInBox
+import com.example.one_tap_sign_in.signin.models.GoogleUserCredentials
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
+
+private const val TAG = "SignInScreen"
 
 @Composable
 fun SignInScreen(
     modifier: Modifier = Modifier,
     viewModel: SignInViewModel = koinViewModel(),
-    onSignInSucceded: () -> Unit = {},
-    showSnackbar: (String, Color) -> Unit = { _, _ -> },
+    onSignInSuccess: () -> Unit = {},
+    showSnackbar: (String, Boolean) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
-    val errorColor = MaterialTheme.colorScheme.error
+
+    val coroutineScope = rememberCoroutineScope()
 
     var isSigningIn by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.uiEvents.collectLatest { uiEvent ->
             when (uiEvent) {
-                is SignInViewModel.UiEvents.SignInSucceded -> {
+                is DataSourceError -> {
                     isSigningIn = false
 
-                    showSnackbar(
-                        context.getString(R.string.snackbar_sign_in_succeded),
-                        AppCustomColors.green300,
-                    )
-
-                    onSignInSucceded()
+                    showSnackbar(context.getString(uiEvent.messageId), false)
                 }
 
-                is SignInViewModel.UiEvents.SignInFailed -> {
+                is SignInSuccess -> {
                     isSigningIn = false
 
-                    showSnackbar(
-                        context.getString(uiEvent.messageId),
-                        errorColor,
-                    )
+                    onSignInSuccess()
                 }
             }
         }
@@ -85,11 +87,24 @@ fun SignInScreen(
                 isSigningIn = isSigningIn,
                 onSignIn = {
                     if (!isSigningIn) {
-                        isSigningIn = true
+                        coroutineScope.launch {
+                            isSigningIn = true
 
-                        viewModel.signInUser(
-                            activityContext = context.getActivity(),
-                        )
+                            try {
+                                // To show Google's sign in dialog
+                                val credentials = getGoogleUserCredentials(
+                                    activityContext = context.getActivity(),
+                                )
+
+                                viewModel.onSignInUser(credentials = credentials)
+                            } catch (e: CredentialManagerException) {
+                                Log.e(TAG, "${e.message}")
+
+                                isSigningIn = false
+
+                                showSnackbar(context.getString(e.toUiMessage()), false)
+                            }
+                        }
                     }
                 },
             )
@@ -111,6 +126,22 @@ private fun SignInBackground() {
                 .background(MaterialTheme.colorScheme.secondaryContainer)
                 .fillMaxSize()
                 .weight(1f)
+        )
+    }
+}
+
+private suspend fun getGoogleUserCredentials(
+    activityContext: Activity,
+): GoogleUserCredentials {
+    return try {
+        AppCredentialManager.chooseGoogleAccount(
+            activityContext = activityContext,
+            isSignIn = true,
+        )
+    } catch (e: CredentialManagerException) {
+        AppCredentialManager.chooseGoogleAccount(
+            activityContext = activityContext,
+            isSignIn = false,
         )
     }
 }

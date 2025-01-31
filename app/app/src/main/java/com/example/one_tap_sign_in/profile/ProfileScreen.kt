@@ -18,11 +18,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,26 +30,36 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.one_tap_sign_in.R
-import com.example.one_tap_sign_in.core.theme.AppCustomColors
-import com.example.one_tap_sign_in.core.theme.AppTheme
-import com.example.one_tap_sign_in.core.utils.presentation.getActivity
+import com.example.one_tap_sign_in.core.presentation.dataSources.credentialManager.AppCredentialManager
+import com.example.one_tap_sign_in.core.presentation.exceptions.CredentialManagerException
+import com.example.one_tap_sign_in.core.presentation.theme.AppTheme
+import com.example.one_tap_sign_in.core.presentation.utils.getActivity
+import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
+import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.DataSourceError
+import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.DeleteUserSuccess
+import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.EditUserSuccess
+import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.RedirectToSignIn
+import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.SignOutUserSuccess
+import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.ValidationError
 import com.example.one_tap_sign_in.profile.composables.DeleteUserDialog
 import com.example.one_tap_sign_in.profile.composables.EditUserDialog
 import com.example.one_tap_sign_in.profile.composables.ProfilePictureSection
 import com.example.one_tap_sign_in.profile.composables.ProfileScreenTopBar
 import com.example.one_tap_sign_in.profile.composables.SignOutButton
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun ProfileScreen(
     modifier: Modifier = Modifier,
     viewModel: ProfileViewModel = koinViewModel(),
-    onSignOutSucceded: () -> Unit = {},
-    showSnackbar: (String, Color) -> Unit = { _, _ -> },
+    onSignOutSuccess: () -> Unit = {},
+    showSnackbar: (String, Boolean) -> Unit = { _, _ -> },
 ) {
     val context = LocalContext.current
-    val errorColor = MaterialTheme.colorScheme.error
+
+    val coroutineScope = rememberCoroutineScope()
 
     val userCredentialsUiState by viewModel.userCredentialsUiState.collectAsStateWithLifecycle()
 
@@ -60,24 +70,40 @@ fun ProfileScreen(
     LaunchedEffect(Unit) {
         viewModel.uiEvents.collectLatest { uiEvent ->
             when (uiEvent) {
-                is ProfileViewModel.UiEvents.SignOutSucceded -> {
-                    isSigningOut = false
-
-                    showSnackbar(
-                        context.getString(R.string.snackbar_sign_out_succeded),
-                        AppCustomColors.green300,
-                    )
-
-                    onSignOutSucceded()
+                is ValidationError -> {
+                    // TODO: Implement field validation UI
                 }
 
-                is ProfileViewModel.UiEvents.SignOutFailed -> {
-                    isSigningOut = false
+                is DataSourceError -> {
+                    showSnackbar(context.getString(uiEvent.messageId), false)
 
-                    showSnackbar(
-                        context.getString(R.string.snackbar_sign_out_failed),
-                        errorColor,
-                    )
+                    isEditingUser = false
+                    isDeletingUser = false
+                    isSigningOut = false
+                }
+
+                is EditUserSuccess -> {
+                    val successMsg = R.string.snackbar_edit_user_succeeded
+                    showSnackbar(context.getString(successMsg), true)
+
+                    isEditingUser = false
+                }
+
+                is DeleteUserSuccess -> {
+                    val successMsg = R.string.snackbar_delete_user_succeeded
+                    showSnackbar(context.getString(successMsg), true)
+
+                    isDeletingUser = false
+                }
+
+                is SignOutUserSuccess -> {
+                    onSignOutSuccess()
+
+                    isSigningOut = false
+                }
+
+                is RedirectToSignIn -> {
+                    onSignOutSuccess()
                 }
             }
         }
@@ -86,8 +112,12 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             ProfileScreenTopBar(
-                onEditUser = { isEditingUser = true },
-                onDeleteUser = { isDeletingUser = true },
+                onEditUser = {
+                    if (!isEditingUser) isEditingUser = true
+                },
+                onDeleteUser = {
+                    if (!isDeletingUser) isDeletingUser = true
+                },
             )
         },
         modifier = modifier
@@ -107,20 +137,24 @@ fun ProfileScreen(
             if (isEditingUser) {
                 EditUserDialog(
                     displayName = userCredentialsUiState.displayName,
-                    onEdit = { newDisplayName ->
-                        viewModel.onEditUser(newDisplayName = newDisplayName)
-                        isEditingUser = false
-                    },
+                    onEdit = viewModel::onEditUser,
                     onCancel = { isEditingUser = false },
                 )
             }
             if (isDeletingUser) {
                 DeleteUserDialog(
                     onDelete = {
-                        viewModel.onDeleteUser(
-                            activityContext = context.getActivity(),
-                        )
-                        isDeletingUser = false
+                        coroutineScope.launch {
+                            try {
+                                AppCredentialManager.clearGoogleCredentialState(
+                                    activityContext = context.getActivity(),
+                                )
+
+                                viewModel.onDeleteUser()
+                            } catch (e: CredentialManagerException) {
+                                showSnackbar(context.getString(e.toUiMessage()), false)
+                            }
+                        }
                     },
                     onCancel = { isDeletingUser = false },
                 )
@@ -143,9 +177,19 @@ fun ProfileScreen(
                     if (!isSigningOut) {
                         isSigningOut = true
 
-                        viewModel.onSignOutUser(
-                            activityContext = context.getActivity(),
-                        )
+                        coroutineScope.launch {
+                            try {
+                                AppCredentialManager.clearGoogleCredentialState(
+                                    activityContext = context.getActivity(),
+                                )
+
+                                viewModel.onSignOutUser()
+                            } catch (e: CredentialManagerException) {
+                                showSnackbar(context.getString(e.toUiMessage()), false)
+
+                                isSigningOut = false
+                            }
+                        }
                     }
                 }
             )

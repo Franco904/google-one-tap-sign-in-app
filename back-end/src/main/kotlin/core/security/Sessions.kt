@@ -5,6 +5,7 @@ import com.example.core.security.session.UserSession
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
 
 fun Application.configureSessions() {
     install(Sessions) {
@@ -16,6 +17,7 @@ fun Application.configureSessions() {
                 path = "/"
                 sameSite = SameSite.Strict // Cookie is only send for the same user context (prevent CSRF attacks)
                 httpOnly = true // Prevents JavaScript access (prevent XSS attacks)
+                maxAge = 10.seconds
             }
         }
     }

@@ -5,26 +5,66 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="88210e25-2eed-4520-8a4c-de60a5aaba4a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/remote/apis/UserApiImpl.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/infra/auth/AppCookieStorage.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/user/responseDtos/UpdateUserResponseDto.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/OneTapSignInApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/OneTapSignInApplication.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/constants/NetworkConstants.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/constants/NetworkConstants.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/local/preferences/UserPreferences.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/local/preferences/UserPreferences.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/remote/apis/UserApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/remote/apis/interfaces/UserApi.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/remote/responseDtos/SignInResponseDto.kt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/repositories/UserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/repositories/UserRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/http/HttpClientManager.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/http/HttpClientManagerImpl.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/http/apis/UserApiImpl.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/http/apis/interfaces/UserApi.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/AppCookieStorage.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/exceptions/HttpException.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/exceptions/PreferencesException.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/utils/DataSourceError.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/utils/Error.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/utils/Result.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/exceptions/CredentialManagerException.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/utils/UiMessageConverters.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/../.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/MainActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/composables/AppCircularProgressIndicator.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/composables/AppCircularProgressIndicator.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/composables/AppSnackbarHost.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/composables/AppSnackbarHost.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/constants/NetworkConstants.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/constants/NetworkConstants.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/local/preferences/DataStoreUserPreferencesStorage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/UserPreferencesStorageImpl.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/local/preferences/UserPreferences.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/UserPreferences.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/local/preferences/UserPreferencesSerializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/UserPreferencesSerializer.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/local/preferences/UserPreferencesStorage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/interfaces/UserPreferencesStorage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/models/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/models/User.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/remote/apis/UserApiImpl.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/remote/apis/interfaces/UserApi.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/remote/requestDtos/SignInRequestDto.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/http/requestDtos/SignInRequestDto.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/remote/requestDtos/UpdateUserRequestDto.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/http/requestDtos/UpdateUserRequestDto.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/remote/responseDtos/GetUserResponseDto.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/http/responseDtos/GetUserResponseDto.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/repositories/UserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/repositories/UserRepository.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/repositories/UserRepositoryImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/repositories/UserRepositoryImpl.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/di/NetworkModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/di/NetworkModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/di/RepositoryModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/di/RepositoryModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/di/StorageModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/di/StorageModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/di/UtilsModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/di/UtilsModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/infra/auth/AppCookieStorage.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/infra/auth/GoogleCredentialManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/dataSources/credentialManager/AppCredentialManager.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/navigation/Destinations.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/navigation/Destinations.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/navigation/DestinationsHandler.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/navigation/DestinationsHandler.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/theme/AppColors.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/theme/AppColors.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/theme/AppShapes.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/theme/AppShapes.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/theme/AppTheme.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/theme/AppTheme.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/theme/AppTypography.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/theme/AppTypography.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/utils/data/CryptoUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/utils/CryptoUtils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/utils/presentation/ContextUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/utils/ContextUtils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/utils/presentation/ViewModelUtils.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/presentation/utils/ViewModelUtils.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/ProfileScreen.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/ProfileViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/ProfileViewModel.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/composables/ProfileScreenTopBar.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/composables/ProfileScreenTopBar.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/gradle/libs.versions.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/composables/EditUserDialog.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/composables/EditUserDialog.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/composables/SignOutButton.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/composables/SignOutButton.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/root/RootScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/root/RootScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/root/RootViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/root/RootViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/signin/SignInScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/signin/SignInScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/signin/SignInViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/signin/SignInViewModel.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/signin/composables/GoogleSignInButton.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/signin/composables/GoogleSignInButton.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/res/values/strings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/constants/AuthConstants.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/constants/AuthConstants.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/exceptionHandling/ExceptionHandling.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/exceptionHandling/ExceptionHandling.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/exceptionHandling/exceptions/UnauthorizedException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/exceptionHandling/exceptions/SessionExpiredException.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/security/Authentication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/security/Authentication.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/security/Sessions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/security/Sessions.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/user/UserRoutes.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/user/UserRoutes.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/security/session/UserSession.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/security/session/UserSession.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,21 +131,21 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Gradle.Build back-end.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.Download Sources.executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.back-end [build].executor&quot;: &quot;Run&quot;,
-    &quot;Gradle.back-end [run].executor&quot;: &quot;Run&quot;,
-    &quot;Kotlin.ApplicationKt.executor&quot;: &quot;Debug&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;app__profile__screen&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/franco/Projects/google-one-tap-sign-in-app/back-end/src/main/kotlin/user&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Gradle.Build back-end.executor": "Run",
+    "Gradle.Download Sources.executor": "Run",
+    "Gradle.back-end [build].executor": "Run",
+    "Gradle.back-end [run].executor": "Run",
+    "Kotlin.ApplicationKt.executor": "Debug",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "final-touches",
+    "last_opened_file_path": "/Users/franco/Projects/google-one-tap-sign-in-app/back-end/src/main/kotlin/user",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/kotlin/user" />

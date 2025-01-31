@@ -7,30 +7,34 @@ import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
 import com.example.one_tap_sign_in.core.domain.utils.onError
 import com.example.one_tap_sign_in.core.domain.utils.onSuccess
 import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class RootViewModel(
     private val userRepository: UserRepository,
 ) : ViewModel() {
-    private val _uiEvents = MutableSharedFlow<UiEvents>()
-    val uiEvents = _uiEvents.asSharedFlow()
+    private var isInitialized = false
 
-    fun init() {
-        checkIsUserSignedIn()
-    }
+    private val _uiEvents = Channel<UiEvents>()
+    val uiEvents = _uiEvents.receiveAsFlow()
 
-    private fun checkIsUserSignedIn() {
+    fun checkIsUserSignedIn() {
+        if (isInitialized) return
+
         viewModelScope.launch {
             userRepository.isUserSignedIn()
                 .onSuccess { isUserSignedIn ->
-                    _uiEvents.emit(UiEvents.SignInState(isUserSignedIn))
+                    _uiEvents.send(UiEvents.SignInState(isUserSignedIn))
                 }
                 .onError { error ->
-                    _uiEvents.emit(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                    _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                 }
         }
+
+        isInitialized = true
     }
 
     sealed interface UiEvents {

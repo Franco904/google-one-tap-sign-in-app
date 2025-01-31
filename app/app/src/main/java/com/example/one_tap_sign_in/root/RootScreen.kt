@@ -31,6 +31,8 @@ fun RootScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        viewModel.checkIsUserSignedIn()
+
         viewModel.uiEvents.collectLatest { uiEvent ->
             when (uiEvent) {
                 is DataSourceError -> {

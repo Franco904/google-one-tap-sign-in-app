@@ -3,7 +3,6 @@ package com.example.one_tap_sign_in.core.presentation.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.example.one_tap_sign_in.core.presentation.utils.invokeAfterComposition
 import com.example.one_tap_sign_in.profile.ProfileScreen
 import com.example.one_tap_sign_in.profile.ProfileViewModel
 import com.example.one_tap_sign_in.root.RootScreen
@@ -19,8 +18,7 @@ object DestinationsHandler {
     ) {
         composable<Destinations.Root> {
             RootScreen(
-                viewModel = koinViewModel<RootViewModel>()
-                    .invokeAfterComposition { init() },
+                viewModel = koinViewModel<RootViewModel>(),
                 onNavigateToFirstDestination = { firstDestination ->
                     navController.navigate(firstDestination) {
                         val startDestination =
@@ -47,8 +45,7 @@ object DestinationsHandler {
 
         composable<Destinations.Profile> {
             ProfileScreen(
-                viewModel = koinViewModel<ProfileViewModel>()
-                    .invokeAfterComposition { init() },
+                viewModel = koinViewModel<ProfileViewModel>(),
                 onSignOutSuccess = {
                     navController.navigate(Destinations.SignIn) {
                         val startDestination =

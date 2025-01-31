@@ -9,27 +9,29 @@ import com.example.one_tap_sign_in.core.domain.utils.onError
 import com.example.one_tap_sign_in.core.domain.utils.onSuccess
 import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
 import com.example.one_tap_sign_in.profile.models.UserCredentialsUiState
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
     private val userRepository: UserRepository,
 ) : ViewModel() {
-    private val _uiEvents = MutableSharedFlow<UiEvents>()
-    val uiEvents = _uiEvents.asSharedFlow()
+    private var isInitialized = false
+
+    private val _uiEvents = Channel<UiEvents>()
+    val uiEvents = _uiEvents.receiveAsFlow()
 
     private val _userCredentialsUiState = MutableStateFlow(UserCredentialsUiState())
     val userCredentialsUiState = _userCredentialsUiState.asStateFlow()
 
-    fun init() {
-        loadUser()
-    }
+    fun loadUser() {
+        if (isInitialized) return
 
-    private fun loadUser() {
         viewModelScope.launch {
             userRepository.watchUser().collect { result ->
                 result
@@ -50,13 +52,15 @@ class ProfileViewModel(
                             DataSourceError.HttpError.NotFound,
                         )
                         if (error in redirectErrors) {
-                            _uiEvents.emit(UiEvents.RedirectToSignIn)
+                            _uiEvents.send(UiEvents.RedirectToSignIn)
                         }
 
-                        _uiEvents.emit(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                        _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                     }
             }
         }
+
+        isInitialized = true
     }
 
     fun onEditUser(newDisplayName: String) {
@@ -66,7 +70,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             userRepository.updateUser(newName = newDisplayName)
                 .onSuccess {
-                    _uiEvents.emit(UiEvents.EditUserSuccess)
+                    _uiEvents.send(UiEvents.EditUserSuccess)
                 }
                 .onError { error ->
                     val redirectErrors = listOf(
@@ -74,10 +78,10 @@ class ProfileViewModel(
                         DataSourceError.HttpError.NotFound,
                     )
                     if (error in redirectErrors) {
-                        _uiEvents.emit(UiEvents.RedirectToSignIn)
+                        _uiEvents.send(UiEvents.RedirectToSignIn)
                     }
 
-                    _uiEvents.emit(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                    _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                 }
         }
     }
@@ -86,7 +90,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             userRepository.deleteUser()
                 .onSuccess {
-                    _uiEvents.emit(UiEvents.DeleteUserSuccess)
+                    _uiEvents.send(UiEvents.DeleteUserSuccess)
                 }
                 .onError { error ->
                     val redirectErrors = listOf(
@@ -94,10 +98,10 @@ class ProfileViewModel(
                         DataSourceError.HttpError.NotFound,
                     )
                     if (error in redirectErrors) {
-                        _uiEvents.emit(UiEvents.RedirectToSignIn)
+                        _uiEvents.send(UiEvents.RedirectToSignIn)
                     }
 
-                    _uiEvents.emit(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                    _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                 }
         }
     }
@@ -106,7 +110,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             userRepository.signOutUser()
                 .onSuccess {
-                    _uiEvents.emit(UiEvents.SignOutUserSuccess)
+                    _uiEvents.send(UiEvents.SignOutUserSuccess)
                 }
                 .onError { error ->
                     val redirectErrors = listOf(
@@ -115,9 +119,9 @@ class ProfileViewModel(
                     )
 
                     if (error in redirectErrors) {
-                        _uiEvents.emit(UiEvents.RedirectToSignIn)
+                        _uiEvents.send(UiEvents.RedirectToSignIn)
                     } else {
-                        _uiEvents.emit(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                        _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                     }
                 }
         }

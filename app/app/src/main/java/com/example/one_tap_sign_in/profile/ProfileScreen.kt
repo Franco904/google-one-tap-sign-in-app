@@ -68,6 +68,8 @@ fun ProfileScreen(
     var isDeletingUser by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
+        viewModel.loadUser()
+
         viewModel.uiEvents.collectLatest { uiEvent ->
             when (uiEvent) {
                 is ValidationError -> {

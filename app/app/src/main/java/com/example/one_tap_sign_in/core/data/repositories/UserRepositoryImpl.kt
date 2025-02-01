@@ -35,6 +35,22 @@ class UserRepositoryImpl(
         }
     }
 
+    override suspend fun didUserExplicitlySignOut(): Result<Boolean, DataSourceError> {
+        return try {
+            val didUserExplicitlySignOut =
+                userPreferencesStorage.readPreferences().first().didExplicitlySignOut == true
+            Result.Success(data = didUserExplicitlySignOut)
+        } catch (e: Exception) {
+            Log.e(TAG, "${e.message}")
+
+            val error = when (e) {
+                is PreferencesException -> e.toPreferencesError()
+                else -> throw e
+            }
+            Result.Error(error = error)
+        }
+    }
+
     override suspend fun signInUser(
         idToken: String,
         displayName: String?,
@@ -48,6 +64,7 @@ class UserRepositoryImpl(
                 prefs.copy(
                     displayName = displayName,
                     profilePictureUrl = profilePictureUrl,
+                    didExplicitlySignOut = false,
                 )
             }
 
@@ -166,6 +183,7 @@ class UserRepositoryImpl(
                     sessionCookie = null,
                     displayName = null,
                     profilePictureUrl = null,
+                    didExplicitlySignOut = true,
                 )
             }
 

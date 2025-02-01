@@ -8,4 +8,5 @@ data class UserPreferences(
     val sessionCookie: Cookie? = null,
     val displayName: String? = null,
     val profilePictureUrl: String? = null,
+    val didExplicitlySignOut: Boolean? = null,
 )

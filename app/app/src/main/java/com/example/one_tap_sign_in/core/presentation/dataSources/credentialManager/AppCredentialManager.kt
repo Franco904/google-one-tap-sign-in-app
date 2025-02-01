@@ -17,6 +17,7 @@ object AppCredentialManager {
     suspend fun chooseGoogleAccount(
         activityContext: Activity,
         isSignIn: Boolean,
+        mustEnableAutoSelect: Boolean,
     ): GoogleUserCredentials {
         val credentialManager = CredentialManager.create(activityContext)
 
@@ -24,7 +25,7 @@ object AppCredentialManager {
             GetGoogleIdOption.Builder()
                 .setFilterByAuthorizedAccounts(true)
                 .setServerClientId(CLIENT_ID)
-                .setAutoSelectEnabled(true)
+                .setAutoSelectEnabled(mustEnableAutoSelect)
                 .setNonce(CryptoUtils().generateNonce())
                 .build()
         } else {

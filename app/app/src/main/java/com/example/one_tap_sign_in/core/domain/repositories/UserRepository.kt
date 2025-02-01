@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 interface UserRepository {
     suspend fun isUserSignedIn(): Result<Boolean, DataSourceError>
 
+    suspend fun didUserExplicitlySignOut(): Result<Boolean, DataSourceError>
+
     suspend fun signInUser(
         idToken: String,
         displayName: String?,

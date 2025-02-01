@@ -52,6 +52,8 @@ fun SignInScreen(
     var isSigningIn by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
+        viewModel.checkUserDidExplicitlySignOut()
+
         viewModel.uiEvents.collectLatest { uiEvent ->
             when (uiEvent) {
                 is DataSourceError -> {
@@ -94,6 +96,7 @@ fun SignInScreen(
                                 // To show Google's sign in dialog
                                 val credentials = getGoogleUserCredentials(
                                     activityContext = context.getActivity(),
+                                    didUserExplicitlySignOut = viewModel.didUserExplicitlySignOut,
                                 )
 
                                 viewModel.onSignInUser(credentials = credentials)
@@ -132,16 +135,19 @@ private fun SignInBackground() {
 
 private suspend fun getGoogleUserCredentials(
     activityContext: Activity,
+    didUserExplicitlySignOut: Boolean
 ): GoogleUserCredentials {
     return try {
         AppCredentialManager.chooseGoogleAccount(
             activityContext = activityContext,
             isSignIn = true,
+            mustEnableAutoSelect = !didUserExplicitlySignOut,
         )
     } catch (e: CredentialManagerException) {
         AppCredentialManager.chooseGoogleAccount(
             activityContext = activityContext,
             isSignIn = false,
+            mustEnableAutoSelect = false,
         )
     }
 }

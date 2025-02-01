@@ -38,7 +38,7 @@ class UserRepositoryImpl(
     override suspend fun didUserExplicitlySignOut(): Result<Boolean, DataSourceError> {
         return try {
             val didUserExplicitlySignOut =
-                userPreferencesStorage.readPreferences().first().didExplicitlySignOut == true
+                userPreferencesStorage.readPreferences().first().didExplicitlySignOut != false
             Result.Success(data = didUserExplicitlySignOut)
         } catch (e: Exception) {
             Log.e(TAG, "${e.message}")

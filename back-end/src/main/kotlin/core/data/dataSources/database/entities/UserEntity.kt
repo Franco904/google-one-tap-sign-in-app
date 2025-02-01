@@ -1,6 +1,6 @@
 package com.example.core.data.dataSources.database.entities
 
-import com.example.core.data.dataSources.authServer.models.UserCredentials
+import com.example.core.domain.models.User
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -10,13 +10,22 @@ data class UserEntity(
     val name: String,
     val profilePictureUrl: String,
 ) {
+    fun toUser(): User {
+        return User(
+            id = id,
+            email = email,
+            name = name,
+            profilePictureUrl = profilePictureUrl,
+        )
+    }
+
     companion object {
-        fun fromUserCredentials(userCredentials: UserCredentials): UserEntity {
+        fun fromUser(user: User): UserEntity {
             return UserEntity(
-                id = userCredentials.sub,
-                email = userCredentials.email,
-                name = userCredentials.name,
-                profilePictureUrl = userCredentials.profilePictureUrl,
+                id = user.id,
+                email = user.email,
+                name = user.name,
+                profilePictureUrl = user.profilePictureUrl,
             )
         }
     }

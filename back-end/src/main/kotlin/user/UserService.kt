@@ -1,11 +1,11 @@
 package com.example.user
 
-import com.example.core.data.dataSources.database.entities.UserEntity
 import com.example.core.domain.repositories.UserRepository
 import com.example.core.presentation.auth.models.UserSession
 import com.example.core.presentation.exceptionHandling.exceptions.BlankTokenException
 import com.example.core.presentation.exceptionHandling.exceptions.InvalidSessionException
 import com.example.user.requestDtos.UpdateUserRequestDto
+import com.example.user.responseDtos.GetUserResponseDto
 
 class UserService(
     private val userRepository: UserRepository,
@@ -21,12 +21,18 @@ class UserService(
         )
     }
 
-    suspend fun getUser(session: UserSession?): UserEntity {
+    suspend fun getUser(session: UserSession?): GetUserResponseDto {
         if (session == null || session.id.isBlank()) {
             throw InvalidSessionException()
         }
 
-        return userRepository.getUser(userId = session.id)
+        val user = userRepository.getUser(userId = session.id)
+
+        return GetUserResponseDto(
+            email = user.email,
+            name = user.name,
+            profilePictureUrl = user.profilePictureUrl,
+        )
     }
 
     suspend fun updateUser(

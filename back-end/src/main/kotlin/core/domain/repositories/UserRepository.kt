@@ -1,11 +1,11 @@
 package com.example.core.domain.repositories
 
-import com.example.core.data.dataSources.database.entities.UserEntity
+import com.example.core.domain.models.User
 
 interface UserRepository {
-    suspend fun verifyIdToken(idToken: String): UserEntity
+    suspend fun verifyIdToken(idToken: String): User
 
-    suspend fun getUser(userId: String): UserEntity
+    suspend fun getUser(userId: String): User
 
     suspend fun updateUserName(
         userId: String,

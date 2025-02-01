@@ -4,7 +4,6 @@ import com.example.core.data.constants.SESSION_COOKIE_NAME
 import com.example.core.presentation.auth.models.UserSession
 import com.example.user.requestDtos.SignInUserRequestDto
 import com.example.user.requestDtos.UpdateUserRequestDto
-import com.example.user.responseDtos.GetUserResponseDto
 import com.example.user.responseDtos.UpdateUserResponseDto
 import io.ktor.http.*
 import io.ktor.server.auth.*
@@ -37,11 +36,7 @@ fun Route.userRoutes(
                 val user = userService.getUser(session = session)
 
                 call.respond(
-                    message = GetUserResponseDto(
-                        email = user.email,
-                        name = user.name,
-                        profilePictureUrl = user.profilePictureUrl,
-                    ),
+                    message = user,
                     status = HttpStatusCode.OK,
                 )
             }

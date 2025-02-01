@@ -1,21 +1,24 @@
 package com.example.user
 
-import com.example.core.data.entities.UserEntity
-import com.example.core.data.repositories.interfaces.UserRepository
-import com.example.core.exceptionHandling.exceptions.BlankTokenException
-import com.example.core.exceptionHandling.exceptions.InvalidSessionException
-import com.example.core.security.session.UserSession
+import com.example.core.data.dataSources.database.entities.UserEntity
+import com.example.core.domain.repositories.UserRepository
+import com.example.core.presentation.auth.models.UserSession
+import com.example.core.presentation.exceptionHandling.exceptions.BlankTokenException
+import com.example.core.presentation.exceptionHandling.exceptions.InvalidSessionException
 import com.example.user.requestDtos.UpdateUserRequestDto
 
 class UserService(
     private val userRepository: UserRepository,
 ) {
-    suspend fun startSession(idToken: String): Pair<String, String> {
+    suspend fun createUserSession(idToken: String): UserSession {
         if (idToken.isBlank()) throw BlankTokenException()
 
         val user = userRepository.verifyIdToken(idToken)
 
-        return user.id to user.name
+        return UserSession(
+            id = user.id,
+            name = user.name,
+        )
     }
 
     suspend fun getUser(session: UserSession?): UserEntity {

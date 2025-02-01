@@ -1,11 +1,10 @@
 package com.example.user
 
-import com.example.core.constants.SESSION_COOKIE_NAME
-import com.example.core.security.session.UserSession
+import com.example.core.data.constants.SESSION_COOKIE_NAME
+import com.example.core.presentation.auth.models.UserSession
 import com.example.user.requestDtos.SignInUserRequestDto
 import com.example.user.requestDtos.UpdateUserRequestDto
 import com.example.user.responseDtos.GetUserResponseDto
-import com.example.user.responseDtos.SignInUserResponseDto
 import com.example.user.responseDtos.UpdateUserResponseDto
 import io.ktor.http.*
 import io.ktor.server.auth.*
@@ -23,9 +22,7 @@ fun Route.userRoutes(
         post("/sign-in") {
             val signInRequest = call.receive<SignInUserRequestDto>()
 
-            val (userSub, userName) = userService.startSession(idToken = signInRequest.idToken)
-
-            val session = UserSession(id = userSub, name = userName)
+            val session = userService.createUserSession(idToken = signInRequest.idToken)
             call.sessions.set(name = SESSION_COOKIE_NAME, value = session)
 
             call.respond(

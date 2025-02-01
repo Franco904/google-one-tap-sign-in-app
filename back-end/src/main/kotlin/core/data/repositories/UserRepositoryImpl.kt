@@ -1,20 +1,22 @@
 package com.example.core.data.repositories
 
-import com.example.core.data.apis.interfaces.GoogleClientApi
-import com.example.core.data.daos.interfaces.UserDao
-import com.example.core.data.entities.UserEntity
-import com.example.core.data.repositories.interfaces.UserRepository
+import com.example.core.data.dataSources.authServer.interfaces.AuthClientApi
+import com.example.core.data.dataSources.database.daos.interfaces.UserDao
+import com.example.core.data.dataSources.database.entities.UserEntity
+import com.example.core.domain.repositories.UserRepository
 
 class UserRepositoryImpl(
     private val userDao: UserDao,
-    private val googleClientApi: GoogleClientApi,
+    private val authClientApi: AuthClientApi,
 ) : UserRepository {
     override suspend fun verifyIdToken(idToken: String): UserEntity {
-        val userCredentials = googleClientApi.verifyIdToken(idToken)
+        val userCredentials = authClientApi.verifyIdToken(idToken)
 
-        return userDao.createOrIgnore(
+        val userEntity = userDao.createOrIgnore(
             user = UserEntity.fromUserCredentials(userCredentials)
         )
+
+        return userEntity
     }
 
     override suspend fun getUser(userId: String): UserEntity {

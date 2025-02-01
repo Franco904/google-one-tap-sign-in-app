@@ -40,7 +40,6 @@ class ProfileViewModel(
 
                         _userCredentialsUiState.update {
                             UserCredentialsUiState(
-                                email = user.email,
                                 displayName = user.name,
                                 profilePictureUrl = user.profilePictureUrl,
                             )

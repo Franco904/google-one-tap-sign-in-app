@@ -2,17 +2,12 @@ package com.example.one_tap_sign_in.profile
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,14 +17,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.one_tap_sign_in.R
+import com.example.one_tap_sign_in.core.presentation.composables.AppCircularProgressIndicator
 import com.example.one_tap_sign_in.core.presentation.dataSources.credentialManager.AppCredentialManager
 import com.example.one_tap_sign_in.core.presentation.exceptions.CredentialManagerException
 import com.example.one_tap_sign_in.core.presentation.theme.AppTheme
@@ -43,9 +37,8 @@ import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.SignOutUser
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.ValidationError
 import com.example.one_tap_sign_in.profile.composables.DeleteUserDialog
 import com.example.one_tap_sign_in.profile.composables.EditUserDialog
-import com.example.one_tap_sign_in.profile.composables.ProfilePictureSection
+import com.example.one_tap_sign_in.profile.composables.ProfileDataSection
 import com.example.one_tap_sign_in.profile.composables.ProfileScreenTopBar
-import com.example.one_tap_sign_in.profile.composables.SignOutButton
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -163,42 +156,37 @@ fun ProfileScreen(
                     onCancel = { isDeletingUser = false },
                 )
             }
-            // TODO: Add circular loading indicator when userCredentialsUiState is null
-            ProfilePictureSection(
-                profilePictureUrl = userCredentialsUiState.profilePictureUrl,
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = userCredentialsUiState.displayName ?: "Anonymous",
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-            // TODO: Add sign out confirmation dialog
-            SignOutButton(
-                isSigningOut = isSigningOut,
-                onSignOut = {
-                    if (!isSigningOut) {
-                        isSigningOut = true
+            if (userCredentialsUiState.isNull()) {
+                AppCircularProgressIndicator(
+                    modifier = Modifier
+                        .size(16.dp)
+                )
+            } else {
+                ProfileDataSection(
+                    profilePictureUrl = userCredentialsUiState.profilePictureUrl!!,
+                    displayName = userCredentialsUiState.displayName!!,
+                    isSigningOut = isSigningOut,
+                    onSignOut = {
+                        if (!isSigningOut) {
+                            isSigningOut = true
 
-                        coroutineScope.launch {
-                            try {
-                                AppCredentialManager.clearGoogleCredentialState(
-                                    activityContext = context.getActivity(),
-                                )
+                            coroutineScope.launch {
+                                try {
+                                    AppCredentialManager.clearGoogleCredentialState(
+                                        activityContext = context.getActivity(),
+                                    )
 
-                                viewModel.onSignOutUser()
-                            } catch (e: CredentialManagerException) {
-                                showSnackbar(context.getString(e.toUiMessage()), false)
+                                    viewModel.onSignOutUser()
+                                } catch (e: CredentialManagerException) {
+                                    showSnackbar(context.getString(e.toUiMessage()), false)
 
-                                isSigningOut = false
+                                    isSigningOut = false
+                                }
                             }
                         }
-                    }
-                }
-            )
+                    },
+                )
+            }
         }
     }
 }

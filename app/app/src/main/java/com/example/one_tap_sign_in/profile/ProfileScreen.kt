@@ -163,6 +163,7 @@ fun ProfileScreen(
                     onCancel = { isDeletingUser = false },
                 )
             }
+            // TODO: Add circular loading indicator when userCredentialsUiState is null
             ProfilePictureSection(
                 profilePictureUrl = userCredentialsUiState.profilePictureUrl,
                 modifier = Modifier
@@ -175,6 +176,7 @@ fun ProfileScreen(
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
             )
             Spacer(modifier = Modifier.height(24.dp))
+            // TODO: Add sign out confirmation dialog
             SignOutButton(
                 isSigningOut = isSigningOut,
                 onSignOut = {

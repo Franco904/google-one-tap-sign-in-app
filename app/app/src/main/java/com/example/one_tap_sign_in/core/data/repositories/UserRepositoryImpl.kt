@@ -158,6 +158,7 @@ class UserRepositoryImpl(
                     sessionCookie = null,
                     displayName = null,
                     profilePictureUrl = null,
+                    didExplicitlySignOut = true,
                 )
             }
 

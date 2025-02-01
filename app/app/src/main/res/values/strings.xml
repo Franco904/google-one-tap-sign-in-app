@@ -43,7 +43,7 @@
     <string name="dialog_edit_user_primary_button">Save</string>
     <string name="dialog_edit_user_secondary_button">Cancel</string>
     <string name="dialog_delete_user_title">Delete user?</string>
-    <string name="dialog_delete_user_description">User will be unregistered from app\'s database</string>
+    <string name="dialog_delete_user_description">User will be unregistered from the app\'s database.</string>
     <string name="dialog_delete_user_primary_button">Confirm</string>
     <string name="dialog_delete_user_secondary_button">Cancel</string>
 </resources>

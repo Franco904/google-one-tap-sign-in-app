@@ -44,6 +44,7 @@
     <string name="dialog_edit_user_secondary_button">Cancel</string>
     <string name="dialog_delete_user_title">Delete user?</string>
     <string name="dialog_delete_user_description">The user will be unregistered from this app.</string>
+    <string name="dialog_sign_out_user_title">Sign out user from the app?</string>
     <string name="dialog_delete_user_primary_button">Confirm</string>
     <string name="dialog_delete_user_secondary_button">Cancel</string>
 </resources>

@@ -1,9 +1,6 @@
 package com.example.one_tap_sign_in.signin
 
 import androidx.annotation.StringRes
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
@@ -13,8 +10,6 @@ import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
 import com.example.one_tap_sign_in.root.RootViewModel.UiEvents
 import com.example.one_tap_sign_in.signin.models.GoogleUserCredentials
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 

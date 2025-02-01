@@ -39,6 +39,7 @@ import com.example.one_tap_sign_in.profile.composables.DeleteUserDialog
 import com.example.one_tap_sign_in.profile.composables.EditUserDialog
 import com.example.one_tap_sign_in.profile.composables.ProfileDataSection
 import com.example.one_tap_sign_in.profile.composables.ProfileScreenTopBar
+import com.example.one_tap_sign_in.profile.composables.SignOutUserDialog
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -138,6 +139,7 @@ fun ProfileScreen(
                     onCancel = { isEditingUser = false },
                 )
             }
+
             if (isDeletingUser) {
                 DeleteUserDialog(
                     onDelete = {
@@ -156,6 +158,28 @@ fun ProfileScreen(
                     onCancel = { isDeletingUser = false },
                 )
             }
+
+            if (isSigningOut) {
+                SignOutUserDialog(
+                    onSignOut = {
+                        coroutineScope.launch {
+                            try {
+                                AppCredentialManager.clearGoogleCredentialState(
+                                    activityContext = context.getActivity(),
+                                )
+
+                                viewModel.onSignOutUser()
+                            } catch (e: CredentialManagerException) {
+                                showSnackbar(context.getString(e.toUiMessage()), false)
+
+                                isSigningOut = false
+                            }
+                        }
+                    },
+                    onCancel = { isSigningOut = false },
+                )
+            }
+
             if (userCredentialsUiState.isNull()) {
                 AppCircularProgressIndicator(
                     modifier = Modifier
@@ -167,23 +191,7 @@ fun ProfileScreen(
                     displayName = userCredentialsUiState.displayName!!,
                     isSigningOut = isSigningOut,
                     onSignOut = {
-                        if (!isSigningOut) {
-                            isSigningOut = true
-
-                            coroutineScope.launch {
-                                try {
-                                    AppCredentialManager.clearGoogleCredentialState(
-                                        activityContext = context.getActivity(),
-                                    )
-
-                                    viewModel.onSignOutUser()
-                                } catch (e: CredentialManagerException) {
-                                    showSnackbar(context.getString(e.toUiMessage()), false)
-
-                                    isSigningOut = false
-                                }
-                            }
-                        }
+                        if (!isSigningOut) isSigningOut = true
                     },
                 )
             }

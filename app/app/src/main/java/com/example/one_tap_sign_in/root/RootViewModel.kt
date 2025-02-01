@@ -8,8 +8,6 @@ import com.example.one_tap_sign_in.core.domain.utils.onError
 import com.example.one_tap_sign_in.core.domain.utils.onSuccess
 import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 

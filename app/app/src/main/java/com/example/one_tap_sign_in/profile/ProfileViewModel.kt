@@ -10,9 +10,7 @@ import com.example.one_tap_sign_in.core.domain.utils.onSuccess
 import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
 import com.example.one_tap_sign_in.profile.models.UserCredentialsUiState
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update

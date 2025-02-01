@@ -34,7 +34,6 @@ fun ProfileDataSection(
         style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Medium),
     )
     Spacer(modifier = Modifier.height(24.dp))
-    // TODO: Add sign out confirmation dialog
     SignOutButton(
         isSigningOut = isSigningOut,
         onSignOut = onSignOut,

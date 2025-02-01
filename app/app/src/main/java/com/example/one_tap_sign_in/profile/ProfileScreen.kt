@@ -95,6 +95,8 @@ fun ProfileScreen(
                     val successMsg = R.string.snackbar_delete_user_succeeded
                     showSnackbar(context.getString(successMsg), true)
 
+                    onSignOutSuccess()
+
                     isDeletingUser = false
                 }
 

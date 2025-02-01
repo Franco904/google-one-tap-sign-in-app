@@ -1,4 +1,4 @@
-package com.example.one_tap_sign_in.core.presentation.utils
+package com.example.one_tap_sign_in.core.presentation.utils.uiConverters
 
 import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.domain.utils.DataSourceError

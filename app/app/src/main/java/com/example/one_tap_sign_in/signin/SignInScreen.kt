@@ -27,7 +27,7 @@ import com.example.one_tap_sign_in.core.presentation.dataSources.credentialManag
 import com.example.one_tap_sign_in.core.presentation.exceptions.CredentialManagerException
 import com.example.one_tap_sign_in.core.presentation.theme.AppTheme
 import com.example.one_tap_sign_in.core.presentation.utils.getActivity
-import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
+import com.example.one_tap_sign_in.core.presentation.utils.uiConverters.toUiMessage
 import com.example.one_tap_sign_in.signin.SignInViewModel.UiEvents.DataSourceError
 import com.example.one_tap_sign_in.signin.SignInViewModel.UiEvents.SignInSuccess
 import com.example.one_tap_sign_in.signin.composables.SignInBox

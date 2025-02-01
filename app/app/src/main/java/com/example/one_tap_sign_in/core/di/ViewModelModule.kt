@@ -21,6 +21,7 @@ val viewModelModule = module {
 
     viewModel {
         ProfileViewModel(
+            userValidator = get(),
             userRepository = get(),
         )
     }

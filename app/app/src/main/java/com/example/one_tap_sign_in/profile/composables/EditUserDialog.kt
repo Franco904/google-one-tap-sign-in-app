@@ -1,8 +1,11 @@
 package com.example.one_tap_sign_in.profile.composables
 
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -33,7 +36,9 @@ import kotlin.time.Duration.Companion.milliseconds
 @Composable
 fun EditUserDialog(
     displayName: String?,
-    onEdit: (String) -> Unit,
+    displayNameError: Int?,
+    onDisplayNameTextChanged: () -> Unit,
+    onEdit: (String?) -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -58,36 +63,18 @@ fun EditUserDialog(
             )
         },
         text = {
-            OutlinedTextField(
+            EditDisplayNameTextField(
                 value = currentDisplayName ?: "",
-                onValueChange = { input -> currentDisplayName = input },
-                textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.dialog_edit_user_edit_name_placeholder),
-                        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
-                    )
+                onValueChange = { input ->
+                    currentDisplayName = input
+                    onDisplayNameTextChanged()
                 },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Outlined.Label,
-                        contentDescription = stringResource(R.string.dialog_edit_user_edit_name_placeholder),
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
+                isInvalid = displayNameError != null,
+                displayNameError = displayNameError,
+                onDone = {
+                    onEdit(currentDisplayName)
                 },
-                singleLine = true,
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        onEdit(currentDisplayName ?: "")
-                    }
-                ),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    imeAction = ImeAction.Done,
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-                    .focusRequester(fieldFocusRequester)
+                fieldFocusRequester = fieldFocusRequester,
             )
         },
         confirmButton = {
@@ -118,5 +105,57 @@ fun EditUserDialog(
         shape = MaterialTheme.shapes.small,
         modifier = modifier
             .width(450.dp)
+    )
+}
+
+@Composable
+fun EditDisplayNameTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    isInvalid: Boolean,
+    displayNameError: Int?,
+    onDone: KeyboardActionScope.() -> Unit,
+    fieldFocusRequester: FocusRequester,
+    modifier: Modifier = Modifier,
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        isError = isInvalid,
+        textStyle = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+        placeholder = {
+            Text(
+                text = stringResource(R.string.dialog_edit_user_edit_name_placeholder),
+                style = MaterialTheme.typography.bodyLarge.copy(fontSize = 16.sp),
+            )
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.AutoMirrored.Outlined.Label,
+                contentDescription = stringResource(R.string.dialog_edit_user_edit_name_placeholder),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+        },
+        supportingText = {
+            if (displayNameError != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = stringResource(displayNameError),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+            }
+        },
+        singleLine = true,
+        keyboardActions = KeyboardActions(
+            onDone = onDone,
+        ),
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Done,
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .focusRequester(fieldFocusRequester)
     )
 }

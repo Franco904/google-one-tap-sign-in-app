@@ -4,10 +4,9 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
-import com.example.one_tap_sign_in.core.domain.utils.onError
-import com.example.one_tap_sign_in.core.domain.utils.onSuccess
-import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
-import com.example.one_tap_sign_in.root.RootViewModel.UiEvents
+import com.example.one_tap_sign_in.core.domain.utils.onErrorAsync
+import com.example.one_tap_sign_in.core.domain.utils.onSuccessAsync
+import com.example.one_tap_sign_in.core.presentation.utils.uiConverters.toUiMessage
 import com.example.one_tap_sign_in.signin.models.GoogleUserCredentials
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -24,10 +23,10 @@ class SignInViewModel(
     fun checkUserDidExplicitlySignOut() {
         viewModelScope.launch {
             userRepository.didUserExplicitlySignOut()
-                .onSuccess { didExplicitlySignOut ->
+                .onSuccessAsync { didExplicitlySignOut ->
                     didUserExplicitlySignOut = didExplicitlySignOut
                 }
-                .onError { error ->
+                .onErrorAsync { error ->
                     _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                 }
         }
@@ -40,10 +39,10 @@ class SignInViewModel(
                 displayName = credentials.displayName,
                 profilePictureUrl = credentials.profilePictureUrl,
             )
-                .onSuccess {
+                .onSuccessAsync {
                     _uiEvents.send(UiEvents.SignInSuccess)
                 }
-                .onError { error ->
+                .onErrorAsync { error ->
                     _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                 }
         }

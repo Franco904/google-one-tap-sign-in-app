@@ -28,13 +28,12 @@ import com.example.one_tap_sign_in.core.presentation.dataSources.credentialManag
 import com.example.one_tap_sign_in.core.presentation.exceptions.CredentialManagerException
 import com.example.one_tap_sign_in.core.presentation.theme.AppTheme
 import com.example.one_tap_sign_in.core.presentation.utils.getActivity
-import com.example.one_tap_sign_in.core.presentation.utils.toUiMessage
+import com.example.one_tap_sign_in.core.presentation.utils.uiConverters.toUiMessage
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.DataSourceError
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.DeleteUserSuccess
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.EditUserSuccess
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.RedirectToSignIn
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.SignOutUserSuccess
-import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.ValidationError
 import com.example.one_tap_sign_in.profile.composables.DeleteUserDialog
 import com.example.one_tap_sign_in.profile.composables.EditUserDialog
 import com.example.one_tap_sign_in.profile.composables.ProfileDataSection
@@ -56,6 +55,7 @@ fun ProfileScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val userCredentialsUiState by viewModel.userCredentialsUiState.collectAsStateWithLifecycle()
+    val userFormUiStateUiState by viewModel.userFormUiState.collectAsStateWithLifecycle()
 
     var isSigningOut by remember { mutableStateOf(false) }
     var isEditingUser by remember { mutableStateOf(false) }
@@ -66,10 +66,6 @@ fun ProfileScreen(
 
         viewModel.uiEvents.collectLatest { uiEvent ->
             when (uiEvent) {
-                is ValidationError -> {
-                    // TODO: Implement field validation UI
-                }
-
                 is DataSourceError -> {
                     showSnackbar(context.getString(uiEvent.messageId), false)
 
@@ -79,8 +75,7 @@ fun ProfileScreen(
                 }
 
                 is EditUserSuccess -> {
-                    val successMsg = R.string.snackbar_edit_user_succeeded
-                    showSnackbar(context.getString(successMsg), true)
+                    showSnackbar(context.getString(uiEvent.messageId), true)
 
                     isEditingUser = false
                 }
@@ -135,8 +130,14 @@ fun ProfileScreen(
             if (isEditingUser) {
                 EditUserDialog(
                     displayName = userCredentialsUiState.displayName,
+                    displayNameError = userFormUiStateUiState.displayNameError,
+                    onDisplayNameTextChanged = viewModel::clearDisplayNameFieldError,
                     onEdit = viewModel::onEditUser,
-                    onCancel = { isEditingUser = false },
+                    onCancel = {
+                        viewModel.clearDisplayNameFieldError()
+
+                        isEditingUser = false
+                    },
                 )
             }
 

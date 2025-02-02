@@ -17,7 +17,6 @@ fun Application.configureSessions() {
                 path = "/"
                 sameSite = SameSite.Strict // Cookie is only send for the same user context (prevent CSRF attacks)
                 httpOnly = true // Prevents JavaScript access (prevent XSS attacks)
-                maxAge = 10.seconds
             }
         }
     }

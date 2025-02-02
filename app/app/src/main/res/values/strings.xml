@@ -24,7 +24,7 @@
     <!-- Snackbar errors -->
     <string name="snackbar_credential_unsupported_type_error">This credential type is not supported. Try logging with your Google account.</string>
     <string name="snackbar_credential_unsupported_api_error">Failed to verify credentials. Try updating the Android version of your device and restarting the app.</string>
-    <string name="snackbar_credential_no_credentials_found_error">No Google accounts found. Please try again later.</string>
+    <string name="snackbar_credential_no_credentials_found_error">No Google accounts available. Please try again later.</string>
     <string name="snackbar_credential_unknown_error">Unexpected error. Please try again later.</string>
 
     <string name="snackbar_preferences_serialization_error">Failed to load user data. Please try again later.</string>

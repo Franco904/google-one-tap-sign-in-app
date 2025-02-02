@@ -5,33 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="88210e25-2eed-4520-8a4c-de60a5aaba4a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/core/di/modules/ValidatorModule.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/core/domain/models/UserSession.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/core/domain/utils/Error.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/core/domain/utils/ValidationError.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/core/domain/validators/UserSessionValidatorImpl.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/core/domain/validators/UserValidatorImpl.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/core/domain/validators/interfaces/UserSessionValidator.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/core/domain/validators/interfaces/UserValidator.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/core/presentation/exceptionHandling/exceptions/UserCredentialNotFoundException.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/core/presentation/utils/ValidationErrorToResponseMessage.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/validators/UserValidatorImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/validators/UserValidatorImpl.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/constants/NetworkConstants.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/constants/NetworkConstants.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/res/values/strings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/data/dataSources/authServer/GoogleClientApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/data/dataSources/authServer/GoogleClientApi.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/data/dataSources/database/entities/UserEntity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/data/dataSources/database/entities/UserEntity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/di/DependencyInjection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/di/DependencyInjection.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/di/modules/ServiceModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/di/modules/ServiceModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/domain/models/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/domain/models/User.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/presentation/auth/Authentication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/presentation/auth/Authentication.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/Application.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/Application.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/Routing.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/presentation/routing/Routing.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/presentation/auth/Sessions.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/presentation/auth/Sessions.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/presentation/auth/models/UserSession.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/presentation/auth/models/UserSessionDto.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/presentation/exceptionHandling/ExceptionHandling.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/presentation/exceptionHandling/ExceptionHandling.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/presentation/exceptionHandling/exceptions/BlankTokenException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/presentation/exceptionHandling/exceptions/InvalidUserException.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/presentation/exceptionHandling/exceptions/InvalidSessionException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/presentation/exceptionHandling/exceptions/InvalidSessionException.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/presentation/exceptionHandling/exceptions/InvalidTokenException.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/presentation/exceptionHandling/exceptions/InvalidIdTokenException.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/user/UserRoutes.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/user/UserRoutes.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/user/UserService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/user/UserService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/user/requestDtos/UpdateUserRequestDto.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/user/requestDtos/UpdateUserRequestDto.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -104,7 +84,7 @@
     "Gradle.Download Sources.executor": "Run",
     "Gradle.back-end [build].executor": "Run",
     "Gradle.back-end [run].executor": "Run",
-    "Kotlin.ApplicationKt.executor": "Run",
+    "Kotlin.ApplicationKt.executor": "Debug",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -122,11 +102,11 @@
       <recent name="$PROJECT_DIR$/src/main/kotlin/core/domain/models" />
     </key>
     <key name="K2MoveDeclarationsDialog.RECENT_PACKAGE_KEY">
+      <recent name="com.example.core.presentation.routing" />
+      <recent name="com.example.user" />
       <recent name="com.example.core.data.apis.models" />
       <recent name="com.example.core.security.session.interfaces" />
       <recent name="com.example.core.di.modules" />
-      <recent name="com.example" />
-      <recent name="com.example.core.monitoring" />
     </key>
   </component>
   <component name="RunManager" selected="Kotlin.ApplicationKt">
@@ -199,5 +179,16 @@
       <updated>1737587273636</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/kotlin/core/presentation/auth/Authentication.kt</url>
+          <line>28</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

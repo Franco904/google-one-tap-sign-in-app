@@ -1,6 +1,7 @@
 package com.example.core.presentation.exceptionHandling
 
 import com.example.core.presentation.exceptionHandling.exceptions.*
+import com.example.core.presentation.utils.toResponseMessage
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.statuspages.*
@@ -21,7 +22,7 @@ fun StatusPagesConfig.configure400Responses(
     logger: Logger,
 ) {
     exception<InvalidIdTokenException> { call, cause ->
-        logger.error("[Id token validation] - ${cause.error}: ${cause.message}")
+        logger.error("[Id token validation] - ${cause.message}: ${cause.error.toResponseMessage()}")
 
         call.respondText(
             text = "[400] Bad request error: ${cause.error} - ${cause.message}",
@@ -30,7 +31,7 @@ fun StatusPagesConfig.configure400Responses(
     }
 
     exception<InvalidSessionException> { call, cause ->
-        logger.error("[Session validation] - ${cause.error}: ${cause.message}")
+        logger.error("[Session validation] - ${cause.message}: ${cause.error.toResponseMessage()}")
 
         call.respondText(
             text = "[400] Bad request error: ${cause.error} - ${cause.message}",
@@ -39,7 +40,7 @@ fun StatusPagesConfig.configure400Responses(
     }
 
     exception<InvalidUserException> { call, cause ->
-        logger.error("[User validation] - ${cause.error}: ${cause.message}")
+        logger.error("[User validation] - ${cause.message}: ${cause.error.toResponseMessage()}")
 
         call.respondText(
             text = "[400] Bad request error: ${cause.error} - ${cause.message}",

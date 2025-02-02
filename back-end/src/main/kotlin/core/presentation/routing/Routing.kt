@@ -1,4 +1,4 @@
-package com.example
+package com.example.core.presentation.routing
 
 import com.example.user.UserService
 import com.example.user.userRoutes

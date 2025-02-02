@@ -1,34 +1,38 @@
 package com.example.core.data.repositories
 
-import com.example.core.data.apis.interfaces.GoogleClientApi
-import com.example.core.data.daos.interfaces.UserDao
-import com.example.core.data.entities.UserEntity
-import com.example.core.data.repositories.interfaces.UserRepository
+import com.example.core.data.dataSources.authServer.interfaces.AuthClientApi
+import com.example.core.data.dataSources.database.daos.interfaces.UserDao
+import com.example.core.data.dataSources.database.entities.UserEntity
+import com.example.core.domain.models.User
+import com.example.core.domain.repositories.UserRepository
 
 class UserRepositoryImpl(
     private val userDao: UserDao,
-    private val googleClientApi: GoogleClientApi,
+    private val authClientApi: AuthClientApi,
 ) : UserRepository {
-    override suspend fun verifyIdToken(idToken: String): UserEntity {
-        val userCredentials = googleClientApi.verifyIdToken(idToken)
+    override suspend fun verifyIdToken(idToken: String): User {
+        val credentialsResponseDto = authClientApi.verifyIdToken(idToken)
+        val userFromCredentials = credentialsResponseDto.toUser()
 
-        return userDao.createOrIgnore(
-            user = UserEntity.fromUserCredentials(userCredentials)
+        val userEntity = userDao.createOrIgnore(
+            user = UserEntity.fromUser(userFromCredentials)
         )
+
+        return userEntity.toUser()
     }
 
-    override suspend fun getUser(userId: String): UserEntity {
-        return userDao.findById(id = userId)
+    override suspend fun getUser(userId: String): User {
+        return userDao.findById(id = userId).toUser()
     }
 
     override suspend fun updateUserName(
         userId: String,
         newName: String,
     ) {
-        val user = userDao.findById(id = userId)
-        val updatedUser = user.copy(name = newName)
+        val userEntity = userDao.findById(id = userId)
+        val updatedUserEntity = userEntity.copy(name = newName)
 
-        userDao.update(user = updatedUser)
+        userDao.update(user = updatedUserEntity)
     }
 
     override suspend fun deleteUser(userId: String) {

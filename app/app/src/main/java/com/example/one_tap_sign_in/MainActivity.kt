@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
@@ -18,11 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.example.one_tap_sign_in.core.composables.AppSnackbarHost
-import com.example.one_tap_sign_in.core.navigation.Destinations
-import com.example.one_tap_sign_in.core.navigation.DestinationsHandler.destinations
-import com.example.one_tap_sign_in.core.theme.AppCustomColors
-import com.example.one_tap_sign_in.core.theme.AppTheme
+import com.example.one_tap_sign_in.core.presentation.composables.AppSnackbarHost
+import com.example.one_tap_sign_in.core.presentation.navigation.Destinations
+import com.example.one_tap_sign_in.core.presentation.navigation.DestinationsHandler.destinations
+import com.example.one_tap_sign_in.core.presentation.theme.AppCustomColors
+import com.example.one_tap_sign_in.core.presentation.theme.AppTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -36,7 +37,7 @@ class MainActivity : ComponentActivity() {
                 val coroutineScope = rememberCoroutineScope()
 
                 val snackbarHostState = remember { SnackbarHostState() }
-                var snackbarContainerColor by remember { mutableStateOf(AppCustomColors.green300) }
+                var isSuccessSnackbar by remember { mutableStateOf(true) }
 
                 val navController = rememberNavController()
 
@@ -44,7 +45,9 @@ class MainActivity : ComponentActivity() {
                     snackbarHost = {
                         AppSnackbarHost(
                             snackbarHostState = snackbarHostState,
-                            snackbarContainerColor = snackbarContainerColor,
+                            snackbarContainerColor = if (isSuccessSnackbar) {
+                                AppCustomColors.green300
+                            } else MaterialTheme.colorScheme.error,
                         )
                     },
                 ) { contentPadding ->
@@ -54,9 +57,9 @@ class MainActivity : ComponentActivity() {
                         builder = {
                             destinations(
                                 navController = navController,
-                                showSnackbar = { message, color ->
+                                showSnackbar = { message, isSuccess ->
                                     coroutineScope.launch {
-                                        snackbarContainerColor = color
+                                        isSuccessSnackbar = isSuccess
                                         snackbarHostState.showSnackbar(message = message)
                                     }
                                 }

@@ -1,0 +1,35 @@
+package com.example.one_tap_sign_in.core.data.exceptions
+
+import com.example.one_tap_sign_in.core.data.utils.CryptoUtils.CryptoUtilsException
+import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
+import kotlinx.serialization.SerializationException
+import java.io.IOException
+
+sealed class PreferencesException(message: String) : Exception(message) {
+    class IOError(message: String?) :
+        PreferencesException("Failed to read/write to preferences file: $message.")
+
+    class SerializationError(message: String?) :
+        PreferencesException("Preferences data parsing failed, unexpected format: $message.")
+
+    class CryptoException(message: String?) :
+        PreferencesException("Crypto failed: $message.")
+
+    class UnknownError(message: String?) : PreferencesException("Unknown error: $message.")
+
+    fun toPreferencesError() = when (this) {
+        is IOError -> DataSourceError.PreferencesError.SerializationError
+        is SerializationError -> DataSourceError.PreferencesError.SerializationError
+        is CryptoException -> DataSourceError.PreferencesError.UnknownError
+        is UnknownError -> DataSourceError.PreferencesError.UnknownError
+    }
+}
+
+fun Exception.toPreferencesException(): PreferencesException {
+    return when (this) {
+        is IOException -> PreferencesException.IOError(message = "$cause: $message")
+        is SerializationException -> PreferencesException.SerializationError(message = "$cause: $message")
+        is CryptoUtilsException -> PreferencesException.CryptoException(message = "$cause: $message")
+        else -> PreferencesException.UnknownError(message = "$cause: $message")
+    }
+}

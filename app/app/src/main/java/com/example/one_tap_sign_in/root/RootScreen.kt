@@ -11,10 +11,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.example.one_tap_sign_in.core.composables.AppCircularProgressIndicator
-import com.example.one_tap_sign_in.core.navigation.Destinations
+import com.example.one_tap_sign_in.core.presentation.composables.AppCircularProgressIndicator
+import com.example.one_tap_sign_in.core.presentation.navigation.Destinations
+import com.example.one_tap_sign_in.root.RootViewModel.UiEvents.DataSourceError
+import com.example.one_tap_sign_in.root.RootViewModel.UiEvents.SignInState
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
@@ -23,11 +26,22 @@ fun RootScreen(
     modifier: Modifier = Modifier,
     viewModel: RootViewModel = koinViewModel(),
     onNavigateToFirstDestination: (Any) -> Unit = { _ -> },
+    showSnackbar: (String, Boolean) -> Unit = { _, _ -> },
 ) {
+    val context = LocalContext.current
+
     LaunchedEffect(Unit) {
+        viewModel.checkIsUserSignedIn()
+
         viewModel.uiEvents.collectLatest { uiEvent ->
             when (uiEvent) {
-                is RootViewModel.UiEvents.SignInState -> {
+                is DataSourceError -> {
+                    showSnackbar(context.getString(uiEvent.messageId), false)
+
+                    onNavigateToFirstDestination(Destinations.SignIn)
+                }
+
+                is SignInState -> {
                     val firstDestination: Any = if (uiEvent.isUserSignedIn) {
                         Destinations.Profile
                     } else Destinations.SignIn

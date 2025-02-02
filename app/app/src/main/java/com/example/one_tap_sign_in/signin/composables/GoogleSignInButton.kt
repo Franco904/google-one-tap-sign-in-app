@@ -19,7 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.one_tap_sign_in.R
-import com.example.one_tap_sign_in.core.composables.AppCircularProgressIndicator
+import com.example.one_tap_sign_in.core.presentation.composables.AppCircularProgressIndicator
 
 @Composable
 fun GoogleSignInButton(

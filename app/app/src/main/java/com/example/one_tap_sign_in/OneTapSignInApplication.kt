@@ -5,6 +5,7 @@ import com.example.one_tap_sign_in.core.di.networkModule
 import com.example.one_tap_sign_in.core.di.repositoryModule
 import com.example.one_tap_sign_in.core.di.storageModule
 import com.example.one_tap_sign_in.core.di.utilsModule
+import com.example.one_tap_sign_in.core.di.validatorModule
 import com.example.one_tap_sign_in.core.di.viewModelModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -20,6 +21,7 @@ class OneTapSignInApplication : Application() {
 
             modules(
                 viewModelModule,
+                validatorModule,
                 repositoryModule,
                 storageModule,
                 networkModule,

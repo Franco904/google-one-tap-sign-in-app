@@ -12,15 +12,35 @@
     <string name="profile_screen_top_bar_title">Profile</string>
     <string name="profile_screen_google_sign_out_text">Sign out</string>
 
-    <!-- Snackbar -->
-    <string name="snackbar_sign_in_succeded">Sign in succeeded</string>
-    <string name="snackbar_sign_in_no_google_accounts">No Google accounts found in your device</string>
-    <string name="snackbar_sign_in_unauthorized">Unauthorized access</string>
-    <string name="snackbar_sign_in_failed">Sign in failed</string>
-    <string name="snackbar_sign_out_succeded">Sign out succeeded</string>
-    <string name="snackbar_sign_out_failed">Sign out failed</string>
-    <string name="snackbar_internet_connection_failed">Internet connection failed</string>
-    <string name="snackbar_internal_server_error">Internal server error</string>
+    <!-- Inline errors -->
+    <string name="inline_user_name_is_blank">Name is required.</string>
+    <string name="inline_user_name_too_big">Name length must be up to 35 chars.</string>
+
+    <!-- Snackbar success -->
+    <string name="snackbar_edit_user_succeeded">Data edited successfully.</string>
+    <string name="snackbar_edit_user_no_data_changed">No data has changed.</string>
+    <string name="snackbar_delete_user_succeeded">User deleted successfully.</string>
+
+    <!-- Snackbar errors -->
+    <string name="snackbar_credential_unsupported_type_error">This credential type is not supported. Try logging with your Google account.</string>
+    <string name="snackbar_credential_unsupported_api_error">Failed to verify credentials. Try updating the Android version of your device and restarting the app.</string>
+    <string name="snackbar_credential_no_credentials_found_error">No Google accounts found. Please try again later.</string>
+    <string name="snackbar_credential_unknown_error">Unexpected error. Please try again later.</string>
+
+    <string name="snackbar_preferences_serialization_error">Failed to load user data. Please try again later.</string>
+    <string name="snackbar_preferences_security_error">Failed to check the integrity of your session. Please sign in again.</string>
+    <string name="snackbar_preferences_unknown_error">Unexpected error. Please restart the app.</string>
+
+    <string name="snackbar_http_bad_request_error">Invalid data. Please check your input and try again.</string>
+    <string name="snackbar_http_unauthorized_error">Your session expired. Please sign in again.</string>
+    <string name="snackbar_http_forbidden_error">Your session expired. Please sign in again.</string>
+    <string name="snackbar_http_not_found_error">User not found. Please sign in again.</string>
+    <string name="snackbar_http_server_error">Unexpected server error. Please try again later.</string>
+    <string name="snackbar_http_unknown_http_response_error">Unexpected server response. Please try again later.</string>
+    <string name="snackbar_http_serialization_error">Your session expired. Please sign in again.</string>
+    <string name="snackbar_http_timeout_error">Request timed out. Check your connection and try again.</string>
+    <string name="snackbar_http_network_internet">No internet connection. Please check your network.</string>
+    <string name="snackbar_http_unknown_error">Unexpected error. Please try again later.</string>
 
     <!-- Dialog -->
     <string name="dialog_edit_user_title">Edit user</string>
@@ -28,7 +48,8 @@
     <string name="dialog_edit_user_primary_button">Save</string>
     <string name="dialog_edit_user_secondary_button">Cancel</string>
     <string name="dialog_delete_user_title">Delete user?</string>
-    <string name="dialog_delete_user_description">User will be unregistered from app\'s database</string>
+    <string name="dialog_delete_user_description">The user will be unregistered from this app.</string>
+    <string name="dialog_sign_out_user_title">Sign out user from the app?</string>
     <string name="dialog_delete_user_primary_button">Confirm</string>
     <string name="dialog_delete_user_secondary_button">Cancel</string>
 </resources>

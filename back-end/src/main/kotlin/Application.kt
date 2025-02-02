@@ -1,11 +1,11 @@
 package com.example
 
 import com.example.core.di.configureDependencyInjection
-import com.example.core.exceptionHandling.configureExceptionHandling
-import com.example.core.monitoring.configureMonitoring
-import com.example.core.negotiation.configureContentNegotiation
-import com.example.core.security.configureAuthentication
-import com.example.core.security.configureSessions
+import com.example.core.presentation.auth.configureAuthentication
+import com.example.core.presentation.auth.configureSessions
+import com.example.core.presentation.contentNegotiation.configureContentNegotiation
+import com.example.core.presentation.exceptionHandling.configureExceptionHandling
+import com.example.core.presentation.monitoring.configureMonitoring
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
 
@@ -18,9 +18,9 @@ fun Application.module() {
 
     configureSessions()
     configureAuthentication()
-    configureMonitoring()
 
     configureRouting()
     configureContentNegotiation()
     configureExceptionHandling()
+    configureMonitoring()
 }

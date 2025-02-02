@@ -1,11 +1,9 @@
 package com.example.user
 
-import com.example.core.constants.SESSION_COOKIE_NAME
-import com.example.core.security.session.UserSession
+import com.example.core.data.constants.SESSION_COOKIE_NAME
+import com.example.core.presentation.auth.models.UserSessionDto
 import com.example.user.requestDtos.SignInUserRequestDto
 import com.example.user.requestDtos.UpdateUserRequestDto
-import com.example.user.responseDtos.GetUserResponseDto
-import com.example.user.responseDtos.SignInUserResponseDto
 import com.example.user.responseDtos.UpdateUserResponseDto
 import io.ktor.http.*
 import io.ktor.server.auth.*
@@ -23,39 +21,30 @@ fun Route.userRoutes(
         post("/sign-in") {
             val signInRequest = call.receive<SignInUserRequestDto>()
 
-            val (userSub, userName) = userService.startSession(idToken = signInRequest.idToken)
+            val userSession = userService.createUserSession(idToken = signInRequest.idToken)
+            call.sessions.set(name = SESSION_COOKIE_NAME, value = userSession)
 
-            val session = UserSession(id = userSub, name = userName)
-            call.sessions.set(name = SESSION_COOKIE_NAME, value = session)
-
-            call.respond(
-                message = true,
-                status = HttpStatusCode.OK,
-            )
+            call.respond(message = HttpStatusCode.OK)
         }
 
         authenticate(SESSION_COOKIE_NAME) {
             get {
-                val session = call.principal<UserSession>()
-                val user = userService.getUser(session = session)
+                val userSessionDto = call.principal<UserSessionDto>()
+                val user = userService.getUser(userSessionDto = userSessionDto)
 
                 call.respond(
-                    message = GetUserResponseDto(
-                        email = user.email,
-                        name = user.name,
-                        profilePictureUrl = user.profilePictureUrl,
-                    ),
+                    message = user,
                     status = HttpStatusCode.OK,
                 )
             }
 
             put("/update") {
-                val session = call.principal<UserSession>()
-                val updateBody = call.receive<UpdateUserRequestDto>()
+                val userSessionDto = call.principal<UserSessionDto>()
+                val userDto = call.receive<UpdateUserRequestDto>()
 
                 userService.updateUser(
-                    session = session,
-                    user = updateBody,
+                    userSessionDto = userSessionDto,
+                    userDto = userDto,
                 )
 
                 call.respond(
@@ -65,23 +54,17 @@ fun Route.userRoutes(
             }
 
             delete("/delete") {
-                val session = call.principal<UserSession>()
+                val userSessionDto = call.principal<UserSessionDto>()
 
-                userService.deleteUser(session = session)
+                userService.deleteUser(userSessionDto = userSessionDto)
 
-                call.respond(
-                    message = true,
-                    status = HttpStatusCode.OK,
-                )
+                call.respond(message = HttpStatusCode.OK)
             }
 
             get("/sign-out") {
-                call.sessions.clear<UserSession>()
+                call.sessions.clear<UserSessionDto>()
 
-                call.respond(
-                    message = true,
-                    status = HttpStatusCode.OK,
-                )
+                call.respond(message = HttpStatusCode.OK)
             }
         }
     }

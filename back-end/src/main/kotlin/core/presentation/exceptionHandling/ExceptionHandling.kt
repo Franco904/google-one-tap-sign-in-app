@@ -20,35 +20,44 @@ fun Application.configureExceptionHandling() {
 fun StatusPagesConfig.configure400Responses(
     logger: Logger,
 ) {
-    exception<BlankTokenException> { call, cause ->
-        logger.error("[Token Verification] - ${cause.message}")
+    exception<InvalidIdTokenException> { call, cause ->
+        logger.error("[Id token validation] - ${cause.error}: ${cause.message}")
 
         call.respondText(
-            text = "[400] Bad request error: ${cause.message}",
-            status = HttpStatusCode.BadRequest,
-        )
-    }
-
-    exception<InvalidTokenException> { call, cause ->
-        logger.error("[Token Verification] - ${cause.message}")
-
-        call.respondText(
-            text = "[400] Bad request error: ${cause.message}",
+            text = "[400] Bad request error: ${cause.error} - ${cause.message}",
             status = HttpStatusCode.BadRequest,
         )
     }
 
     exception<InvalidSessionException> { call, cause ->
-        logger.error("[Session verification] - ${cause.message}")
+        logger.error("[Session validation] - ${cause.error}: ${cause.message}")
 
         call.respondText(
-            text = "[401] Unauthorized error: User is unauthorized to access this resource.",
+            text = "[400] Bad request error: ${cause.error} - ${cause.message}",
+            status = HttpStatusCode.BadRequest,
+        )
+    }
+
+    exception<InvalidUserException> { call, cause ->
+        logger.error("[User validation] - ${cause.error}: ${cause.message}")
+
+        call.respondText(
+            text = "[400] Bad request error: ${cause.error} - ${cause.message}",
+            status = HttpStatusCode.BadRequest,
+        )
+    }
+
+    exception<UserCredentialNotFoundException> { call, cause ->
+        logger.error("[Session auth] - ${cause.cause}: ${cause.message}")
+
+        call.respondText(
+            text = "[401] Unauthorized error: ${cause.message}",
             status = HttpStatusCode.Unauthorized,
         )
     }
 
     exception<SessionExpiredException> { call, cause ->
-        logger.error("[Resource Access] - ${cause.message}")
+        logger.error("[Resource Access] - ${cause.cause}: ${cause.message}")
 
         call.respondText(
             text = "[401] Unauthorized error: ${cause.message}",
@@ -57,7 +66,7 @@ fun StatusPagesConfig.configure400Responses(
     }
 
     exception<UserNotFoundException> { call, cause ->
-        logger.error("[Get user] - ${cause.message}")
+        logger.error("[Get user] - ${cause.cause}: ${cause.message}")
 
         call.respondText(
             text = "[404] Resource not found error: ${cause.message}",
@@ -70,7 +79,7 @@ fun StatusPagesConfig.configure500Responses(
     logger: Logger,
 ) {
     exception<CreateUserFailedException> { call, cause ->
-        logger.error("[Create User] - ${cause.message}")
+        logger.error("[Create User] - ${cause.cause}: ${cause.message}")
 
         call.respondText(
             text = "[500] Internal server error: ${cause.message}",
@@ -79,7 +88,7 @@ fun StatusPagesConfig.configure500Responses(
     }
 
     exception<UpdateUserFailedException> { call, cause ->
-        logger.error("[Update User] - ${cause.message}")
+        logger.error("[Update User] - ${cause.cause}: ${cause.message}")
 
         call.respondText(
             text = "[500] Internal server error: ${cause.message}",
@@ -88,7 +97,7 @@ fun StatusPagesConfig.configure500Responses(
     }
 
     exception<DeleteUserFailedException> { call, cause ->
-        logger.error("[Delete User] - ${cause.message}")
+        logger.error("[Delete User] - ${cause.cause}: ${cause.message}")
 
         call.respondText(
             text = "[500] Internal server error: ${cause.message}",
@@ -97,7 +106,7 @@ fun StatusPagesConfig.configure500Responses(
     }
 
     exception<Throwable> { call, cause ->
-        logger.error("[Unknown error] - ${cause.message}")
+        logger.error("[Unknown error] - ${cause.cause}: ${cause.message}")
 
         call.respondText(
             text = "[500] Internal server error: ${cause.message}",

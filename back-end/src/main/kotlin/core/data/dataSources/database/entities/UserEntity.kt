@@ -22,10 +22,10 @@ data class UserEntity(
     companion object {
         fun fromUser(user: User): UserEntity {
             return UserEntity(
-                id = user.id,
-                email = user.email,
-                name = user.name,
-                profilePictureUrl = user.profilePictureUrl,
+                id = user.id!!,
+                email = user.email!!,
+                name = user.name!!,
+                profilePictureUrl = user.profilePictureUrl!!,
             )
         }
     }

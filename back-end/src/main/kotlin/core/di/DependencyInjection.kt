@@ -12,6 +12,7 @@ fun Application.configureDependencyInjection() {
         modules(
             applicationModule(),
             serviceModule,
+            validatorModule,
             repositoryModule,
             daoModule,
             databaseModule,

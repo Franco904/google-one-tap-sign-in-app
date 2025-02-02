@@ -1,7 +1,7 @@
 package com.example.core.presentation.auth
 
 import com.example.core.data.constants.SESSION_COOKIE_NAME
-import com.example.core.presentation.auth.models.UserSession
+import com.example.core.presentation.auth.models.UserSessionDto
 import com.example.core.presentation.exceptionHandling.exceptions.SessionExpiredException
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -9,7 +9,7 @@ import java.io.File
 
 fun Application.configureAuthentication() {
     install(Authentication) {
-        session<UserSession>(SESSION_COOKIE_NAME) {
+        session<UserSessionDto>(SESSION_COOKIE_NAME) {
             validate { session ->
                 val isSessionExpired = System.currentTimeMillis() >= session.expirationTimestamp
 

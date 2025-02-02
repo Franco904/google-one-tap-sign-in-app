@@ -1,59 +1,61 @@
 package com.example.user
 
 import com.example.core.domain.repositories.UserRepository
-import com.example.core.presentation.auth.models.UserSession
-import com.example.core.presentation.exceptionHandling.exceptions.BlankTokenException
-import com.example.core.presentation.exceptionHandling.exceptions.InvalidSessionException
+import com.example.core.domain.validators.interfaces.UserSessionValidator
+import com.example.core.domain.validators.interfaces.UserValidator
+import com.example.core.presentation.auth.models.UserSessionDto
 import com.example.user.requestDtos.UpdateUserRequestDto
 import com.example.user.responseDtos.GetUserResponseDto
 
 class UserService(
+    private val userSessionValidator: UserSessionValidator,
+    private val userValidator: UserValidator,
     private val userRepository: UserRepository,
 ) {
-    suspend fun createUserSession(idToken: String): UserSession {
-        if (idToken.isBlank()) throw BlankTokenException()
+    suspend fun createUserSession(idToken: String): UserSessionDto {
+        userSessionValidator.validateIdToken(idToken)
 
         val user = userRepository.verifyIdToken(idToken)
 
-        return UserSession(
-            id = user.id,
-            name = user.name,
+        return UserSessionDto(
+            id = user.id!!,
+            name = user.name!!,
         )
     }
 
-    suspend fun getUser(session: UserSession?): GetUserResponseDto {
-        if (session == null || session.id.isBlank()) {
-            throw InvalidSessionException()
-        }
+    suspend fun getUser(userSessionDto: UserSessionDto?): GetUserResponseDto {
+        val userSession = userSessionDto?.toUserSession()
+        userSessionValidator.validateUserSession(userSession = userSession)
 
-        val user = userRepository.getUser(userId = session.id)
+        val user = userRepository.getUser(userId = userSession?.id!!)
 
         return GetUserResponseDto(
-            email = user.email,
-            name = user.name,
-            profilePictureUrl = user.profilePictureUrl,
+            email = user.email!!,
+            name = user.name!!,
+            profilePictureUrl = user.profilePictureUrl!!,
         )
     }
 
     suspend fun updateUser(
-        session: UserSession?,
-        user: UpdateUserRequestDto,
+        userSessionDto: UserSessionDto?,
+        userDto: UpdateUserRequestDto,
     ) {
-        if (session == null || session.id.isBlank()) {
-            throw InvalidSessionException()
-        }
+        val userSession = userSessionDto?.toUserSession()
+        userSessionValidator.validateUserSession(userSession = userSession)
+
+        val user = userDto.toUser()
+        userValidator.validate(user = user)
 
         userRepository.updateUserName(
-            userId = session.id,
-            newName = user.name,
+            userId = userSession?.id!!,
+            newName = user.name!!,
         )
     }
 
-    suspend fun deleteUser(session: UserSession?) {
-        if (session == null || session.id.isBlank()) {
-            throw InvalidSessionException()
-        }
+    suspend fun deleteUser(userSessionDto: UserSessionDto?) {
+        val userSession = userSessionDto?.toUserSession()
+        userSessionValidator.validateUserSession(userSession = userSession)
 
-        userRepository.deleteUser(userId = session.id)
+        userRepository.deleteUser(userId = userSession?.id!!)
     }
 }

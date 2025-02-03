@@ -10,7 +10,18 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
-class CryptoUtils {
+object CryptoUtils {
+    private const val KEY_STORE_TYPE = "AndroidKeyStore"
+    private const val KEY_ALIAS = "secret"
+
+    private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
+    private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
+    private const val PADDING_SCHEME = KeyProperties.ENCRYPTION_PADDING_NONE
+    private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING_SCHEME"
+
+    private const val KEY_LENGTH_BITS = 256
+    private const val AUTH_TAG_LENGTH_BITS = 128
+
     private val cipher = Cipher.getInstance(TRANSFORMATION)
 
     private val keyStore = KeyStore
@@ -97,17 +108,4 @@ class CryptoUtils {
     }
 
     class CryptoUtilsException(message: String?) : Exception(message)
-
-    companion object {
-        private const val KEY_STORE_TYPE = "AndroidKeyStore"
-        private const val KEY_ALIAS = "secret"
-
-        private const val ALGORITHM = KeyProperties.KEY_ALGORITHM_AES
-        private const val BLOCK_MODE = KeyProperties.BLOCK_MODE_GCM
-        private const val PADDING_SCHEME = KeyProperties.ENCRYPTION_PADDING_NONE
-        private const val TRANSFORMATION = "$ALGORITHM/$BLOCK_MODE/$PADDING_SCHEME"
-
-        private const val KEY_LENGTH_BITS = 256
-        private const val AUTH_TAG_LENGTH_BITS = 128
-    }
 }

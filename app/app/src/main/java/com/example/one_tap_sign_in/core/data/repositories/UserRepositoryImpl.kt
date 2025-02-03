@@ -1,28 +1,35 @@
 package com.example.one_tap_sign_in.core.data.repositories
 
 import android.util.Log
-import com.example.one_tap_sign_in.core.data.dataSources.http.apis.interfaces.UserApi
-import com.example.one_tap_sign_in.core.data.dataSources.http.requestDtos.SignInRequestDto
-import com.example.one_tap_sign_in.core.data.dataSources.http.requestDtos.UpdateUserRequestDto
-import com.example.one_tap_sign_in.core.data.dataSources.preferences.interfaces.UserPreferencesStorage
-import com.example.one_tap_sign_in.core.data.exceptions.HttpException
+import com.example.one_tap_sign_in.core.data.dataSources.preferences.EncryptedPreferences
+import com.example.one_tap_sign_in.core.data.dataSources.preferences.interfaces.EncryptedPreferencesStorage
+import com.example.one_tap_sign_in.core.data.dataSources.remoteBackend.apis.interfaces.UserApi
+import com.example.one_tap_sign_in.core.data.dataSources.remoteBackend.requestDtos.SignInRequestDto
+import com.example.one_tap_sign_in.core.data.dataSources.remoteBackend.requestDtos.UpdateUserRequestDto
 import com.example.one_tap_sign_in.core.data.exceptions.PreferencesException
-import com.example.one_tap_sign_in.core.data.models.User
+import com.example.one_tap_sign_in.core.data.exceptions.RemoteBackendException
+import com.example.one_tap_sign_in.core.domain.models.User
 import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
 import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
 import com.example.one_tap_sign_in.core.domain.utils.Result
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 class UserRepositoryImpl(
     private val userApi: UserApi,
-    private val userPreferencesStorage: UserPreferencesStorage,
+    private val encryptedPreferencesStorage: EncryptedPreferencesStorage,
     // private val logger: Logger,
 ) : UserRepository {
     override suspend fun isUserSignedIn(): Result<Boolean, DataSourceError> {
         return try {
-            val isSignedIn = userPreferencesStorage.readPreferences().first().sessionCookie != null
+            val isSignedIn =
+                encryptedPreferencesStorage.readPreferences().first().sessionCookie != null
             Result.Success(data = isSignedIn)
         } catch (e: Exception) {
             Log.e(TAG, "${e.message}")
@@ -38,7 +45,7 @@ class UserRepositoryImpl(
     override suspend fun didUserExplicitlySignOut(): Result<Boolean, DataSourceError> {
         return try {
             val didUserExplicitlySignOut =
-                userPreferencesStorage.readPreferences().first().didExplicitlySignOut != false
+                encryptedPreferencesStorage.readPreferences().first().didExplicitlySignOut != false
             Result.Success(data = didUserExplicitlySignOut)
         } catch (e: Exception) {
             Log.e(TAG, "${e.message}")
@@ -60,7 +67,7 @@ class UserRepositoryImpl(
             val requestDto = SignInRequestDto(idToken = idToken)
             userApi.signInUser(signInRequestDto = requestDto)
 
-            userPreferencesStorage.savePreferences { prefs ->
+            encryptedPreferencesStorage.savePreferences { prefs ->
                 prefs.copy(
                     displayName = displayName,
                     profilePictureUrl = profilePictureUrl,
@@ -74,7 +81,7 @@ class UserRepositoryImpl(
 
             val error = when (e) {
                 is PreferencesException -> e.toPreferencesError()
-                is HttpException -> e.toBackendError()
+                is RemoteBackendException -> e.toRemoteBackendError()
                 else -> throw e
             }
             Result.Error(error = error)
@@ -83,77 +90,71 @@ class UserRepositoryImpl(
 
     override fun watchUser(): Flow<Result<User, DataSourceError>> = flow {
         try {
-            val preferences = userPreferencesStorage.readPreferences().first()
+            // Read cached user data from preferences storage
+            val preferences = encryptedPreferencesStorage.readPreferences().first()
+            val userFromPreferences = preferences.toUser()
 
-            val userFromPreferences = User(
-                name = preferences.displayName,
-                profilePictureUrl = preferences.profilePictureUrl,
-            )
             emit(Result.Success(data = userFromPreferences))
+
+            // Fetch user data from remote backend API
             val responseDto = userApi.getUser()
+            val userFromRemoteBackend = responseDto.toUser()
 
-            userPreferencesStorage.savePreferences { prefs ->
+            // Cache the fetched data in preferences storage
+            encryptedPreferencesStorage.savePreferences { prefs ->
                 prefs.copy(
-                    displayName = responseDto.name,
-                    profilePictureUrl = responseDto.profilePictureUrl,
+                    displayName = userFromRemoteBackend.name,
+                    profilePictureUrl = userFromRemoteBackend.profilePictureUrl,
                 )
             }
 
-            val userFromBackend = User(
-                email = responseDto.email,
-                name = responseDto.name,
-                profilePictureUrl = responseDto.profilePictureUrl,
+            emit(Result.Success(data = userFromRemoteBackend))
+
+            // Watch the cached user data for updates
+            emitAll(
+                encryptedPreferencesStorage.readPreferences()
+                    .map { prefs: EncryptedPreferences ->
+                        Result.Success<User, DataSourceError>(data = prefs.toUser())
+                    }
+                    .distinctUntilChanged()
             )
-            emit(Result.Success(data = userFromBackend))
-
-            userPreferencesStorage.readPreferences().collect { prefs ->
-                val user = User(
-                    name = prefs.displayName,
-                    profilePictureUrl = prefs.profilePictureUrl,
-                )
-                emit(Result.Success(data = user))
-            }
         } catch (e: Exception) {
             Log.e(TAG, "${e.message}")
 
-            val error = when (e) {
-                is PreferencesException -> e.toPreferencesError()
-                is HttpException -> e.toBackendError()
-                else -> throw e
+            if (e is PreferencesException) {
+                emit(Result.Error(error = e.toPreferencesError()))
             }
-            emit(Result.Error(error = error))
         }
     }
 
     override suspend fun updateUser(newName: String): Result<Unit, DataSourceError> {
         return try {
-            val updateUserRequestDto = UpdateUserRequestDto(name = newName)
-            userApi.updateUser(
-                updateUserRequestDto = updateUserRequestDto
-            )
-
-            userPreferencesStorage.savePreferences { prefs ->
+            encryptedPreferencesStorage.savePreferences { prefs ->
                 prefs.copy(displayName = newName)
+            }
+
+            coroutineScope {
+                launch {
+                    val updateUserRequestDto = UpdateUserRequestDto(name = newName)
+                    userApi.updateUser(updateUserRequestDto = updateUserRequestDto)
+                }
             }
 
             Result.Success(data = Unit)
         } catch (e: Exception) {
             Log.e(TAG, "${e.message}")
 
-            val error = when (e) {
-                is PreferencesException -> e.toPreferencesError()
-                is HttpException -> e.toBackendError()
-                else -> throw e
+            if (e is PreferencesException) {
+                Result.Error(error = e.toPreferencesError())
+            } else {
+                Result.Success(data = Unit)
             }
-            Result.Error(error = error)
         }
     }
 
     override suspend fun deleteUser(): Result<Unit, DataSourceError> {
         return try {
-            userApi.deleteUser()
-
-            userPreferencesStorage.savePreferences { prefs ->
+            encryptedPreferencesStorage.savePreferences { prefs ->
                 prefs.copy(
                     sessionCookie = null,
                     displayName = null,
@@ -162,16 +163,21 @@ class UserRepositoryImpl(
                 )
             }
 
+            coroutineScope {
+                launch {
+                    userApi.deleteUser()
+                }
+            }
+
             Result.Success(data = Unit)
         } catch (e: Exception) {
             Log.e(TAG, "${e.message}")
 
-            val error = when (e) {
-                is PreferencesException -> e.toPreferencesError()
-                is HttpException -> e.toBackendError()
-                else -> throw e
+            if (e is PreferencesException) {
+                Result.Error(error = e.toPreferencesError())
+            } else {
+                Result.Success(data = Unit)
             }
-            Result.Error(error = error)
         }
     }
 
@@ -179,7 +185,7 @@ class UserRepositoryImpl(
         return try {
             userApi.signOutUser()
 
-            userPreferencesStorage.savePreferences { prefs ->
+            encryptedPreferencesStorage.savePreferences { prefs ->
                 prefs.copy(
                     sessionCookie = null,
                     displayName = null,
@@ -194,7 +200,7 @@ class UserRepositoryImpl(
 
             val error = when (e) {
                 is PreferencesException -> e.toPreferencesError()
-                is HttpException -> e.toBackendError()
+                is RemoteBackendException -> e.toRemoteBackendError()
                 else -> throw e
             }
             Result.Error(error = error)

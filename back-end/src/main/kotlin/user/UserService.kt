@@ -3,7 +3,7 @@ package com.example.user
 import com.example.core.domain.repositories.UserRepository
 import com.example.core.domain.validators.interfaces.UserSessionValidator
 import com.example.core.domain.validators.interfaces.UserValidator
-import com.example.core.presentation.auth.models.UserSessionDto
+import com.example.core.application.auth.models.UserSessionDto
 import com.example.user.requestDtos.UpdateUserRequestDto
 import com.example.user.responseDtos.GetUserResponseDto
 

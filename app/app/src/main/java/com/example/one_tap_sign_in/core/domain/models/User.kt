@@ -1,4 +1,4 @@
-package com.example.one_tap_sign_in.core.data.models
+package com.example.one_tap_sign_in.core.domain.models
 
 data class User(
     val email: String? = null,

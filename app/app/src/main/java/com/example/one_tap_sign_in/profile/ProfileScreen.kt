@@ -97,6 +97,8 @@ fun ProfileScreen(
 
                 is RedirectToSignIn -> {
                     onSignOutSuccess()
+
+                    isSigningOut = false
                 }
             }
         }

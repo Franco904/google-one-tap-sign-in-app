@@ -7,7 +7,7 @@ sealed interface DataSourceError : Error {
         UnknownError,
     }
 
-    enum class HttpError : DataSourceError {
+    enum class RemoteBackendError : DataSourceError {
         BadRequest,
         Unauthorized,
         Forbidden,

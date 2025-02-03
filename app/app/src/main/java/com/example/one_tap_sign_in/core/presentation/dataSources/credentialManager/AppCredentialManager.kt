@@ -26,7 +26,7 @@ object AppCredentialManager {
                 .setFilterByAuthorizedAccounts(true)
                 .setServerClientId(CLIENT_ID)
                 .setAutoSelectEnabled(mustEnableAutoSelect)
-                .setNonce(CryptoUtils().generateNonce())
+                .setNonce(CryptoUtils.generateNonce())
                 .build()
         } else {
             GetGoogleIdOption.Builder()

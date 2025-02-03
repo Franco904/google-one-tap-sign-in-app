@@ -2,7 +2,7 @@ package com.example.one_tap_sign_in.core.data.dataSources.preferences
 
 import android.util.Log
 import com.example.one_tap_sign_in.core.data.constants.SESSION_COOKIE_NAME
-import com.example.one_tap_sign_in.core.data.dataSources.preferences.interfaces.UserPreferencesStorage
+import com.example.one_tap_sign_in.core.data.dataSources.preferences.interfaces.EncryptedPreferencesStorage
 import com.example.one_tap_sign_in.core.data.exceptions.toPreferencesException
 import io.ktor.client.plugins.cookies.CookiesStorage
 import io.ktor.http.Cookie
@@ -10,12 +10,12 @@ import io.ktor.http.Url
 import kotlinx.coroutines.flow.first
 
 class AppCookieStorage(
-    private val userPreferencesStorage: UserPreferencesStorage,
+    private val encryptedPreferencesStorage: EncryptedPreferencesStorage,
 ) : CookiesStorage {
     override suspend fun addCookie(requestUrl: Url, cookie: Cookie) {
         try {
             if (cookie.name == SESSION_COOKIE_NAME) {
-                userPreferencesStorage.savePreferences { prefs ->
+                encryptedPreferencesStorage.savePreferences { prefs ->
                     prefs.copy(sessionCookie = cookie)
                 }
             }
@@ -27,7 +27,7 @@ class AppCookieStorage(
 
     override suspend fun get(requestUrl: Url): List<Cookie> {
         try {
-            val sessionCookie = userPreferencesStorage.readPreferences().first().sessionCookie
+            val sessionCookie = encryptedPreferencesStorage.readPreferences().first().sessionCookie
 
             return if (sessionCookie == null) emptyList() else listOf(sessionCookie)
         } catch (e: Exception) {

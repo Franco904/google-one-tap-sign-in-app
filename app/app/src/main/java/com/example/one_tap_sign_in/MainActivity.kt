@@ -32,6 +32,10 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
+        configureContent()
+    }
+
+    private fun configureContent() {
         setContent {
             AppTheme {
                 val coroutineScope = rememberCoroutineScope()

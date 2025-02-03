@@ -38,27 +38,34 @@ class ProfileViewModel(
     private val _userFormUiState = MutableStateFlow(UserFormUiState())
     val userFormUiState: StateFlow<UserFormUiState> = _userFormUiState
 
+    private val _isLoadingUser = MutableStateFlow(true)
+    val isLoadingUser = _isLoadingUser.asStateFlow()
+
+    private val redirectErrors = listOf(
+        DataSourceError.RemoteBackendError.Unauthorized,
+        DataSourceError.RemoteBackendError.NotFound,
+    )
+
     fun loadUser() {
         if (isInitialized) return
 
         viewModelScope.launch {
+            _isLoadingUser.update { true }
+
             userRepository.watchUser().collect { result ->
                 result
                     .onSuccessAsync { user ->
+                        _isLoadingUser.update { false }
+
                         if (user.isNull()) return@onSuccessAsync
 
                         _userCredentialsUiState.update {
-                            UserCredentialsUiState(
-                                displayName = user.name,
-                                profilePictureUrl = user.profilePictureUrl,
-                            )
+                            UserCredentialsUiState.fromUser(user)
                         }
                     }
                     .onErrorAsync { error ->
-                        val redirectErrors = listOf(
-                            DataSourceError.HttpError.Unauthorized,
-                            DataSourceError.HttpError.NotFound,
-                        )
+                        _isLoadingUser.update { false }
+
                         if (error in redirectErrors) {
                             _uiEvents.send(UiEvents.RedirectToSignIn)
                         }
@@ -93,10 +100,6 @@ class ProfileViewModel(
 
                     userRepository.updateUser(newName = newDisplayName ?: "")
                         .onErrorAsync { error ->
-                            val redirectErrors = listOf(
-                                DataSourceError.HttpError.Unauthorized,
-                                DataSourceError.HttpError.NotFound,
-                            )
                             if (error in redirectErrors) {
                                 _uiEvents.send(UiEvents.RedirectToSignIn)
                             }
@@ -125,10 +128,6 @@ class ProfileViewModel(
                     _uiEvents.send(UiEvents.DeleteUserSuccess)
                 }
                 .onErrorAsync { error ->
-                    val redirectErrors = listOf(
-                        DataSourceError.HttpError.Unauthorized,
-                        DataSourceError.HttpError.NotFound,
-                    )
                     if (error in redirectErrors) {
                         _uiEvents.send(UiEvents.RedirectToSignIn)
                     }
@@ -145,11 +144,6 @@ class ProfileViewModel(
                     _uiEvents.send(UiEvents.SignOutUserSuccess)
                 }
                 .onErrorAsync { error ->
-                    val redirectErrors = listOf(
-                        DataSourceError.HttpError.Unauthorized,
-                        DataSourceError.HttpError.NotFound,
-                    )
-
                     if (error in redirectErrors) {
                         _uiEvents.send(UiEvents.RedirectToSignIn)
                     } else {

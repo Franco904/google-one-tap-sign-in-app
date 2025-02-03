@@ -1,6 +1,6 @@
 package com.example.one_tap_sign_in.core.domain.validators
 
-import com.example.one_tap_sign_in.core.data.models.User
+import com.example.one_tap_sign_in.core.domain.models.User
 import com.example.one_tap_sign_in.core.domain.utils.Result
 import com.example.one_tap_sign_in.core.domain.utils.ResultCompound
 import com.example.one_tap_sign_in.core.domain.utils.ValidationError

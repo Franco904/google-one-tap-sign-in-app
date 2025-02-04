@@ -1,4 +1,4 @@
-package com.example.one_tap_sign_in.core.presentation.theme
+package com.example.one_tap_sign_in.core.application.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

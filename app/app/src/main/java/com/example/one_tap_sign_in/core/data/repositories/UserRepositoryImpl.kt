@@ -89,14 +89,19 @@ class UserRepositoryImpl(
     }
 
     override fun watchUser(): Flow<Result<User, DataSourceError>> = flow {
+        // Read cached user data from preferences storage
         try {
-            // Read cached user data from preferences storage
             val preferences = encryptedPreferencesStorage.readPreferences().first()
             val userFromPreferences = preferences.toUser()
 
             emit(Result.Success(data = userFromPreferences))
+        } catch (e: PreferencesException) {
+            Log.e(TAG, "${e.message}")
+            emit(Result.Error(error = e.toPreferencesError()))
+        }
 
-            // Fetch user data from remote backend API
+        // Fetch user data from remote backend API
+        try {
             val responseDto = userApi.getUser()
             val userFromRemoteBackend = responseDto.toUser()
 
@@ -109,15 +114,6 @@ class UserRepositoryImpl(
             }
 
             emit(Result.Success(data = userFromRemoteBackend))
-
-            // Watch the cached user data for updates
-            emitAll(
-                encryptedPreferencesStorage.readPreferences()
-                    .map { prefs: EncryptedPreferences ->
-                        Result.Success<User, DataSourceError>(data = prefs.toUser())
-                    }
-                    .distinctUntilChanged()
-            )
         } catch (e: Exception) {
             Log.e(TAG, "${e.message}")
 
@@ -125,35 +121,44 @@ class UserRepositoryImpl(
                 emit(Result.Error(error = e.toPreferencesError()))
             }
         }
-    }
 
-    override suspend fun updateUser(newName: String): Result<Unit, DataSourceError> {
-        return try {
-            encryptedPreferencesStorage.savePreferences { prefs ->
-                prefs.copy(displayName = newName)
-            }
-
-            coroutineScope {
-                launch {
-                    val updateUserRequestDto = UpdateUserRequestDto(name = newName)
-                    userApi.updateUser(updateUserRequestDto = updateUserRequestDto)
-                }
-            }
-
-            Result.Success(data = Unit)
-        } catch (e: Exception) {
+        // Watch the cached user data for updates
+        try {
+            emitAll(
+                encryptedPreferencesStorage.readPreferences()
+                    .map { prefs: EncryptedPreferences ->
+                        Result.Success<User, DataSourceError>(data = prefs.toUser())
+                    }
+                    .distinctUntilChanged()
+            )
+        } catch (e: PreferencesException) {
             Log.e(TAG, "${e.message}")
-
-            if (e is PreferencesException) {
-                Result.Error(error = e.toPreferencesError())
-            } else {
-                Result.Success(data = Unit)
-            }
+            emit(Result.Error(error = e.toPreferencesError()))
         }
     }
 
+    override suspend fun updateUser(newName: String): Result<Unit, DataSourceError> {
+        try {
+            encryptedPreferencesStorage.savePreferences { prefs ->
+                prefs.copy(displayName = newName)
+            }
+        } catch (e: PreferencesException) {
+            Log.e(TAG, "${e.message}")
+            return Result.Error(error = e.toPreferencesError())
+        }
+
+        try {
+            val updateUserRequestDto = UpdateUserRequestDto(name = newName)
+            userApi.updateUser(updateUserRequestDto = updateUserRequestDto)
+        } catch (e: RemoteBackendException) {
+            Log.e(TAG, "${e.message}")
+        }
+
+        return Result.Success(data = Unit)
+    }
+
     override suspend fun deleteUser(): Result<Unit, DataSourceError> {
-        return try {
+        try {
             encryptedPreferencesStorage.savePreferences { prefs ->
                 prefs.copy(
                     sessionCookie = null,
@@ -162,23 +167,18 @@ class UserRepositoryImpl(
                     didExplicitlySignOut = true,
                 )
             }
-
-            coroutineScope {
-                launch {
-                    userApi.deleteUser()
-                }
-            }
-
-            Result.Success(data = Unit)
-        } catch (e: Exception) {
+        } catch (e: PreferencesException) {
             Log.e(TAG, "${e.message}")
-
-            if (e is PreferencesException) {
-                Result.Error(error = e.toPreferencesError())
-            } else {
-                Result.Success(data = Unit)
-            }
+            return Result.Error(error = e.toPreferencesError())
         }
+
+        try {
+            userApi.deleteUser()
+        } catch (e: RemoteBackendException) {
+            Log.e(TAG, "${e.message}")
+        }
+
+        return Result.Success(data = Unit)
     }
 
     override suspend fun signOutUser(): Result<Unit, DataSourceError> {

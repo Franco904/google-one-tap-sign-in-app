@@ -23,10 +23,10 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.one_tap_sign_in.R
+import com.example.one_tap_sign_in.core.application.theme.AppTheme
 import com.example.one_tap_sign_in.core.presentation.composables.AppCircularProgressIndicator
 import com.example.one_tap_sign_in.core.presentation.dataSources.credentialManager.AppCredentialManager
 import com.example.one_tap_sign_in.core.presentation.exceptions.CredentialManagerException
-import com.example.one_tap_sign_in.core.application.theme.AppTheme
 import com.example.one_tap_sign_in.core.presentation.utils.getActivity
 import com.example.one_tap_sign_in.core.presentation.utils.uiConverters.toUiMessage
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.DataSourceError

@@ -1,4 +1,4 @@
-package com.example.one_tap_sign_in.core.data.dataSources.preferences
+package com.example.one_tap_sign_in.core.data.dataSources.preferences.encrypted
 
 import com.example.one_tap_sign_in.core.domain.models.User
 import io.ktor.http.Cookie
@@ -9,13 +9,14 @@ data class EncryptedPreferences(
     val sessionCookie: Cookie? = null,
     val displayName: String? = null,
     val profilePictureUrl: String? = null,
-    val didExplicitlySignOut: Boolean? = null,
+    val isUserEditSynced: Boolean? = null,
 ) {
     fun toUser(): User {
         return User(
             email = null,
             name = displayName,
             profilePictureUrl = profilePictureUrl,
+            isUserModifySynced = isUserEditSynced,
         )
     }
 }

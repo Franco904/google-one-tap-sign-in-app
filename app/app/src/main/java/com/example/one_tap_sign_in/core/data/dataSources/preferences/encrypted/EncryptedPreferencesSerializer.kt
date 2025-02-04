@@ -1,4 +1,4 @@
-package com.example.one_tap_sign_in.core.data.dataSources.preferences
+package com.example.one_tap_sign_in.core.data.dataSources.preferences.encrypted
 
 import android.util.Log
 import androidx.datastore.core.Serializer

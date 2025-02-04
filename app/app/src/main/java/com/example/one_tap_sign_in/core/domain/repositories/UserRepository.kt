@@ -20,6 +20,8 @@ interface UserRepository {
 
     suspend fun updateUser(newName: String): Result<Unit, DataSourceError>
 
+    suspend fun retryUpdateUser()
+
     suspend fun deleteUser(): Result<Unit, DataSourceError>
 
     suspend fun signOutUser(): Result<Unit, DataSourceError>

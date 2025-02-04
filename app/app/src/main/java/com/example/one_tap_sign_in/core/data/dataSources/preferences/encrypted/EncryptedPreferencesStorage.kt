@@ -1,15 +1,15 @@
-package com.example.one_tap_sign_in.core.data.dataSources.preferences
+package com.example.one_tap_sign_in.core.data.dataSources.preferences.encrypted
 
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
-import com.example.one_tap_sign_in.core.data.dataSources.preferences.interfaces.EncryptedPreferencesStorage
+import com.example.one_tap_sign_in.core.data.dataSources.preferences.interfaces.PreferencesStorage
 import com.example.one_tap_sign_in.core.data.exceptions.toPreferencesException
 import kotlinx.coroutines.flow.Flow
 
-class EncryptedPreferencesStorageImpl(
+class EncryptedPreferencesStorage(
     private val dataStore: DataStore<EncryptedPreferences>
-) : EncryptedPreferencesStorage {
+) : PreferencesStorage<EncryptedPreferences> {
     override suspend fun savePreferences(onPreferencesFile: (EncryptedPreferences) -> EncryptedPreferences) {
         try {
             dataStore.updateData { preferences -> onPreferencesFile(preferences) }

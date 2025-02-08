@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
-import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
 import com.example.one_tap_sign_in.core.domain.utils.ValidationError
 import com.example.one_tap_sign_in.core.domain.utils.onError
 import com.example.one_tap_sign_in.core.domain.utils.onErrors
@@ -40,11 +39,6 @@ class ProfileViewModel(
     private val _isLoadingUser = MutableStateFlow(true)
     val isLoadingUser = _isLoadingUser.asStateFlow()
 
-    private val redirectErrors = listOf(
-        DataSourceError.RemoteBackendError.Unauthorized,
-        DataSourceError.RemoteBackendError.NotFound,
-    )
-
     fun loadUser() {
         if (isInitialized) return
 
@@ -56,11 +50,11 @@ class ProfileViewModel(
                     .onError { error ->
                         _isLoadingUser.update { false }
 
-                        if (error in redirectErrors) {
-                            _uiEvents.trySend(UiEvents.RedirectToSignIn)
+                        if (error in userRepository.redirectErrors) {
+                            _uiEvents.send(UiEvents.RedirectToSignIn)
                         }
 
-                        _uiEvents.trySend(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                        _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                     }
                     .onSuccess { user ->
                         _isLoadingUser.update { false }
@@ -105,7 +99,7 @@ class ProfileViewModel(
     private suspend fun updateUser(newDisplayName: String?) {
         userRepository.updateUser(newName = newDisplayName ?: "")
             .onError { error ->
-                if (error in redirectErrors) {
+                if (error in userRepository.redirectErrors) {
                     _uiEvents.send(UiEvents.RedirectToSignIn)
                 }
 
@@ -128,7 +122,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             userRepository.deleteUser()
                 .onError { error ->
-                    if (error in redirectErrors) {
+                    if (error in userRepository.redirectErrors) {
                         _uiEvents.send(UiEvents.RedirectToSignIn)
                     }
 
@@ -144,7 +138,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             userRepository.signOutUser()
                 .onError { error ->
-                    if (error in redirectErrors) {
+                    if (error in userRepository.redirectErrors) {
                         _uiEvents.send(UiEvents.RedirectToSignIn)
                     } else {
                         _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))

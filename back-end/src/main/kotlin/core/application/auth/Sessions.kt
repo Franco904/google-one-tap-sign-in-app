@@ -1,7 +1,7 @@
 package com.example.core.application.auth
 
-import com.example.core.data.constants.SESSION_COOKIE_NAME
 import com.example.core.application.auth.models.UserSessionDto
+import com.example.core.data.constants.SESSION_COOKIE_NAME
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import java.io.File

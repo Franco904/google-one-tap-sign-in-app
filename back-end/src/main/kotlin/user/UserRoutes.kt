@@ -1,7 +1,7 @@
 package com.example.user
 
-import com.example.core.data.constants.SESSION_COOKIE_NAME
 import com.example.core.application.auth.models.UserSessionDto
+import com.example.core.data.constants.SESSION_COOKIE_NAME
 import com.example.user.requestDtos.SignInUserRequestDto
 import com.example.user.requestDtos.UpdateUserRequestDto
 import com.example.user.responseDtos.UpdateUserResponseDto

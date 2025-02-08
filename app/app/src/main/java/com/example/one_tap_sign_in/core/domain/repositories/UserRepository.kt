@@ -6,6 +6,8 @@ import com.example.one_tap_sign_in.core.domain.utils.Result
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
+    val redirectErrors: List<DataSourceError>
+
     suspend fun isUserSignedIn(): Result<Boolean, DataSourceError>
 
     suspend fun didUserExplicitlySignOut(): Result<Boolean, DataSourceError>

@@ -15,17 +15,17 @@ class RetryDataSyncRepositoryImpl(
     private val userRepository: UserRepository,
 ) : RetryDataSyncRepository {
     override suspend fun retryDataSync(): Result<Unit, DataSourceError> {
-        return try {
+        try {
             val encryptedPreferences = encryptedPreferencesStorage.readPreferences().first()
 
             val isUserSignedIn = encryptedPreferences.sessionCookie != null
-            if (isUserSignedIn) {
-                val isUserEditSynced = encryptedPreferences.isUserEditSynced == false
+            if (!isUserSignedIn) return Result.Success(data = Unit)
 
-                if (isUserEditSynced) userRepository.retryUpdateUser()
-            }
+            val isUserEditSynced = !encryptedPreferences.isUserEditSynced
 
-            Result.Success(data = Unit)
+            if (isUserEditSynced) userRepository.retryUpdateUser()
+
+            return Result.Success(data = Unit)
         } catch (e: Exception) {
             Log.e(TAG, "retryDataSyncWhenOnline - ${e.message}")
 
@@ -34,7 +34,7 @@ class RetryDataSyncRepositoryImpl(
                 else -> throw e
             }
 
-            Result.Error(error = error)
+            return Result.Error(error = error)
         }
     }
 

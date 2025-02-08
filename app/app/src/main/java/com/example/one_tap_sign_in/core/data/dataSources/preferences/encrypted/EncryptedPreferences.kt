@@ -9,7 +9,7 @@ data class EncryptedPreferences(
     val sessionCookie: Cookie? = null,
     val displayName: String? = null,
     val profilePictureUrl: String? = null,
-    val isUserEditSynced: Boolean? = null,
+    val isUserEditSynced: Boolean = true,
 ) {
     fun toUser(): User {
         return User(

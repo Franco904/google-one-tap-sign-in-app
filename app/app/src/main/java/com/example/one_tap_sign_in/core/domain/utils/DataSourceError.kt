@@ -10,7 +10,6 @@ sealed interface DataSourceError : Error {
     enum class RemoteBackendError : DataSourceError {
         BadRequest,
         Unauthorized,
-        Forbidden,
         NotFound,
         ServerError,
         UnknownHttpRemoteError,

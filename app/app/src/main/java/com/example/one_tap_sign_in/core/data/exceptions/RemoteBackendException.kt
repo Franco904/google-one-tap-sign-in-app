@@ -12,7 +12,6 @@ sealed class RemoteBackendException(message: String) : Exception(message) {
     // HTTP errors
     class BadRequest : RemoteBackendException("Invalid request body or headers.")
     class Unauthorized : RemoteBackendException("Invalid credentials or session expired.")
-    class Forbidden : RemoteBackendException("Access denied.")
     class NotFound : RemoteBackendException("Requested resource not found.")
     class ServerError(statusCode: String) :
         RemoteBackendException("Server error: $statusCode code. Please try again later.")
@@ -33,7 +32,6 @@ sealed class RemoteBackendException(message: String) : Exception(message) {
     fun toRemoteBackendError() = when (this) {
         is BadRequest -> DataSourceError.RemoteBackendError.BadRequest
         is Unauthorized -> DataSourceError.RemoteBackendError.Unauthorized
-        is Forbidden -> DataSourceError.RemoteBackendError.Forbidden
         is NotFound -> DataSourceError.RemoteBackendError.NotFound
         is ServerError -> DataSourceError.RemoteBackendError.ServerError
         is UnknownRemoteBackendRemoteError -> DataSourceError.RemoteBackendError.UnknownHttpRemoteError
@@ -48,7 +46,6 @@ fun HttpStatusCode.toRemoteBackendException(): RemoteBackendException {
     return when (this) {
         HttpStatusCode.BadRequest -> RemoteBackendException.BadRequest()
         HttpStatusCode.Unauthorized -> RemoteBackendException.Unauthorized()
-        HttpStatusCode.Forbidden -> RemoteBackendException.Forbidden()
         HttpStatusCode.NotFound -> RemoteBackendException.NotFound()
         else -> {
             if (value in 500..599) {

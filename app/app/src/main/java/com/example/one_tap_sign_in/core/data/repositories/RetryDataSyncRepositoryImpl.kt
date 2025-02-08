@@ -1,34 +1,40 @@
 package com.example.one_tap_sign_in.core.data.repositories
 
 import android.util.Log
-import com.example.one_tap_sign_in.core.data.dataSources.connectivity.interfaces.ConnectivityObserver
 import com.example.one_tap_sign_in.core.data.dataSources.preferences.encrypted.EncryptedPreferences
 import com.example.one_tap_sign_in.core.data.dataSources.preferences.interfaces.PreferencesStorage
+import com.example.one_tap_sign_in.core.data.exceptions.PreferencesException
 import com.example.one_tap_sign_in.core.domain.repositories.RetryDataSyncRepository
 import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filter
+import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
+import com.example.one_tap_sign_in.core.domain.utils.Result
 import kotlinx.coroutines.flow.first
 
 class RetryDataSyncRepositoryImpl(
-    private val connectivityObserver: ConnectivityObserver,
     private val encryptedPreferencesStorage: PreferencesStorage<EncryptedPreferences>,
     private val userRepository: UserRepository,
 ) : RetryDataSyncRepository {
-    override suspend fun retryDataSyncWhenOnline() {
-        try {
-            connectivityObserver.isConnectedToInternet()
-                .distinctUntilChanged()
-                .filter { it }
-                .collect {
-                    val isUserEditSynced =
-                        encryptedPreferencesStorage.readPreferences()
-                            .first().isUserEditSynced == false
+    override suspend fun retryDataSync(): Result<Unit, DataSourceError> {
+        return try {
+            val encryptedPreferences = encryptedPreferencesStorage.readPreferences().first()
 
-                    if (isUserEditSynced) userRepository.retryUpdateUser()
-                }
+            val isUserSignedIn = encryptedPreferences.sessionCookie != null
+            if (isUserSignedIn) {
+                val isUserEditSynced = encryptedPreferences.isUserEditSynced == false
+
+                if (isUserEditSynced) userRepository.retryUpdateUser()
+            }
+
+            Result.Success(data = Unit)
         } catch (e: Exception) {
-            Log.e(TAG, "${e.message}")
+            Log.e(TAG, "retryDataSyncWhenOnline - ${e.message}")
+
+            val error = when (e) {
+                is PreferencesException -> e.toPreferencesError()
+                else -> throw e
+            }
+
+            Result.Error(error = error)
         }
     }
 

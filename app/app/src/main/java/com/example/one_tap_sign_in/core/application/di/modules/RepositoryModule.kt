@@ -19,7 +19,6 @@ val repositoryModule = module {
 
     single<RetryDataSyncRepository> {
         RetryDataSyncRepositoryImpl(
-            connectivityObserver = get(),
             encryptedPreferencesStorage = get(encryptedPreferencesQualifier),
             userRepository = get(),
         )

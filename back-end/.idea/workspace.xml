@@ -5,29 +5,26 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="88210e25-2eed-4520-8a4c-de60a5aaba4a" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/di/qualifiers/DependencyQualifiers.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/foregroundServices/AppDataSyncService.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/connectivity/interfaces/ConnectivityObserver.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/plain/PlainPreferences.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/plain/PlainPreferencesSerializer.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/plain/PlainPreferencesStorage.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/repositories/RetryDataSyncRepositoryImpl.kt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/repositories/RetryDataSyncRepository.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/backgroundWork/BackgroundWork.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/backgroundWork/workers/RetryDataSyncWorker.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/di/modules/WorkerModule.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/AndroidManifest.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/OneTapSignInApplication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/OneTapSignInApplication.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/di/DependencyInjection.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/di/DependencyInjection.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/di/modules/NetworkModule.kt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/di/modules/RepositoryModule.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/di/modules/RepositoryModule.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/di/modules/StorageModule.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/application/foregroundServices/AppDataSyncService.kt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/constants/NetworkConstants.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/constants/NetworkConstants.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/AppCookieStorage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/cookieStorage/AppCookieStorage.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/EncryptedPreferences.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/encrypted/EncryptedPreferences.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/EncryptedPreferencesSerializer.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/encrypted/EncryptedPreferencesSerializer.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/EncryptedPreferencesStorageImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/encrypted/EncryptedPreferencesStorage.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/interfaces/EncryptedPreferencesStorage.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/preferences/interfaces/PreferencesStorage.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/connectivity/ConnectivityObserverImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/connectivity/ConnectivityObserverImpl.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/connectivity/interfaces/ConnectivityObserver.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/dataSources/connectivity/interfaces/ConnectivityObserver.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/repositories/RetryDataSyncRepositoryImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/repositories/RetryDataSyncRepositoryImpl.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/repositories/UserRepositoryImpl.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/data/repositories/UserRepositoryImpl.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/models/User.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/models/User.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/repositories/UserRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/repositories/UserRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/repositories/RetryDataSyncRepository.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/repositories/RetryDataSyncRepository.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/utils/Result.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/core/domain/utils/Result.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/gradle/libs.versions.toml" beforeDir="false" afterPath="$PROJECT_DIR$/../app/gradle/libs.versions.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/application/auth/Authentication.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/application/auth/Authentication.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/core/data/constants/AuthConstants.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/core/data/constants/AuthConstants.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,7 +97,7 @@
     "Gradle.Download Sources.executor": "Run",
     "Gradle.back-end [build].executor": "Run",
     "Gradle.back-end [run].executor": "Run",
-    "Kotlin.ApplicationKt.executor": "Run",
+    "Kotlin.ApplicationKt.executor": "Debug",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -200,9 +197,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/core/application/auth/Authentication.kt</url>
-          <line>28</line>
-          <option name="timeStamp" value="27" />
+          <url>jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.ktor/ktor-server-sessions-jvm/3.0.3/8173e1fd3c882ecb62063647691d6639586f5f2d/ktor-server-sessions-jvm-3.0.3-sources.jar!/jvmMain/io/ktor/server/sessions/DirectoryStorage.kt</url>
+          <line>62</line>
+          <option name="timeStamp" value="33" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

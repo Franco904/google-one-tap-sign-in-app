@@ -7,7 +7,9 @@ sealed interface Result<out D, out E : RootError> {
     data class Error<out D, out E : RootError>(val error: E) : Result<D, E>
 }
 
-fun <D, E : RootError> Result<D, E>.onSuccess(
+fun <D, E : RootError> Result<D, E>.hasError() = this is Result.Error
+
+inline fun <D, E : RootError> Result<D, E>.onSuccess(
     block: (D) -> Unit,
 ) = apply {
     if (this is Result.Success<D, E>) {
@@ -15,24 +17,8 @@ fun <D, E : RootError> Result<D, E>.onSuccess(
     }
 }
 
-suspend fun <D, E : RootError> Result<D, E>.onSuccessAsync(
-    block: suspend (D) -> Unit,
-) = apply {
-    if (this is Result.Success<D, E>) {
-        block(data)
-    }
-}
-
-fun <D, E : RootError> Result<D, E>.onError(
+inline fun <D, E : RootError> Result<D, E>.onError(
     block: (E) -> Unit,
-) = apply {
-    if (this is Result.Error<D, E>) {
-        block(error)
-    }
-}
-
-suspend fun <D, E : RootError> Result<D, E>.onErrorAsync(
-    block: suspend (E) -> Unit,
 ) = apply {
     if (this is Result.Error<D, E>) {
         block(error)

@@ -14,11 +14,14 @@ import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
 import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
 import com.example.one_tap_sign_in.core.domain.utils.Result
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+
+typealias WatchUserFlowCollector = FlowCollector<Result<User, DataSourceError>>
 
 class UserRepositoryImpl(
     private val userApi: UserApi,
@@ -29,6 +32,7 @@ class UserRepositoryImpl(
         return try {
             val isSignedIn =
                 encryptedPreferencesStorage.readPreferences().first().sessionCookie != null
+
             Result.Success(data = isSignedIn)
         } catch (e: Exception) {
             Log.e(TAG, "isUserSignedIn - ${e.message}")
@@ -37,6 +41,7 @@ class UserRepositoryImpl(
                 is PreferencesException -> e.toPreferencesError()
                 else -> throw e
             }
+
             Result.Error(error = error)
         }
     }
@@ -46,6 +51,7 @@ class UserRepositoryImpl(
             val didUserExplicitlySignOut =
                 plainPreferencesStorage.readPreferences()
                     .first().didUserExplicitlySignOut != false
+
             Result.Success(data = didUserExplicitlySignOut)
         } catch (e: Exception) {
             Log.e(TAG, "didUserExplicitlySignOut - ${e.message}")
@@ -54,6 +60,7 @@ class UserRepositoryImpl(
                 is PreferencesException -> e.toPreferencesError()
                 else -> throw e
             }
+
             Result.Error(error = error)
         }
     }
@@ -92,31 +99,42 @@ class UserRepositoryImpl(
     }
 
     override fun watchUser(): Flow<Result<User, DataSourceError>> = flow {
-        // Read cached user data from preferences storage
+        emitCachedUser()
+        fetchAndCacheRemoteUser()
+        watchCachedUserForUpdates()
+    }
+
+    private suspend fun WatchUserFlowCollector.emitCachedUser() {
         try {
             val preferences = encryptedPreferencesStorage.readPreferences().first()
-            val userFromPreferences = preferences.toUser()
+            val cachedUser = preferences.toUser()
 
-            emit(Result.Success(data = userFromPreferences))
+            emit(Result.Success(data = cachedUser))
         } catch (e: PreferencesException) {
-            Log.e(TAG, "watchUser - ${e.message}")
+            Log.e(TAG, "watchUser/emitCachedUser - ${e.message}")
             emit(Result.Error(error = e.toPreferencesError()))
         }
+    }
 
-        // Fetch user data from remote backend API
+    private suspend fun WatchUserFlowCollector.fetchAndCacheRemoteUser() {
         try {
-            val responseDto = userApi.getUser()
-            val userFromRemoteBackend = responseDto.toUser()
+            val isUserEditSynced =
+                encryptedPreferencesStorage.readPreferences().first().isUserEditSynced != false
+            if (!isUserEditSynced) return
 
-            // Cache the fetched data in preferences storage
+            // Fetch user from remote backend API
+            val responseDto = userApi.getUser()
+            val fetchedUser = responseDto.toUser()
+
+            // Cache the fetched user
             encryptedPreferencesStorage.savePreferences { prefs ->
                 prefs.copy(
-                    displayName = userFromRemoteBackend.name,
-                    profilePictureUrl = userFromRemoteBackend.profilePictureUrl,
+                    displayName = fetchedUser.name,
+                    profilePictureUrl = fetchedUser.profilePictureUrl,
                 )
             }
 
-            emit(Result.Success(data = userFromRemoteBackend))
+            emit(Result.Success(data = fetchedUser))
         } catch (e: Exception) {
             Log.e(TAG, "watchUser - ${e.message}")
 
@@ -124,8 +142,9 @@ class UserRepositoryImpl(
                 emit(Result.Error(error = e.toPreferencesError()))
             }
         }
+    }
 
-        // Watch the cached user data for updates
+    private suspend fun WatchUserFlowCollector.watchCachedUserForUpdates() {
         try {
             emitAll(
                 encryptedPreferencesStorage.readPreferences()
@@ -160,13 +179,7 @@ class UserRepositoryImpl(
         } catch (e: Exception) {
             Log.e(TAG, "updateUser - ${e.message}")
 
-            try {
-                encryptedPreferencesStorage.savePreferences { prefs ->
-                    prefs.copy(isUserEditSynced = false)
-                }
-            } catch (e: PreferencesException) {
-                Log.e(TAG, "${e.message}")
-            }
+            onUpdateUserFail()
 
             if (e is RemoteBackendException.NetworkError) {
                 return Result.Success(data = Unit)
@@ -182,6 +195,16 @@ class UserRepositoryImpl(
         }
 
         return Result.Success(data = Unit)
+    }
+
+    private suspend fun onUpdateUserFail() {
+        try {
+            encryptedPreferencesStorage.savePreferences { prefs ->
+                prefs.copy(isUserEditSynced = false)
+            }
+        } catch (e: PreferencesException) {
+            Log.e(TAG, "${e.message}")
+        }
     }
 
     override suspend fun retryUpdateUser() {

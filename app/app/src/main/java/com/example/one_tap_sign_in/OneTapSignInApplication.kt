@@ -1,22 +1,15 @@
 package com.example.one_tap_sign_in
 
 import android.app.Application
+import com.example.one_tap_sign_in.core.application.backgroundWork.configureWorkManager
 import com.example.one_tap_sign_in.core.application.di.configureDependencyInjection
-import com.example.one_tap_sign_in.core.application.foregroundServices.AppDataSyncService
-import org.koin.android.ext.android.get
+import org.koin.core.component.KoinComponent
 
-class OneTapSignInApplication : Application() {
-    private val appDataSyncService by lazy {
-        AppDataSyncService(
-            retryDataSyncRepository = get(),
-        )
-    }
-
+class OneTapSignInApplication : Application(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
 
         configureDependencyInjection()
-
-        appDataSyncService.configureUnsyncedDataSync()
+        configureWorkManager()
     }
 }

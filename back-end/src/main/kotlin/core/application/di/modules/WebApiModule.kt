@@ -1,7 +1,7 @@
 package com.example.core.application.di.modules
 
 import com.example.core.data.dataSources.authServer.GoogleClientApiImpl
-import com.example.core.data.dataSources.authServer.interfaces.AuthClientApi
+import com.example.core.data.dataSources.authServer.interfaces.GoogleClientApi
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.apache.v2.ApacheHttpTransport
 import com.google.api.client.json.gson.GsonFactory
@@ -22,7 +22,7 @@ val webApiModule = module {
             .build()
     }
 
-    single<AuthClientApi> {
+    single<GoogleClientApi> {
         GoogleClientApiImpl(
             googleIdTokenVerifier = get(),
         )

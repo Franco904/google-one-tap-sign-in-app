@@ -1,7 +1,7 @@
 package com.example.user
 
 import com.example.core.application.auth.models.UserSessionDto
-import com.example.core.data.constants.SESSION_EXPIRATION_TIME_MILLIS
+import com.example.core.application.constants.SESSION_EXPIRATION_TIME_MILLIS
 import com.example.core.domain.repositories.UserRepository
 import com.example.core.domain.validators.interfaces.UserSessionValidator
 import com.example.core.domain.validators.interfaces.UserValidator

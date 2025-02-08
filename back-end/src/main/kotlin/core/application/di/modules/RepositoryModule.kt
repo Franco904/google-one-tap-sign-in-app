@@ -8,7 +8,7 @@ val repositoryModule = module {
     single<UserRepository> {
         UserRepositoryImpl(
             userDao = get(),
-            authClientApi = get(),
+            googleClientApi = get(),
         )
     }
 }

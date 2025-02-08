@@ -23,9 +23,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
+import com.example.one_tap_sign_in.core.application.theme.AppTheme
 import com.example.one_tap_sign_in.core.presentation.dataSources.credentialManager.AppCredentialManager
 import com.example.one_tap_sign_in.core.presentation.exceptions.CredentialManagerException
-import com.example.one_tap_sign_in.core.presentation.theme.AppTheme
 import com.example.one_tap_sign_in.core.presentation.utils.getActivity
 import com.example.one_tap_sign_in.core.presentation.utils.uiConverters.toUiMessage
 import com.example.one_tap_sign_in.signin.SignInViewModel.UiEvents.DataSourceError

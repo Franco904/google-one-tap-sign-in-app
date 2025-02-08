@@ -47,6 +47,9 @@ android {
 }
 
 dependencies {
+    // Kotlin
+    implementation(libs.kotlin.collections.immutable)
+
     // Android Core
     implementation(libs.androidx.core.ktx)
 
@@ -78,8 +81,9 @@ dependencies {
     implementation(project.dependencies.platform(libs.koin.bom))
     implementation(libs.koin.android)
     implementation(libs.koin.compose)
+    implementation(libs.koin.workmanager)
 
-    // DataStore (User Preferences)
+    // DataStore (Preferences file)
     implementation(libs.androidx.datastore)
 
     // HTTP Client
@@ -94,11 +98,11 @@ dependencies {
     implementation(libs.credentials.play.services.auth)
     implementation(libs.google.identity)
 
-    // Kotlin
-    implementation(libs.kotlin.collections.immutable)
-
     // Serialization
     implementation(libs.kotlin.serialization.json)
+
+    // Background work
+    implementation(libs.workmanager)
 
     // Other
     debugImplementation(libs.androidx.ui.tooling)

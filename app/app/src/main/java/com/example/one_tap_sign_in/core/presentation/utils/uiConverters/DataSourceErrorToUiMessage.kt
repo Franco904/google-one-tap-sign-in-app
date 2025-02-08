@@ -17,43 +17,43 @@ fun DataSourceError.toUiMessage() = when (this) {
         R.string.snackbar_preferences_unknown_error
     }
 
-    DataSourceError.HttpError.BadRequest -> {
+    DataSourceError.RemoteBackendError.BadRequest -> {
         R.string.snackbar_http_bad_request_error
     }
 
-    DataSourceError.HttpError.Unauthorized -> {
+    DataSourceError.RemoteBackendError.Unauthorized -> {
         R.string.snackbar_http_unauthorized_error
     }
 
-    DataSourceError.HttpError.Forbidden -> {
+    DataSourceError.RemoteBackendError.Forbidden -> {
         R.string.snackbar_http_forbidden_error
     }
 
-    DataSourceError.HttpError.NotFound -> {
+    DataSourceError.RemoteBackendError.NotFound -> {
         R.string.snackbar_http_not_found_error
     }
 
-    DataSourceError.HttpError.ServerError -> {
+    DataSourceError.RemoteBackendError.ServerError -> {
         R.string.snackbar_http_server_error
     }
 
-    DataSourceError.HttpError.UnknownHttpRemoteError -> {
+    DataSourceError.RemoteBackendError.UnknownHttpRemoteError -> {
         R.string.snackbar_http_unknown_http_response_error
     }
 
-    DataSourceError.HttpError.SerializationError -> {
+    DataSourceError.RemoteBackendError.SerializationError -> {
         R.string.snackbar_http_serialization_error
     }
 
-    DataSourceError.HttpError.Timeout -> {
+    DataSourceError.RemoteBackendError.Timeout -> {
         R.string.snackbar_http_timeout_error
     }
 
-    DataSourceError.HttpError.NetworkError -> {
+    DataSourceError.RemoteBackendError.NetworkError -> {
         R.string.snackbar_http_network_internet
     }
 
-    DataSourceError.HttpError.UnknownError -> {
+    DataSourceError.RemoteBackendError.UnknownError -> {
         R.string.snackbar_http_unknown_error
     }
 }

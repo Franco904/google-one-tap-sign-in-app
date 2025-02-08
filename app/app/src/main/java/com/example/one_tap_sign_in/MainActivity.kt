@@ -19,11 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import com.example.one_tap_sign_in.core.application.navigation.Destinations
+import com.example.one_tap_sign_in.core.application.navigation.DestinationsHandler.destinations
+import com.example.one_tap_sign_in.core.application.theme.AppCustomColors
+import com.example.one_tap_sign_in.core.application.theme.AppTheme
 import com.example.one_tap_sign_in.core.presentation.composables.AppSnackbarHost
-import com.example.one_tap_sign_in.core.presentation.navigation.Destinations
-import com.example.one_tap_sign_in.core.presentation.navigation.DestinationsHandler.destinations
-import com.example.one_tap_sign_in.core.presentation.theme.AppCustomColors
-import com.example.one_tap_sign_in.core.presentation.theme.AppTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -32,6 +32,10 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
 
+        configureContent()
+    }
+
+    private fun configureContent() {
         setContent {
             AppTheme {
                 val coroutineScope = rememberCoroutineScope()

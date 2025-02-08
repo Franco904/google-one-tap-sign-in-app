@@ -1,32 +1,15 @@
 package com.example.one_tap_sign_in
 
 import android.app.Application
-import com.example.one_tap_sign_in.core.di.networkModule
-import com.example.one_tap_sign_in.core.di.repositoryModule
-import com.example.one_tap_sign_in.core.di.storageModule
-import com.example.one_tap_sign_in.core.di.utilsModule
-import com.example.one_tap_sign_in.core.di.validatorModule
-import com.example.one_tap_sign_in.core.di.viewModelModule
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
+import com.example.one_tap_sign_in.core.application.backgroundWork.configureWorkManager
+import com.example.one_tap_sign_in.core.application.di.configureDependencyInjection
+import org.koin.core.component.KoinComponent
 
-class OneTapSignInApplication : Application() {
+class OneTapSignInApplication : Application(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
 
-        startKoin {
-            androidLogger()
-            androidContext(this@OneTapSignInApplication)
-
-            modules(
-                viewModelModule,
-                validatorModule,
-                repositoryModule,
-                storageModule,
-                networkModule,
-                utilsModule,
-            )
-        }
+        configureDependencyInjection()
+        configureWorkManager()
     }
 }

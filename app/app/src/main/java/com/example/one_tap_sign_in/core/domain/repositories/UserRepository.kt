@@ -1,11 +1,13 @@
 package com.example.one_tap_sign_in.core.domain.repositories
 
-import com.example.one_tap_sign_in.core.data.models.User
+import com.example.one_tap_sign_in.core.domain.models.User
 import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
 import com.example.one_tap_sign_in.core.domain.utils.Result
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepository {
+    val redirectErrors: List<DataSourceError>
+
     suspend fun isUserSignedIn(): Result<Boolean, DataSourceError>
 
     suspend fun didUserExplicitlySignOut(): Result<Boolean, DataSourceError>
@@ -19,6 +21,8 @@ interface UserRepository {
     fun watchUser(): Flow<Result<User, DataSourceError>>
 
     suspend fun updateUser(newName: String): Result<Unit, DataSourceError>
+
+    suspend fun retryUpdateUser()
 
     suspend fun deleteUser(): Result<Unit, DataSourceError>
 

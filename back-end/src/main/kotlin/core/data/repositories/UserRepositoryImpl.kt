@@ -1,6 +1,6 @@
 package com.example.core.data.repositories
 
-import com.example.core.data.dataSources.authServer.interfaces.AuthClientApi
+import com.example.core.data.dataSources.authServer.interfaces.GoogleClientApi
 import com.example.core.data.dataSources.database.daos.interfaces.UserDao
 import com.example.core.data.dataSources.database.entities.UserEntity
 import com.example.core.domain.models.User
@@ -8,10 +8,10 @@ import com.example.core.domain.repositories.UserRepository
 
 class UserRepositoryImpl(
     private val userDao: UserDao,
-    private val authClientApi: AuthClientApi,
+    private val googleClientApi: GoogleClientApi,
 ) : UserRepository {
     override suspend fun verifyIdToken(idToken: String): User {
-        val credentialsResponseDto = authClientApi.verifyIdToken(idToken)
+        val credentialsResponseDto = googleClientApi.verifyIdToken(idToken)
         val userFromCredentials = credentialsResponseDto.toUser()
 
         val userEntity = userDao.createOrIgnore(

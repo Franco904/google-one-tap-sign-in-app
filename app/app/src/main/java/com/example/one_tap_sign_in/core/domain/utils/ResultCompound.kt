@@ -5,7 +5,7 @@ sealed interface ResultCompound<out D, out E : RootError> {
     data class ErrorList<out D, out E : RootError>(val errors: List<E>) : ResultCompound<D, E>
 }
 
-fun <D, E : RootError> ResultCompound<D, E>.onSuccess(
+inline fun <D, E : RootError> ResultCompound<D, E>.onSuccess(
     block: (D) -> Unit,
 ) = apply {
     if (this is ResultCompound.Success<D, E>) {
@@ -13,7 +13,7 @@ fun <D, E : RootError> ResultCompound<D, E>.onSuccess(
     }
 }
 
-fun <D, E : RootError> ResultCompound<D, E>.onErrors(
+inline fun <D, E : RootError> ResultCompound<D, E>.onErrors(
     block: (List<E>) -> Unit,
 ) = apply {
     if (this is ResultCompound.ErrorList<D, E>) {

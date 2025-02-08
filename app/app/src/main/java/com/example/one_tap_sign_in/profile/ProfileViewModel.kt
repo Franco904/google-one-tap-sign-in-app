@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.one_tap_sign_in.R
 import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
-import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
 import com.example.one_tap_sign_in.core.domain.utils.ValidationError
-import com.example.one_tap_sign_in.core.domain.utils.onErrorAsync
+import com.example.one_tap_sign_in.core.domain.utils.onError
 import com.example.one_tap_sign_in.core.domain.utils.onErrors
 import com.example.one_tap_sign_in.core.domain.utils.onSuccess
-import com.example.one_tap_sign_in.core.domain.utils.onSuccessAsync
 import com.example.one_tap_sign_in.core.domain.validators.interfaces.UserValidator
 import com.example.one_tap_sign_in.core.presentation.utils.uiConverters.toUiMessage
 import com.example.one_tap_sign_in.profile.models.UserCredentialsUiState
@@ -38,32 +36,34 @@ class ProfileViewModel(
     private val _userFormUiState = MutableStateFlow(UserFormUiState())
     val userFormUiState: StateFlow<UserFormUiState> = _userFormUiState
 
+    private val _isLoadingUser = MutableStateFlow(true)
+    val isLoadingUser = _isLoadingUser.asStateFlow()
+
     fun loadUser() {
         if (isInitialized) return
 
         viewModelScope.launch {
+            _isLoadingUser.update { true }
+
             userRepository.watchUser().collect { result ->
                 result
-                    .onSuccessAsync { user ->
-                        if (user.isNull()) return@onSuccessAsync
+                    .onError { error ->
+                        _isLoadingUser.update { false }
 
-                        _userCredentialsUiState.update {
-                            UserCredentialsUiState(
-                                displayName = user.name,
-                                profilePictureUrl = user.profilePictureUrl,
-                            )
-                        }
-                    }
-                    .onErrorAsync { error ->
-                        val redirectErrors = listOf(
-                            DataSourceError.HttpError.Unauthorized,
-                            DataSourceError.HttpError.NotFound,
-                        )
-                        if (error in redirectErrors) {
+                        if (error in userRepository.redirectErrors) {
                             _uiEvents.send(UiEvents.RedirectToSignIn)
                         }
 
                         _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                    }
+                    .onSuccess { user ->
+                        _isLoadingUser.update { false }
+
+                        if (user.isNull()) return@onSuccess
+
+                        _userCredentialsUiState.update {
+                            UserCredentialsUiState.fromUser(user)
+                        }
                     }
             }
         }
@@ -72,18 +72,18 @@ class ProfileViewModel(
     }
 
     fun onEditUser(newDisplayName: String?) {
-        val newUser = userCredentialsUiState.value.toUser().copy(name = newDisplayName)
+        viewModelScope.launch {
+            val newUser = userCredentialsUiState.value.toUser().copy(name = newDisplayName)
 
-        userValidator.validate(newUser)
-            .onErrors { errors ->
-                val displayNameError = errors.firstOrNull { it is ValidationError.UserName }
+            userValidator.validate(newUser)
+                .onErrors { errors ->
+                    val displayNameError = errors.firstOrNull { it is ValidationError.UserName }
 
-                _userFormUiState.update {
-                    it.copy(displayNameError = displayNameError?.toUiMessage())
+                    _userFormUiState.update {
+                        it.copy(displayNameError = displayNameError?.toUiMessage())
+                    }
                 }
-            }
-            .onSuccess {
-                viewModelScope.launch {
+                .onSuccess {
                     if (newDisplayName == userCredentialsUiState.value.displayName) {
                         _uiEvents.send(
                             UiEvents.EditUserSuccess(messageId = R.string.snackbar_edit_user_no_data_changed)
@@ -91,26 +91,26 @@ class ProfileViewModel(
                         return@launch
                     }
 
-                    userRepository.updateUser(newName = newDisplayName ?: "")
-                        .onErrorAsync { error ->
-                            val redirectErrors = listOf(
-                                DataSourceError.HttpError.Unauthorized,
-                                DataSourceError.HttpError.NotFound,
-                            )
-                            if (error in redirectErrors) {
-                                _uiEvents.send(UiEvents.RedirectToSignIn)
-                            }
-
-                            _uiEvents.send(
-                                UiEvents.DataSourceError(messageId = error.toUiMessage()),
-                            )
-                        }
-                        .onSuccessAsync {
-                            _uiEvents.send(
-                                UiEvents.EditUserSuccess(messageId = R.string.snackbar_edit_user_succeeded)
-                            )
-                        }
+                    updateUser(newDisplayName = newDisplayName)
                 }
+        }
+    }
+
+    private suspend fun updateUser(newDisplayName: String?) {
+        userRepository.updateUser(newName = newDisplayName ?: "")
+            .onError { error ->
+                if (error in userRepository.redirectErrors) {
+                    _uiEvents.send(UiEvents.RedirectToSignIn)
+                }
+
+                _uiEvents.send(
+                    UiEvents.DataSourceError(messageId = error.toUiMessage()),
+                )
+            }
+            .onSuccess {
+                _uiEvents.send(
+                    UiEvents.EditUserSuccess(messageId = R.string.snackbar_edit_user_succeeded)
+                )
             }
     }
 
@@ -121,19 +121,15 @@ class ProfileViewModel(
     fun onDeleteUser() {
         viewModelScope.launch {
             userRepository.deleteUser()
-                .onSuccessAsync {
-                    _uiEvents.send(UiEvents.DeleteUserSuccess)
-                }
-                .onErrorAsync { error ->
-                    val redirectErrors = listOf(
-                        DataSourceError.HttpError.Unauthorized,
-                        DataSourceError.HttpError.NotFound,
-                    )
-                    if (error in redirectErrors) {
+                .onError { error ->
+                    if (error in userRepository.redirectErrors) {
                         _uiEvents.send(UiEvents.RedirectToSignIn)
                     }
 
                     _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
+                }
+                .onSuccess {
+                    _uiEvents.send(UiEvents.DeleteUserSuccess)
                 }
         }
     }
@@ -141,20 +137,15 @@ class ProfileViewModel(
     fun onSignOutUser() {
         viewModelScope.launch {
             userRepository.signOutUser()
-                .onSuccessAsync {
-                    _uiEvents.send(UiEvents.SignOutUserSuccess)
-                }
-                .onErrorAsync { error ->
-                    val redirectErrors = listOf(
-                        DataSourceError.HttpError.Unauthorized,
-                        DataSourceError.HttpError.NotFound,
-                    )
-
-                    if (error in redirectErrors) {
+                .onError { error ->
+                    if (error in userRepository.redirectErrors) {
                         _uiEvents.send(UiEvents.RedirectToSignIn)
                     } else {
                         _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                     }
+                }
+                .onSuccess {
+                    _uiEvents.send(UiEvents.SignOutUserSuccess)
                 }
         }
     }

@@ -18,7 +18,6 @@ import com.example.one_tap_sign_in.core.application.navigation.Destinations
 import com.example.one_tap_sign_in.core.presentation.composables.AppCircularProgressIndicator
 import com.example.one_tap_sign_in.root.RootViewModel.UiEvents.DataSourceError
 import com.example.one_tap_sign_in.root.RootViewModel.UiEvents.SignInState
-import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -33,7 +32,7 @@ fun RootScreen(
     LaunchedEffect(Unit) {
         viewModel.checkIsUserSignedIn()
 
-        viewModel.uiEvents.collectLatest { uiEvent ->
+        viewModel.uiEvents.collect { uiEvent ->
             when (uiEvent) {
                 is DataSourceError -> {
                     showSnackbar(context.getString(uiEvent.messageId), false)

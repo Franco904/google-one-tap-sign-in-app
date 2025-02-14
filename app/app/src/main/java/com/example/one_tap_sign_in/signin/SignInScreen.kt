@@ -32,7 +32,6 @@ import com.example.one_tap_sign_in.signin.SignInViewModel.UiEvents.DataSourceErr
 import com.example.one_tap_sign_in.signin.SignInViewModel.UiEvents.SignInSuccess
 import com.example.one_tap_sign_in.signin.composables.SignInBox
 import com.example.one_tap_sign_in.signin.models.GoogleUserCredentials
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -54,7 +53,7 @@ fun SignInScreen(
     LaunchedEffect(Unit) {
         viewModel.checkUserDidExplicitlySignOut()
 
-        viewModel.uiEvents.collectLatest { uiEvent ->
+        viewModel.uiEvents.collect { uiEvent ->
             when (uiEvent) {
                 is DataSourceError -> {
                     isSigningIn = false

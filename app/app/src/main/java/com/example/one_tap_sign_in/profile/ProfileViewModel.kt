@@ -48,8 +48,6 @@ class ProfileViewModel(
             userRepository.watchUser().collect { result ->
                 result
                     .onError { error ->
-                        _isLoadingUser.update { false }
-
                         if (error in userRepository.redirectErrors) {
                             _uiEvents.send(UiEvents.RedirectToSignIn)
                         }
@@ -57,22 +55,27 @@ class ProfileViewModel(
                         _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                     }
                     .onSuccess { user ->
-                        _isLoadingUser.update { false }
-
                         if (user.isNull()) return@onSuccess
 
                         _userCredentialsUiState.update {
                             UserCredentialsUiState.fromUser(user)
                         }
                     }
+
+                _isLoadingUser.update { false }
             }
         }
-
-        isInitialized = true
     }
 
     fun onEditUser(newDisplayName: String?) {
         viewModelScope.launch {
+            if (newDisplayName == userCredentialsUiState.value.displayName) {
+                _uiEvents.send(
+                    UiEvents.EditUserSuccess(messageId = R.string.snackbar_edit_user_no_data_changed)
+                )
+                return@launch
+            }
+
             val newUser = userCredentialsUiState.value.toUser().copy(name = newDisplayName)
 
             userValidator.validate(newUser)
@@ -82,36 +85,26 @@ class ProfileViewModel(
                     _userFormUiState.update {
                         it.copy(displayNameError = displayNameError?.toUiMessage())
                     }
+
+                    return@launch
                 }
-                .onSuccess {
-                    if (newDisplayName == userCredentialsUiState.value.displayName) {
-                        _uiEvents.send(
-                            UiEvents.EditUserSuccess(messageId = R.string.snackbar_edit_user_no_data_changed)
-                        )
-                        return@launch
+
+            userRepository.updateUser(newName = newDisplayName ?: "")
+                .onError { error ->
+                    if (error in userRepository.redirectErrors) {
+                        _uiEvents.send(UiEvents.RedirectToSignIn)
                     }
 
-                    updateUser(newDisplayName = newDisplayName)
+                    _uiEvents.send(
+                        UiEvents.DataSourceError(messageId = error.toUiMessage()),
+                    )
+                }
+                .onSuccess {
+                    _uiEvents.send(
+                        UiEvents.EditUserSuccess(messageId = R.string.snackbar_edit_user_succeeded)
+                    )
                 }
         }
-    }
-
-    private suspend fun updateUser(newDisplayName: String?) {
-        userRepository.updateUser(newName = newDisplayName ?: "")
-            .onError { error ->
-                if (error in userRepository.redirectErrors) {
-                    _uiEvents.send(UiEvents.RedirectToSignIn)
-                }
-
-                _uiEvents.send(
-                    UiEvents.DataSourceError(messageId = error.toUiMessage()),
-                )
-            }
-            .onSuccess {
-                _uiEvents.send(
-                    UiEvents.EditUserSuccess(messageId = R.string.snackbar_edit_user_succeeded)
-                )
-            }
     }
 
     fun clearDisplayNameFieldError() {

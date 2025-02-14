@@ -53,6 +53,7 @@ fun SignOutButton(
                 Row {
                     Spacer(modifier = Modifier.width(12.dp))
                     AppCircularProgressIndicator(
+                        strokeWidth = 2.dp,
                         modifier = Modifier
                             .size(16.dp)
                     )

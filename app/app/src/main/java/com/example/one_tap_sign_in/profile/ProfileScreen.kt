@@ -39,7 +39,6 @@ import com.example.one_tap_sign_in.profile.composables.EditUserDialog
 import com.example.one_tap_sign_in.profile.composables.ProfileDataSection
 import com.example.one_tap_sign_in.profile.composables.ProfileScreenTopBar
 import com.example.one_tap_sign_in.profile.composables.SignOutUserDialog
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -56,6 +55,7 @@ fun ProfileScreen(
 
     val userCredentialsUiState by viewModel.userCredentialsUiState.collectAsStateWithLifecycle()
     val userFormUiStateUiState by viewModel.userFormUiState.collectAsStateWithLifecycle()
+    val isLoadingUser by viewModel.isLoadingUser.collectAsStateWithLifecycle()
 
     var isSigningOut by remember { mutableStateOf(false) }
     var isEditingUser by remember { mutableStateOf(false) }
@@ -64,7 +64,7 @@ fun ProfileScreen(
     LaunchedEffect(Unit) {
         viewModel.loadUser()
 
-        viewModel.uiEvents.collectLatest { uiEvent ->
+        viewModel.uiEvents.collect { uiEvent ->
             when (uiEvent) {
                 is DataSourceError -> {
                     showSnackbar(context.getString(uiEvent.messageId), false)
@@ -183,15 +183,15 @@ fun ProfileScreen(
                 )
             }
 
-            if (userCredentialsUiState.isNull()) {
+            if (isLoadingUser) {
                 AppCircularProgressIndicator(
                     modifier = Modifier
-                        .size(16.dp)
+                        .size(64.dp)
                 )
             } else {
                 ProfileDataSection(
-                    profilePictureUrl = userCredentialsUiState.profilePictureUrl!!,
-                    displayName = userCredentialsUiState.displayName!!,
+                    profilePictureUrl = userCredentialsUiState.profilePictureUrl ?: "",
+                    displayName = userCredentialsUiState.displayName ?: "",
                     isSigningOut = isSigningOut,
                     onSignOut = {
                         if (!isSigningOut) isSigningOut = true

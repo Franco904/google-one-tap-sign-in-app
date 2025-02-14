@@ -14,7 +14,7 @@ class RetryDataSyncWorker(
     override suspend fun doWork(): Result {
         val result = retryDataSyncRepository.retryDataSync()
 
-        return if (result.hasError()) Result.retry() else Result.success()
+        return if (result.hasError()) Result.failure() else Result.success()
     }
 
     companion object {

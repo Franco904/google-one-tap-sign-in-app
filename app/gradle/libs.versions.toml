@@ -16,6 +16,10 @@ googleIdentity = "1.1.1"
 coil = "2.7.0"
 workmanager = "2.10.0"
 
+androidxTest = "1.6.1"
+kluent = "1.73"
+mockk = "1.13.16"
+
 # Plugins
 agp = "8.6.1"
 kotlin = "2.0.20"
@@ -52,7 +56,13 @@ credentials-core = { group = "androidx.credentials", name = "credentials", versi
 credentials-play-services-auth = { group = "androidx.credentials", name = "credentials-play-services-auth", version.ref = "credentials" }
 google-identity = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleIdentity" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
-workmanager = { module = "androidx.work:work-runtime", version.ref = "workmanager" }
+workmanager-runtime = { module = "androidx.work:work-runtime", version.ref = "workmanager" }
+
+androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidxTest" }
+workmanager-testing = { module = "androidx.work:work-testing", version.ref = "workmanager" }
+kluent-android = { module = "org.amshove.kluent:kluent-android", version.ref = "kluent" }
+mockk-android = { module = "io.mockk:mockk-android", version.ref = "mockk" }
+mockk-agent = { module = "io.mockk:mockk-agent", version.ref = "mockk" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

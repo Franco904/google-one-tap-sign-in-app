@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -43,6 +45,14 @@ android {
     buildFeatures {
         buildConfig = true
         compose = true
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            merges += "META-INF/LICENSE.md"
+            merges += "META-INF/LICENSE-notice.md"
+        }
     }
 }
 
@@ -102,7 +112,14 @@ dependencies {
     implementation(libs.kotlin.serialization.json)
 
     // Background work
-    implementation(libs.workmanager)
+    implementation(libs.workmanager.runtime)
+
+    // Testing
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.workmanager.testing)
+    androidTestImplementation(libs.kluent.android)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockk.agent)
 
     // Other
     debugImplementation(libs.androidx.ui.tooling)

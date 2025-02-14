@@ -87,9 +87,11 @@ fun Module.configureRemoteBackendDependencies() {
                 )
             }
 
-            install(Logging) {
-                logger = Logger.ANDROID
-                level = if (BuildConfig.DEBUG) LogLevel.BODY else LogLevel.NONE
+            if (BuildConfig.DEBUG) {
+                install(Logging) {
+                    logger = Logger.ANDROID
+                    level = LogLevel.BODY
+                }
             }
         }
     }

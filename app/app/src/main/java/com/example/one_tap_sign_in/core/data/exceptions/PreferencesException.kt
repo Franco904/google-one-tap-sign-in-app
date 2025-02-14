@@ -25,11 +25,26 @@ sealed class PreferencesException(message: String) : Exception(message) {
     }
 }
 
-fun Exception.toPreferencesException(): PreferencesException {
-    return when (this) {
-        is IOException -> PreferencesException.IOError(message = "$cause: $message")
-        is SerializationException -> PreferencesException.SerializationError(message = "$cause: $message")
-        is CryptoUtilsException -> PreferencesException.CryptoException(message = "$cause: $message")
-        else -> PreferencesException.UnknownError(message = "$cause: $message")
+fun Exception.asPreferencesException(): PreferencesException {
+    val preferencesException = when (this) {
+        is IOException -> {
+            PreferencesException.IOError(message = "$cause: ${message ?: "Unknown I/O error"}")
+        }
+
+        is SerializationException -> {
+            PreferencesException.SerializationError(message = "$cause: ${message ?: "Unknown serialization error"}")
+        }
+
+        is CryptoUtilsException -> {
+            PreferencesException.CryptoException(message = "$cause: ${message ?: "Unknown crypto utils error"}")
+        }
+
+        else -> {
+            PreferencesException.UnknownError(message = "$cause: ${message ?: "Unknown preferences error"}")
+        }
+    }
+
+    return preferencesException.apply {
+        initCause(this@asPreferencesException)
     }
 }

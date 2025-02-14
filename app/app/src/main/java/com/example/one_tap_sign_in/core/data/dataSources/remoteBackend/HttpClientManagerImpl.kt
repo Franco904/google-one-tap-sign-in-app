@@ -1,7 +1,7 @@
 package com.example.one_tap_sign_in.core.data.dataSources.remoteBackend
 
 import com.example.one_tap_sign_in.core.data.exceptions.RemoteBackendException
-import com.example.one_tap_sign_in.core.data.exceptions.toRemoteBackendException
+import com.example.one_tap_sign_in.core.data.exceptions.asRemoteBackendException
 import io.ktor.client.HttpClient
 import io.ktor.client.request.request
 import io.ktor.client.request.setBody
@@ -27,12 +27,12 @@ class HttpClientManagerImpl(
             }
 
             // Handle standard HTTP errors
-            throw response.status.toRemoteBackendException()
+            throw response.status.asRemoteBackendException()
         } catch (e: Exception) {
             if (e is RemoteBackendException) throw e
 
             // Handle Network & Serialization Errors
-            throw e.toRemoteBackendException()
+            throw e.asRemoteBackendException()
         }
     }
 }

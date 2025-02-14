@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.dataStore
 import com.example.one_tap_sign_in.core.data.dataSources.preferences.interfaces.PreferencesStorage
-import com.example.one_tap_sign_in.core.data.exceptions.toPreferencesException
+import com.example.one_tap_sign_in.core.data.exceptions.asPreferencesException
 import kotlinx.coroutines.flow.Flow
 
 class EncryptedPreferencesStorage(
@@ -14,7 +14,7 @@ class EncryptedPreferencesStorage(
         try {
             dataStore.updateData { preferences -> onPreferencesFile(preferences) }
         } catch (e: Exception) {
-            throw e.toPreferencesException()
+            throw e.asPreferencesException()
         }
     }
 
@@ -22,7 +22,7 @@ class EncryptedPreferencesStorage(
         return try {
             dataStore.data
         } catch (e: Exception) {
-            throw e.toPreferencesException()
+            throw e.asPreferencesException()
         }
     }
 

@@ -2,7 +2,7 @@ package com.example.one_tap_sign_in.core.data.dataSources.preferences.encrypted
 
 import android.util.Log
 import androidx.datastore.core.Serializer
-import com.example.one_tap_sign_in.core.data.exceptions.toPreferencesException
+import com.example.one_tap_sign_in.core.data.exceptions.asPreferencesException
 import com.example.one_tap_sign_in.core.data.utils.CryptoUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -28,7 +28,7 @@ object EncryptedPreferencesSerializer : Serializer<EncryptedPreferences> {
                 output.use { it.write(preferencesEncryptedBytes) }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "${e.toPreferencesException().message}")
+            Log.e(TAG, "${e.asPreferencesException().message}")
         }
     }
 
@@ -46,7 +46,7 @@ object EncryptedPreferencesSerializer : Serializer<EncryptedPreferences> {
 
             preferences
         } catch (e: Exception) {
-            Log.e(TAG, "${e.toPreferencesException().message}")
+            Log.e(TAG, "${e.asPreferencesException().message}")
             defaultValue
         }
     }

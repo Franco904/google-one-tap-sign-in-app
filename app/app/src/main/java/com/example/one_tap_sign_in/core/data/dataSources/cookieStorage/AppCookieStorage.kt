@@ -4,7 +4,7 @@ import android.util.Log
 import com.example.one_tap_sign_in.core.data.constants.SESSION_COOKIE_NAME
 import com.example.one_tap_sign_in.core.data.dataSources.preferences.encrypted.EncryptedPreferences
 import com.example.one_tap_sign_in.core.data.dataSources.preferences.interfaces.PreferencesStorage
-import com.example.one_tap_sign_in.core.data.exceptions.toPreferencesException
+import com.example.one_tap_sign_in.core.data.exceptions.asPreferencesException
 import io.ktor.client.plugins.cookies.CookiesStorage
 import io.ktor.http.Cookie
 import io.ktor.http.Url
@@ -21,7 +21,7 @@ class AppCookieStorage(
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "${e.toPreferencesException().message}")
+            Log.e(TAG, "${e.asPreferencesException().message}")
             throw e
         }
     }
@@ -32,7 +32,7 @@ class AppCookieStorage(
 
             return if (sessionCookie == null) emptyList() else listOf(sessionCookie)
         } catch (e: Exception) {
-            Log.e(TAG, "${e.toPreferencesException().message}")
+            Log.e(TAG, "${e.asPreferencesException().message}")
             throw e
         }
     }

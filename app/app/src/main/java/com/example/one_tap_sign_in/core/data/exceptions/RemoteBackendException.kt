@@ -42,7 +42,7 @@ sealed class RemoteBackendException(message: String) : Exception(message) {
     }
 }
 
-fun HttpStatusCode.toRemoteBackendException(): RemoteBackendException {
+fun HttpStatusCode.asRemoteBackendException(): RemoteBackendException {
     return when (this) {
         HttpStatusCode.BadRequest -> RemoteBackendException.BadRequest()
         HttpStatusCode.Unauthorized -> RemoteBackendException.Unauthorized()
@@ -57,13 +57,34 @@ fun HttpStatusCode.toRemoteBackendException(): RemoteBackendException {
     }
 }
 
-fun Exception.toRemoteBackendException(): RemoteBackendException {
-    return when (this) {
-        is SerializationException -> RemoteBackendException.SerializationError(message = "$cause: $message")
-        is HttpRequestTimeoutException -> RemoteBackendException.Timeout(message = "$cause: $message")
-        is ConnectException -> RemoteBackendException.NetworkError(message = "$cause: $message")
-        is UnknownHostException -> RemoteBackendException.NetworkError(message = "$cause: $message")
-        is IOException -> RemoteBackendException.NetworkError(message = "$cause: $message")
-        else -> RemoteBackendException.UnknownError(message = "$cause: $message")
+fun Exception.asRemoteBackendException(): RemoteBackendException {
+    val remoteBackendException = when (this) {
+        is SerializationException -> {
+            RemoteBackendException.SerializationError(message = "$cause: ${message ?: "Unknown serialization error"}")
+        }
+
+        is HttpRequestTimeoutException -> {
+            RemoteBackendException.Timeout(message = "$cause: ${message ?: "Unknown time out error"}")
+        }
+
+        is ConnectException -> {
+            RemoteBackendException.NetworkError(message = "$cause: ${message ?: "Unknown connection error"}")
+        }
+
+        is UnknownHostException -> {
+            RemoteBackendException.NetworkError(message = "$cause: ${message ?: "Unknown unknown host error"}")
+        }
+
+        is IOException -> {
+            RemoteBackendException.NetworkError(message = "$cause: ${message ?: "Unknown I/O error"}")
+        }
+
+        else -> {
+            RemoteBackendException.UnknownError(message = "$cause: ${message ?: "Unknown remote backend error"}")
+        }
+    }
+
+    return remoteBackendException.apply {
+        initCause(this@asRemoteBackendException)
     }
 }

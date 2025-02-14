@@ -25,10 +25,6 @@ fun DataSourceError.toUiMessage() = when (this) {
         R.string.snackbar_http_unauthorized_error
     }
 
-    DataSourceError.RemoteBackendError.Forbidden -> {
-        R.string.snackbar_http_forbidden_error
-    }
-
     DataSourceError.RemoteBackendError.NotFound -> {
         R.string.snackbar_http_not_found_error
     }

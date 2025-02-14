@@ -8,7 +8,7 @@ import androidx.credentials.GetCredentialRequest
 import com.example.one_tap_sign_in.core.data.constants.CLIENT_ID
 import com.example.one_tap_sign_in.core.data.utils.CryptoUtils
 import com.example.one_tap_sign_in.core.presentation.exceptions.CredentialManagerException
-import com.example.one_tap_sign_in.core.presentation.exceptions.toAuthRemoteApiException
+import com.example.one_tap_sign_in.core.presentation.exceptions.asCredentialManagerException
 import com.example.one_tap_sign_in.signin.models.GoogleUserCredentials
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
@@ -67,7 +67,7 @@ object AppCredentialManager {
         } catch (e: Exception) {
             if (e is CredentialManagerException) throw e
 
-            throw e.toAuthRemoteApiException()
+            throw e.asCredentialManagerException()
         }
     }
 
@@ -80,7 +80,7 @@ object AppCredentialManager {
         } catch (e: Exception) {
             if (e is CredentialManagerException) throw e
 
-            throw e.toAuthRemoteApiException()
+            throw e.asCredentialManagerException()
         }
     }
 }

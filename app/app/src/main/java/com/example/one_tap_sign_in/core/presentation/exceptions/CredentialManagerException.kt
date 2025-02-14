@@ -17,18 +17,22 @@ sealed class CredentialManagerException(message: String) : Exception(message) {
     class UnknownError(message: String?) : CredentialManagerException("Unexpected error: $message.")
 }
 
-fun Exception.toAuthRemoteApiException(): CredentialManagerException {
-    return when (this) {
+fun Exception.asCredentialManagerException(): CredentialManagerException {
+    val credentialManagerException = when (this) {
         is GetCredentialUnsupportedException, is ClearCredentialUnsupportedException -> {
-            CredentialManagerException.UnsupportedApiException(message = "$cause: $message")
+            CredentialManagerException.UnsupportedApiException(message = "$cause: ${message ?: "Unknown unsupported credential API error"}")
         }
 
         is NoCredentialException -> {
-            CredentialManagerException.NoCredentialsFoundException(message = "$cause: $message")
+            CredentialManagerException.NoCredentialsFoundException(message = "$cause: ${message ?: "Unknown no credential error"}")
         }
 
         else -> {
-            CredentialManagerException.UnknownError(message = "$cause: $message")
+            CredentialManagerException.UnknownError(message = "$cause: ${message ?: "Unknown crendential manager error"}")
         }
+    }
+
+    return credentialManagerException.apply {
+        initCause(this@asCredentialManagerException)
     }
 }

@@ -5,47 +5,74 @@ import com.example.one_tap_sign_in.core.data.dataSources.remoteBackend.apis.inte
 import com.example.one_tap_sign_in.core.data.dataSources.remoteBackend.requestDtos.SignInRequestDto
 import com.example.one_tap_sign_in.core.data.dataSources.remoteBackend.requestDtos.UpdateUserRequestDto
 import com.example.one_tap_sign_in.core.data.dataSources.remoteBackend.responseDtos.GetUserResponseDto
+import com.example.one_tap_sign_in.core.domain.utils.AppResult
+import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
+import com.example.one_tap_sign_in.core.domain.utils.fold
 import io.ktor.client.call.body
 import io.ktor.http.HttpMethod
 
 class UserApiImpl(
     private val client: HttpClientManager,
 ) : UserApi {
-    override suspend fun signInUser(signInRequestDto: SignInRequestDto) {
-        client.request(
+    override suspend fun signInUser(
+        signInRequestDto: SignInRequestDto,
+    ): AppResult<Unit, DataSourceError.RemoteBackendError> {
+        return client.request(
             url = "$ROUTE/sign-in",
             method = HttpMethod.Post,
             body = signInRequestDto,
         )
+            .fold(
+                onError = { AppResult.Error(error = it) },
+                onSuccess = { AppResult.Success(data = Unit) },
+            )
     }
 
-    override suspend fun getUser(): GetUserResponseDto {
+    override suspend fun getUser(): AppResult<GetUserResponseDto, DataSourceError.RemoteBackendError> {
         return client.request(
             url = ROUTE,
             method = HttpMethod.Get,
-        ).body()
+        )
+            .fold(
+                onError = { AppResult.Error(error = it) },
+                onSuccess = { response -> AppResult.Success(data = response.body()) },
+            )
     }
 
-    override suspend fun updateUser(updateUserRequestDto: UpdateUserRequestDto) {
-        client.request(
+    override suspend fun updateUser(
+        updateUserRequestDto: UpdateUserRequestDto,
+    ): AppResult<Unit, DataSourceError.RemoteBackendError> {
+        return client.request(
             url = "$ROUTE/update",
             method = HttpMethod.Put,
             body = updateUserRequestDto,
         )
+            .fold(
+                onError = { AppResult.Error(error = it) },
+                onSuccess = { AppResult.Success(data = Unit) },
+            )
     }
 
-    override suspend fun deleteUser() {
-        client.request(
+    override suspend fun deleteUser(): AppResult<Unit, DataSourceError.RemoteBackendError> {
+        return client.request(
             url = "$ROUTE/delete",
             method = HttpMethod.Delete,
         )
+            .fold(
+                onError = { AppResult.Error(error = it) },
+                onSuccess = { AppResult.Success(data = Unit) },
+            )
     }
 
-    override suspend fun signOutUser() {
-        client.request(
+    override suspend fun signOutUser(): AppResult<Unit, DataSourceError.RemoteBackendError> {
+        return client.request(
             url = "$ROUTE/sign-out",
             method = HttpMethod.Get,
         )
+            .fold(
+                onError = { AppResult.Error(error = it) },
+                onSuccess = { AppResult.Success(data = Unit) },
+            )
     }
 
     companion object {

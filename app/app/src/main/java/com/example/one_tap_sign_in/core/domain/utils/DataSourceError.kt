@@ -16,6 +16,13 @@ sealed interface DataSourceError : Error {
         SerializationError,
         Timeout,
         NetworkError,
-        UnknownError,
+        UnknownError
+    }
+
+    fun isRedirectError(): Boolean {
+        return this in listOf(
+            RemoteBackendError.Unauthorized,
+            RemoteBackendError.NotFound,
+        )
     }
 }

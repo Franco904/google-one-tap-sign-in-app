@@ -9,7 +9,7 @@ val workerModule = module {
         RetryDataSyncWorker(
             applicationContext = get(),
             workerParameters = get(),
-            retryDataSyncRepository = get(),
+            userRepository = get(),
         )
     }
 }

@@ -5,7 +5,7 @@ import androidx.datastore.core.DataStore
 import com.example.one_tap_sign_in.BuildConfig
 import com.example.one_tap_sign_in.core.application.di.qualifiers.encryptedPreferencesQualifier
 import com.example.one_tap_sign_in.core.application.di.qualifiers.plainPreferencesQualifier
-import com.example.one_tap_sign_in.core.data.constants.BASE_URL
+import com.example.one_tap_sign_in.core.data.constants.AUTH_BASE_URL
 import com.example.one_tap_sign_in.core.data.dataSources.cookieStorage.AppCookieStorage
 import com.example.one_tap_sign_in.core.data.dataSources.preferences.encrypted.EncryptedPreferences
 import com.example.one_tap_sign_in.core.data.dataSources.preferences.encrypted.EncryptedPreferencesStorage
@@ -69,7 +69,7 @@ fun Module.configureRemoteBackendDependencies() {
             }
 
             defaultRequest {
-                url(BASE_URL)
+                url(AUTH_BASE_URL)
                 contentType(ContentType.Application.Json)
             }
 

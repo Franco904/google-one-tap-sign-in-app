@@ -2,7 +2,7 @@ package com.example.one_tap_sign_in.core.data.dataSources.preferences.plain
 
 import android.util.Log
 import androidx.datastore.core.Serializer
-import com.example.one_tap_sign_in.core.data.exceptions.asPreferencesException
+import com.example.one_tap_sign_in.core.data.exceptions.toPreferencesException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
@@ -24,7 +24,7 @@ object PlainPreferencesSerializer : Serializer<PlainPreferences> {
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "${e.asPreferencesException().message}")
+            Log.e(TAG, "${e.toPreferencesException().message}")
         }
     }
 
@@ -36,7 +36,7 @@ object PlainPreferencesSerializer : Serializer<PlainPreferences> {
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, "${e.asPreferencesException().message}")
+            Log.e(TAG, "${e.toPreferencesException().message}")
             defaultValue
         }
     }

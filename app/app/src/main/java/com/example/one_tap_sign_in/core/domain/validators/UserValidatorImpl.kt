@@ -1,7 +1,7 @@
 package com.example.one_tap_sign_in.core.domain.validators
 
 import com.example.one_tap_sign_in.core.domain.models.User
-import com.example.one_tap_sign_in.core.domain.utils.Result
+import com.example.one_tap_sign_in.core.domain.utils.AppResult
 import com.example.one_tap_sign_in.core.domain.utils.ResultCompound
 import com.example.one_tap_sign_in.core.domain.utils.ValidationError
 import com.example.one_tap_sign_in.core.domain.utils.onError
@@ -18,11 +18,11 @@ class UserValidatorImpl : UserValidator {
         } else ResultCompound.ErrorList(errors.toList())
     }
 
-    override fun validateName(name: String?): Result<Unit, ValidationError.UserName> {
+    override fun validateName(name: String?): AppResult<Unit, ValidationError.UserName> {
         return when {
-            name.isNullOrBlank() -> Result.Error(ValidationError.UserName.IsBlank)
-            name.length > 35 -> Result.Error(ValidationError.UserName.LengthIsGreaterThan35Chars)
-            else -> Result.Success(Unit)
+            name.isNullOrBlank() -> AppResult.Error(ValidationError.UserName.IsBlank)
+            name.length > 35 -> AppResult.Error(ValidationError.UserName.LengthIsGreaterThan35Chars)
+            else -> AppResult.Success(Unit)
         }
     }
 }

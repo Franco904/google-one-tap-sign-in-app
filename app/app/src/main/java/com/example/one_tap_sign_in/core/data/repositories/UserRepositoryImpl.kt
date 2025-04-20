@@ -1,19 +1,18 @@
 package com.example.one_tap_sign_in.core.data.repositories
 
-import android.util.Log
 import com.example.one_tap_sign_in.core.data.dataSources.preferences.encrypted.EncryptedPreferences
 import com.example.one_tap_sign_in.core.data.dataSources.preferences.interfaces.PreferencesStorage
 import com.example.one_tap_sign_in.core.data.dataSources.preferences.plain.PlainPreferences
 import com.example.one_tap_sign_in.core.data.dataSources.remoteBackend.apis.interfaces.UserApi
 import com.example.one_tap_sign_in.core.data.dataSources.remoteBackend.requestDtos.SignInRequestDto
 import com.example.one_tap_sign_in.core.data.dataSources.remoteBackend.requestDtos.UpdateUserRequestDto
-import com.example.one_tap_sign_in.core.data.exceptions.PreferencesException
-import com.example.one_tap_sign_in.core.data.exceptions.RemoteBackendException
 import com.example.one_tap_sign_in.core.domain.models.User
 import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
+import com.example.one_tap_sign_in.core.domain.utils.AppResult
 import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
-import com.example.one_tap_sign_in.core.domain.utils.Result
+import com.example.one_tap_sign_in.core.domain.utils.fold
 import com.example.one_tap_sign_in.core.domain.utils.onError
+import com.example.one_tap_sign_in.core.domain.utils.onSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -22,324 +21,242 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-typealias WatchUserFlowCollector = FlowCollector<Result<User, DataSourceError>>
+typealias WatchUserFlowCollector = FlowCollector<AppResult<User, DataSourceError>>
 
 class UserRepositoryImpl(
     private val userApi: UserApi,
     private val encryptedPreferencesStorage: PreferencesStorage<EncryptedPreferences>,
     private val plainPreferencesStorage: PreferencesStorage<PlainPreferences>,
 ) : UserRepository {
-    override val redirectErrors = listOf(
-        DataSourceError.RemoteBackendError.Unauthorized,
-        DataSourceError.RemoteBackendError.NotFound,
-    )
+    override suspend fun isUserSignedIn(): AppResult<Boolean, DataSourceError> {
+        return encryptedPreferencesStorage.readPreferences()
+            .fold(
+                onError = { error ->
+                    AppResult.Error(error = error)
+                },
+                onSuccess = { prefsFlow ->
+                    val isSignedIn = prefsFlow.first().sessionCookie != null
 
-    override suspend fun isUserSignedIn(): Result<Boolean, DataSourceError> {
-        return try {
-            val isSignedIn =
-                encryptedPreferencesStorage.readPreferences().first().sessionCookie != null
-
-            Result.Success(data = isSignedIn)
-        } catch (e: Exception) {
-            Log.e(TAG, "isUserSignedIn - ${e.message}")
-
-            val error = when (e) {
-                is PreferencesException -> e.toPreferencesError()
-                else -> throw e
-            }
-
-            Result.Error(error = error)
-        }
+                    AppResult.Success(data = isSignedIn)
+                }
+            )
     }
 
-    override suspend fun didUserExplicitlySignOut(): Result<Boolean, DataSourceError> {
-        return try {
-            val didUserExplicitlySignOut =
-                plainPreferencesStorage.readPreferences()
-                    .first().didUserExplicitlySignOut != false
+    override suspend fun didUserExplicitlySignOut(): AppResult<Boolean, DataSourceError> {
+        return plainPreferencesStorage.readPreferences()
+            .fold(
+                onError = { error ->
+                    AppResult.Error(error = error)
+                },
+                onSuccess = { prefsFlow ->
+                    val didUserExplicitlySignOut =
+                        prefsFlow.first().didUserExplicitlySignOut != null
 
-            Result.Success(data = didUserExplicitlySignOut)
-        } catch (e: Exception) {
-            Log.e(TAG, "didUserExplicitlySignOut - ${e.message}")
-
-            val error = when (e) {
-                is PreferencesException -> e.toPreferencesError()
-                else -> throw e
-            }
-
-            Result.Error(error = error)
-        }
+                    AppResult.Success(data = didUserExplicitlySignOut)
+                }
+            )
     }
 
     override suspend fun signInUser(
         idToken: String,
         displayName: String?,
         profilePictureUrl: String?,
-    ): Result<Unit, DataSourceError> {
-        return try {
-            val requestDto = SignInRequestDto(idToken = idToken)
-            userApi.signInUser(signInRequestDto = requestDto)
+    ): AppResult<Unit, DataSourceError> {
+        val requestDto = SignInRequestDto(idToken = idToken)
+        userApi.signInUser(signInRequestDto = requestDto)
+            .onError { return AppResult.Error(error = it) }
 
-            encryptedPreferencesStorage.savePreferences { prefs ->
-                prefs.copy(
-                    displayName = displayName,
-                    profilePictureUrl = profilePictureUrl,
-                    isUserEditSynced = true,
-                )
-            }
-
-            plainPreferencesStorage.savePreferences { prefs ->
-                prefs.copy(didUserExplicitlySignOut = false)
-            }
-
-            Result.Success(data = Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "signInUser - ${e.message}")
-
-            val error = when (e) {
-                is PreferencesException -> e.toPreferencesError()
-                is RemoteBackendException -> e.toRemoteBackendError()
-                else -> throw e
-            }
-            Result.Error(error = error)
+        encryptedPreferencesStorage.savePreferences { prefs ->
+            prefs.copy(
+                displayName = displayName,
+                profilePictureUrl = profilePictureUrl,
+                isUserEditSynced = true,
+            )
         }
+            .onError { return AppResult.Error(error = it) }
+
+        plainPreferencesStorage.savePreferences { prefs ->
+            prefs.copy(didUserExplicitlySignOut = false)
+        }
+            .onError { return AppResult.Error(error = it) }
+
+        return AppResult.Success(data = Unit)
     }
 
-    override fun watchUser(): Flow<Result<User, DataSourceError>> = flow {
+    override fun watchUser(): Flow<AppResult<User, DataSourceError>> = flow {
         emitCachedUser()
         fetchAndCacheRemoteUser()
         watchCachedUserForUpdates()
     }
 
     private suspend fun WatchUserFlowCollector.emitCachedUser() {
-        try {
-            val preferences = encryptedPreferencesStorage.readPreferences().first()
-            val cachedUser = preferences.toUser()
+        encryptedPreferencesStorage.readPreferences()
+            .onError { emit(AppResult.Error(error = it)) }
+            .onSuccess { prefsFlow ->
+                val prefs = prefsFlow.first()
 
-            if (preferences.sessionCookie == null) {
-                emit(Result.Error(error = DataSourceError.RemoteBackendError.Unauthorized))
+                if (prefs.sessionCookie == null) {
+                    emit(AppResult.Error(error = DataSourceError.RemoteBackendError.Unauthorized))
+                    return
+                }
+
+                val cachedUser = prefs.toUser()
+                emit(AppResult.Success(data = cachedUser))
             }
-
-            emit(Result.Success(data = cachedUser))
-        } catch (e: PreferencesException) {
-            Log.e(TAG, "watchUser - ${e.message}")
-            emit(Result.Error(error = e.toPreferencesError()))
-        }
     }
 
     private suspend fun WatchUserFlowCollector.fetchAndCacheRemoteUser() {
-        try {
-            val isUserEditSynced =
-                encryptedPreferencesStorage.readPreferences().first().isUserEditSynced
-            if (!isUserEditSynced) return
-
-            // Fetch user from remote backend API
-            val responseDto = userApi.getUser()
-            val fetchedUser = responseDto.toUser()
-
-            // Cache the fetched user
-            encryptedPreferencesStorage.savePreferences { prefs ->
-                prefs.copy(
-                    displayName = fetchedUser.name,
-                    profilePictureUrl = fetchedUser.profilePictureUrl,
-                )
+        // If the cached logged user isn't synced, don't fetch user
+        encryptedPreferencesStorage.readPreferences()
+            .onError { emit(AppResult.Error(error = it)) }
+            .onSuccess { prefsFlow ->
+                val isUserEditSynced = prefsFlow.first().isUserEditSynced
+                if (!isUserEditSynced) return
             }
 
-            emit(Result.Success(data = fetchedUser))
-        } catch (e: Exception) {
-            Log.e(TAG, "watchUser - ${e.message}")
+        // Fetch user from remote backend API
+        val fetchedUser = userApi.getUser()
+            .fold(
+                onError = {
+                    emit(AppResult.Error(error = it))
+                    return
+                },
+                onSuccess = { responseDto -> responseDto.toUser() }
+            )
 
-            if (e is PreferencesException) {
-                emit(Result.Error(error = e.toPreferencesError()))
-            }
+        // Cache the fetched user
+        encryptedPreferencesStorage.savePreferences { prefs ->
+            prefs.copy(
+                displayName = fetchedUser.name,
+                profilePictureUrl = fetchedUser.profilePictureUrl,
+            )
         }
+            .onError { emit(AppResult.Error(error = it)) }
+
+        emit(AppResult.Success(data = fetchedUser))
     }
 
     private suspend fun WatchUserFlowCollector.watchCachedUserForUpdates() {
-        try {
-            emitAll(
-                encryptedPreferencesStorage.readPreferences()
-                    .map { prefs: EncryptedPreferences ->
-                        Result.Success<User, DataSourceError>(data = prefs.toUser())
-                    }
-                    .distinctUntilChanged()
-            )
-        } catch (e: PreferencesException) {
-            Log.e(TAG, "watchUser - ${e.message}")
-            emit(Result.Error(error = e.toPreferencesError()))
-        }
-    }
-
-    override suspend fun updateUser(newName: String): Result<Unit, DataSourceError> {
-        cacheUserUpdate(newName = newName).onError { return Result.Error(error = it) }
-
-        trySendUserUpdate(newName = newName).onError {
-            if (it in redirectErrors) {
-                deleteCachedUser().onError { e -> return Result.Error(error = e) }
-            }
-
-            return Result.Error(error = it)
-        }
-
-        return Result.Success(data = Unit)
-    }
-
-    private suspend fun cacheUserUpdate(newName: String): Result<Unit, DataSourceError> {
-        return try {
-            encryptedPreferencesStorage.savePreferences { prefs ->
-                prefs.copy(displayName = newName)
-            }
-
-            Result.Success(data = Unit)
-        } catch (e: PreferencesException) {
-            Log.e(TAG, "updateUser - ${e.message}")
-            Result.Error(error = e.toPreferencesError())
-        }
-    }
-
-    private suspend fun trySendUserUpdate(newName: String): Result<Unit, DataSourceError> {
-        return try {
-            val updateUserRequestDto = UpdateUserRequestDto(name = newName)
-            userApi.updateUser(updateUserRequestDto = updateUserRequestDto)
-
-            encryptedPreferencesStorage.savePreferences { prefs ->
-                prefs.copy(isUserEditSynced = true)
-            }
-
-            Result.Success(data = Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "updateUser - ${e.message}")
-
-            onUpdateUserFail().onError { return Result.Error(error = it) }
-
-            val error = when (e) {
-                is PreferencesException -> e.toPreferencesError()
-                is RemoteBackendException -> e.toRemoteBackendError()
-                else -> throw e
-            }
-
-            Result.Error(error = error)
-        }
-    }
-
-    private suspend fun onUpdateUserFail(): Result<Unit, DataSourceError> {
-        return try {
-            encryptedPreferencesStorage.savePreferences { prefs ->
-                prefs.copy(isUserEditSynced = false)
-            }
-
-            Result.Success(data = Unit)
-        } catch (e: PreferencesException) {
-            Log.e(TAG, "updateUser - ${e.message}")
-
-            Result.Error(error = e.toPreferencesError())
-        }
-    }
-
-    override suspend fun retryUpdateUser() {
-        val cachedUser = try {
-            encryptedPreferencesStorage.readPreferences().first().toUser()
-        } catch (e: PreferencesException) {
-            Log.e(TAG, "retryUpdateUser - ${e.message}")
-            null
-        }
-
-        if (cachedUser?.name == null) return
-
-        try {
-            val updateUserRequestDto = UpdateUserRequestDto(name = cachedUser.name)
-            userApi.updateUser(updateUserRequestDto = updateUserRequestDto)
-
-            encryptedPreferencesStorage.savePreferences { prefs ->
-                prefs.copy(isUserEditSynced = true)
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "retryUpdateUser - ${e.message}")
-
-            (e as? RemoteBackendException)?.toRemoteBackendError()?.let { backendError ->
-                if (backendError in redirectErrors) deleteCachedUser()
-            }
-        }
-    }
-
-    override suspend fun deleteUser(): Result<Unit, DataSourceError> {
-        return try {
-            userApi.deleteUser()
-
-            deleteCachedUser().onError { return Result.Error(error = it) }
-
-            Result.Success(data = Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "${e.message}")
-
-            val error = when (e) {
-                is PreferencesException -> e.toPreferencesError()
-                is RemoteBackendException -> {
-                    val backendError = e.toRemoteBackendError()
-                    if (backendError in redirectErrors) {
-                        deleteCachedUser().onError { e -> return Result.Error(error = e) }
-                    }
-
-                    backendError
-                }
-
-                else -> throw e
-            }
-            Result.Error(error = error)
-        }
-    }
-
-    override suspend fun signOutUser(): Result<Unit, DataSourceError> {
-        return try {
-            userApi.signOutUser()
-
-            deleteCachedUser().onError { return Result.Error(error = it) }
-
-            Result.Success(data = Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "${e.message}")
-
-            val error = when (e) {
-                is PreferencesException -> e.toPreferencesError()
-                is RemoteBackendException -> {
-                    val backendError = e.toRemoteBackendError()
-                    if (backendError in redirectErrors) {
-                        deleteCachedUser().onError { e -> return Result.Error(error = e) }
-                    }
-
-                    backendError
-                }
-
-                else -> throw e
-            }
-            Result.Error(error = error)
-        }
-    }
-
-    private suspend fun deleteCachedUser(): Result<Unit, DataSourceError> {
-        try {
-            encryptedPreferencesStorage.savePreferences { prefs ->
-                prefs.copy(
-                    sessionCookie = null,
-                    displayName = null,
-                    profilePictureUrl = null,
+        encryptedPreferencesStorage.readPreferences()
+            .onError { emit(AppResult.Error(error = it)) }
+            .onSuccess { prefsFlow ->
+                emitAll(
+                    prefsFlow
+                        .map { AppResult.Success<User, DataSourceError>(data = it.toUser()) }
+                        .distinctUntilChanged()
                 )
             }
+    }
 
-            return Result.Success(data = Unit)
-        } catch (e: Exception) {
-            Log.e(TAG, "${e.message}")
+    override suspend fun updateUser(newName: String): AppResult<Unit, DataSourceError> {
+        // Cache new user name
+        encryptedPreferencesStorage.savePreferences { prefs ->
+            prefs.copy(displayName = newName)
+        }
+            .onError { return AppResult.Error(error = it) }
 
-            val error = when (e) {
-                is PreferencesException -> e.toPreferencesError()
-                else -> throw e
+        // Try to send new user name to remote backend API
+        val updateUserRequestDto = UpdateUserRequestDto(name = newName)
+        userApi.updateUser(updateUserRequestDto = updateUserRequestDto)
+            .onError { remoteBackendError ->
+                if (remoteBackendError.isRedirectError()) {
+                    deleteCachedUser()
+                        .onError { return AppResult.Error(error = it) }
+                }
+
+                encryptedPreferencesStorage.savePreferences { prefs ->
+                    prefs.copy(isUserEditSynced = false)
+                }
+                    .onError { return AppResult.Error(error = it) }
+
+                return AppResult.Error(error = remoteBackendError)
             }
 
-            return Result.Error(error = error)
+        encryptedPreferencesStorage.savePreferences { prefs ->
+            prefs.copy(isUserEditSynced = true)
+        }
+            .onError { return AppResult.Error(error = it) }
+
+        return AppResult.Success(data = Unit)
+    }
+
+    private suspend fun deleteCachedUser(): AppResult<Unit, DataSourceError> {
+        return encryptedPreferencesStorage.savePreferences { prefs ->
+            prefs.copy(
+                sessionCookie = null,
+                displayName = null,
+                profilePictureUrl = null,
+            )
         }
     }
 
-    companion object {
-        private const val TAG = "UserRepositoryImpl"
+    override suspend fun retrySendUserUpdate(): AppResult<Unit, DataSourceError> {
+        val prefs = encryptedPreferencesStorage.readPreferences()
+            .fold(
+                onError = { return AppResult.Error(error = it) },
+                onSuccess = { prefsFlow -> prefsFlow.first() },
+            )
+
+        // Check if should retry syncing local user data
+        val isUserSignedIn = prefs.sessionCookie != null
+        if (!isUserSignedIn) return AppResult.Success(data = Unit)
+
+        val isUserEditSynced = prefs.isUserEditSynced
+        if (isUserEditSynced) return AppResult.Success(data = Unit)
+
+        val cachedUser = prefs.toUser()
+        if (cachedUser.name.isNullOrBlank()) return AppResult.Success(data = Unit)
+
+        val updateUserRequestDto = UpdateUserRequestDto(name = cachedUser.name)
+        userApi.updateUser(updateUserRequestDto = updateUserRequestDto)
+            .onError { remoteBackendError ->
+                if (remoteBackendError.isRedirectError()) {
+                    deleteCachedUser()
+                        .onError { return AppResult.Error(error = it) }
+                }
+
+                return AppResult.Error(error = remoteBackendError)
+            }
+
+        encryptedPreferencesStorage.savePreferences {
+            it.copy(isUserEditSynced = true)
+        }
+            .onError { return AppResult.Error(error = it) }
+
+        return AppResult.Success(data = Unit)
+    }
+
+    override suspend fun deleteUser(): AppResult<Unit, DataSourceError> {
+        userApi.deleteUser()
+            .onError { remoteBackendError ->
+                if (remoteBackendError.isRedirectError()) {
+                    deleteCachedUser()
+                        .onError { return AppResult.Error(error = it) }
+                }
+
+                return AppResult.Error(error = remoteBackendError)
+            }
+
+        deleteCachedUser()
+            .onError { return AppResult.Error(error = it) }
+
+        return AppResult.Success(data = Unit)
+    }
+
+    override suspend fun signOutUser(): AppResult<Unit, DataSourceError> {
+        userApi.signOutUser()
+            .onError { remoteBackendError ->
+                if (remoteBackendError.isRedirectError()) {
+                    deleteCachedUser()
+                        .onError { return AppResult.Error(error = it) }
+                }
+
+                return AppResult.Error(error = remoteBackendError)
+            }
+
+        deleteCachedUser()
+            .onError { return AppResult.Error(error = it) }
+
+        return AppResult.Success(data = Unit)
     }
 }

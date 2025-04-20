@@ -13,7 +13,6 @@ data class EncryptedPreferences(
 ) {
     fun toUser(): User {
         return User(
-            email = null,
             name = displayName,
             profilePictureUrl = profilePictureUrl,
             isUserModifySynced = isUserEditSynced,

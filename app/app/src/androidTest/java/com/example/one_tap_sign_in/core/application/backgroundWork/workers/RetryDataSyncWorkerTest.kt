@@ -1,13 +1,13 @@
 package com.example.one_tap_sign_in.core.application.backgroundWork.workers
 
 import android.content.Context
-import com.example.one_tap_sign_in.androidTestUtils.workerFactory
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.ListenableWorker
 import androidx.work.testing.TestListenableWorkerBuilder
-import com.example.one_tap_sign_in.core.domain.repositories.RetryDataSyncRepository
+import com.example.one_tap_sign_in.androidTestUtils.workerFactory
+import com.example.one_tap_sign_in.core.domain.repositories.UserRepository
+import com.example.one_tap_sign_in.core.domain.utils.AppResult
 import com.example.one_tap_sign_in.core.domain.utils.DataSourceError
-import com.example.one_tap_sign_in.core.domain.utils.Result
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -18,13 +18,13 @@ import org.junit.Test
 class RetryDataSyncWorkerTest {
     private lateinit var sut: RetryDataSyncWorker
 
-    private lateinit var retryDataSyncRepositoryMock: RetryDataSyncRepository
+    private lateinit var userRepositoryMock: UserRepository
 
     private lateinit var appContext: Context
 
     @Before
     fun setUp() {
-        retryDataSyncRepositoryMock = mockk(relaxUnitFun = true)
+        userRepositoryMock = mockk(relaxUnitFun = true)
 
         appContext = InstrumentationRegistry.getInstrumentation().context
 
@@ -32,7 +32,7 @@ class RetryDataSyncWorkerTest {
             RetryDataSyncWorker(
                 applicationContext = context,
                 workerParameters = params,
-                retryDataSyncRepository = retryDataSyncRepositoryMock,
+                userRepository = userRepositoryMock,
             )
         }
 
@@ -43,8 +43,8 @@ class RetryDataSyncWorkerTest {
 
     @Test
     fun shouldReturnFailureResultIfTheRetryReturnsAnError(): Unit = runBlocking {
-        coEvery { retryDataSyncRepositoryMock.retryDataSync() } returns
-                Result.Error(error = DataSourceError.RemoteBackendError.UnknownError)
+        coEvery { userRepositoryMock.retrySendUserUpdate() } returns
+                AppResult.Error(error = DataSourceError.RemoteBackendError.UnknownError)
 
         val result = sut.doWork()
 
@@ -53,8 +53,8 @@ class RetryDataSyncWorkerTest {
 
     @Test
     fun shouldReturnSuccessResultIfTheRetryDoesNotReturnAnError(): Unit = runBlocking {
-        coEvery { retryDataSyncRepositoryMock.retryDataSync() } returns
-                Result.Success(data = Unit)
+        coEvery { userRepositoryMock.retrySendUserUpdate() } returns
+                AppResult.Success(data = Unit)
 
         val result = sut.doWork()
 

@@ -25,7 +25,7 @@ sealed class PreferencesException(message: String) : Exception(message) {
     }
 }
 
-fun Exception.asPreferencesException(): PreferencesException {
+fun Exception.toPreferencesException(): PreferencesException {
     val preferencesException = when (this) {
         is IOException -> {
             PreferencesException.IOError(message = "$cause: ${message ?: "Unknown I/O error"}")
@@ -45,6 +45,6 @@ fun Exception.asPreferencesException(): PreferencesException {
     }
 
     return preferencesException.apply {
-        initCause(this@asPreferencesException)
+        initCause(this@toPreferencesException)
     }
 }

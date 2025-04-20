@@ -1,7 +1,7 @@
-package com.example.one_tap_sign_in
+package com.example.one_tap_sign_in.core.application
 
 import android.app.Application
-import com.example.one_tap_sign_in.core.application.backgroundWork.configureWorkManager
+import com.example.one_tap_sign_in.core.application.backgroundWork.configureBackgroundWork
 import com.example.one_tap_sign_in.core.application.di.configureDependencyInjection
 import org.koin.core.component.KoinComponent
 
@@ -10,6 +10,6 @@ class OneTapSignInApplication : Application(), KoinComponent {
         super.onCreate()
 
         configureDependencyInjection()
-        configureWorkManager()
+        configureBackgroundWork()
     }
 }

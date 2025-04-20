@@ -9,7 +9,7 @@ import androidx.work.WorkManager
 import com.example.one_tap_sign_in.core.application.backgroundWork.workers.RetryDataSyncWorker
 import java.util.concurrent.TimeUnit
 
-fun Application.configureWorkManager() {
+fun Application.configureBackgroundWork() {
     val workManager = WorkManager.getInstance(this)
 
     workManager.configureRetryDataSyncWorker()

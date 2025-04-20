@@ -34,11 +34,11 @@ import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.DeleteUserS
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.EditUserSuccess
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.RedirectToSignIn
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.SignOutUserSuccess
-import com.example.one_tap_sign_in.profile.composables.DeleteUserDialog
+import com.example.one_tap_sign_in.profile.composables.ConfirmDeleteUserDialog
+import com.example.one_tap_sign_in.profile.composables.ConfirmSignOutUserDialog
 import com.example.one_tap_sign_in.profile.composables.EditUserDialog
 import com.example.one_tap_sign_in.profile.composables.ProfileDataSection
 import com.example.one_tap_sign_in.profile.composables.ProfileScreenTopBar
-import com.example.one_tap_sign_in.profile.composables.SignOutUserDialog
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -57,9 +57,13 @@ fun ProfileScreen(
     val userFormUiStateUiState by viewModel.userFormUiState.collectAsStateWithLifecycle()
     val isLoadingUser by viewModel.isLoadingUser.collectAsStateWithLifecycle()
 
+    var isConfirmingSigningOut by remember { mutableStateOf(false) }
+    var isEditingUserByDialog by remember { mutableStateOf(false) }
+    var isConfirmingDeletingUser by remember { mutableStateOf(false) }
+
     var isSigningOut by remember { mutableStateOf(false) }
-    var isEditingUser by remember { mutableStateOf(false) }
     var isDeletingUser by remember { mutableStateOf(false) }
+    var isEditingUser by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.loadUser()
@@ -107,11 +111,13 @@ fun ProfileScreen(
     Scaffold(
         topBar = {
             ProfileScreenTopBar(
+                isEditingUser = isEditingUser,
+                isDeletingUser = isDeletingUser,
                 onEditUser = {
-                    if (!isEditingUser) isEditingUser = true
+                    if (!isEditingUserByDialog) isEditingUserByDialog = true
                 },
                 onDeleteUser = {
-                    if (!isDeletingUser) isDeletingUser = true
+                    if (!isConfirmingDeletingUser) isConfirmingDeletingUser = true
                 },
             )
         },
@@ -129,49 +135,60 @@ fun ProfileScreen(
                     bottom = contentPadding.calculateBottomPadding(),
                 )
         ) {
-            if (isEditingUser) {
+            if (isEditingUserByDialog) {
                 EditUserDialog(
                     displayName = userCredentialsUiState.displayName,
                     displayNameError = userFormUiStateUiState.displayNameError,
                     onDisplayNameTextChanged = viewModel::clearDisplayNameFieldError,
-                    onEdit = viewModel::onEditUser,
-                    onCancel = {
-                        viewModel.clearDisplayNameFieldError()
+                    onEdit = { newUserName ->
+                        isEditingUser = true
+                        isEditingUserByDialog = false
 
-                        isEditingUser = false
+                        viewModel.editUserName(newUserName)
+                    },
+                    onCancel = {
+                        isEditingUserByDialog = false
+
+                        viewModel.clearDisplayNameFieldError()
                     },
                 )
             }
 
-            if (isDeletingUser) {
-                DeleteUserDialog(
+            if (isConfirmingDeletingUser) {
+                ConfirmDeleteUserDialog(
                     onDelete = {
+                        isDeletingUser = true
+                        isConfirmingDeletingUser = false
+
                         coroutineScope.launch {
                             try {
                                 AppCredentialManager.clearGoogleCredentialState(
                                     activityContext = context.getActivity(),
                                 )
 
-                                viewModel.onDeleteUser()
+                                viewModel.deleteUser()
                             } catch (e: CredentialManagerException) {
                                 showSnackbar(context.getString(e.toUiMessage()), false)
                             }
                         }
                     },
-                    onCancel = { isDeletingUser = false },
+                    onCancel = { isConfirmingDeletingUser = false },
                 )
             }
 
-            if (isSigningOut) {
-                SignOutUserDialog(
+            if (isConfirmingSigningOut) {
+                ConfirmSignOutUserDialog(
                     onSignOut = {
+                        isSigningOut = true
+                        isConfirmingSigningOut = false
+
                         coroutineScope.launch {
                             try {
                                 AppCredentialManager.clearGoogleCredentialState(
                                     activityContext = context.getActivity(),
                                 )
 
-                                viewModel.onSignOutUser()
+                                viewModel.signOutUser()
                             } catch (e: CredentialManagerException) {
                                 showSnackbar(context.getString(e.toUiMessage()), false)
 
@@ -179,7 +196,7 @@ fun ProfileScreen(
                             }
                         }
                     },
-                    onCancel = { isSigningOut = false },
+                    onCancel = { isConfirmingSigningOut = false },
                 )
             }
 
@@ -193,9 +210,7 @@ fun ProfileScreen(
                     profilePictureUrl = userCredentialsUiState.profilePictureUrl ?: "",
                     displayName = userCredentialsUiState.displayName ?: "",
                     isSigningOut = isSigningOut,
-                    onSignOut = {
-                        if (!isSigningOut) isSigningOut = true
-                    },
+                    onSignOut = { isConfirmingSigningOut = true },
                 )
             }
         }

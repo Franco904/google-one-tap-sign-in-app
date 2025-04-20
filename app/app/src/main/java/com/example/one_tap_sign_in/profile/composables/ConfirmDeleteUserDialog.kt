@@ -12,20 +12,26 @@ import androidx.compose.ui.unit.dp
 import com.example.one_tap_sign_in.R
 
 @Composable
-fun SignOutUserDialog(
-    onSignOut: () -> Unit,
+fun ConfirmDeleteUserDialog(
+    onDelete: () -> Unit,
     onCancel: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     AlertDialog(
         title = {
             Text(
-                text = stringResource(R.string.dialog_sign_out_user_title),
+                text = stringResource(R.string.dialog_delete_user_title),
                 style = MaterialTheme.typography.titleMedium,
             )
         },
+        text = {
+            Text(
+                text = stringResource(R.string.dialog_delete_user_description),
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        },
         confirmButton = {
-            TextButton(onClick = onSignOut) {
+            TextButton(onClick = onDelete) {
                 Text(
                     text = stringResource(id = R.string.dialog_delete_user_primary_button),
                     style = MaterialTheme.typography.titleMedium,

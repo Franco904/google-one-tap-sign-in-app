@@ -6,12 +6,7 @@ data class UserCredentialsUiState(
     val displayName: String? = null,
     val profilePictureUrl: String? = null,
 ) {
-    fun isNull(): Boolean {
-        return this.displayName == null
-                || this.profilePictureUrl == null
-    }
-
-    fun toUser(): User = User(
+    fun toUser() = User(
         email = null,
         name = displayName,
         profilePictureUrl = profilePictureUrl,

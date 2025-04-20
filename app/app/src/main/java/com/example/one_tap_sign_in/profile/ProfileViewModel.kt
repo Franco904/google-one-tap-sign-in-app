@@ -48,9 +48,7 @@ class ProfileViewModel(
             userRepository.watchUser().collect { result ->
                 result
                     .onError { error ->
-                        if (error in userRepository.redirectErrors) {
-                            _uiEvents.send(UiEvents.RedirectToSignIn)
-                        }
+                        if (error.isRedirectError()) _uiEvents.send(UiEvents.RedirectToSignIn)
 
                         _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                     }
@@ -67,7 +65,7 @@ class ProfileViewModel(
         }
     }
 
-    fun onEditUser(newDisplayName: String?) {
+    fun editUserName(newDisplayName: String?) {
         viewModelScope.launch {
             if (newDisplayName == userCredentialsUiState.value.displayName) {
                 _uiEvents.send(
@@ -91,9 +89,7 @@ class ProfileViewModel(
 
             userRepository.updateUser(newName = newDisplayName ?: "")
                 .onError { error ->
-                    if (error in userRepository.redirectErrors) {
-                        _uiEvents.send(UiEvents.RedirectToSignIn)
-                    }
+                    if (error.isRedirectError()) _uiEvents.send(UiEvents.RedirectToSignIn)
 
                     _uiEvents.send(
                         UiEvents.DataSourceError(messageId = error.toUiMessage()),
@@ -111,13 +107,11 @@ class ProfileViewModel(
         _userFormUiState.update { it.copy(displayNameError = null) }
     }
 
-    fun onDeleteUser() {
+    fun deleteUser() {
         viewModelScope.launch {
             userRepository.deleteUser()
                 .onError { error ->
-                    if (error in userRepository.redirectErrors) {
-                        _uiEvents.send(UiEvents.RedirectToSignIn)
-                    }
+                    if (error.isRedirectError()) _uiEvents.send(UiEvents.RedirectToSignIn)
 
                     _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                 }
@@ -127,15 +121,13 @@ class ProfileViewModel(
         }
     }
 
-    fun onSignOutUser() {
+    fun signOutUser() {
         viewModelScope.launch {
             userRepository.signOutUser()
                 .onError { error ->
-                    if (error in userRepository.redirectErrors) {
-                        _uiEvents.send(UiEvents.RedirectToSignIn)
-                    } else {
-                        _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
-                    }
+                    if (error.isRedirectError()) _uiEvents.send(UiEvents.RedirectToSignIn)
+
+                    _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                 }
                 .onSuccess {
                     _uiEvents.send(UiEvents.SignOutUserSuccess)

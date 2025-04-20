@@ -31,7 +31,9 @@ fun SignOutButton(
             color = MaterialTheme.colorScheme.outline,
         ),
         shape = MaterialTheme.shapes.extraSmall,
-        onClick = onSignOut,
+        onClick = if (isSigningOut) {
+            {}
+        } else onSignOut,
         modifier = modifier
     ) {
         Row(

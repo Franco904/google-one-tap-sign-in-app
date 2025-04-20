@@ -1,7 +1,7 @@
 package com.example.one_tap_sign_in.core.application.backgroundWork.workers
 
 import android.content.Context
-import androidTestUtils.workerFactory
+import com.example.one_tap_sign_in.androidTestUtils.workerFactory
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.work.ListenableWorker
 import androidx.work.testing.TestListenableWorkerBuilder
@@ -28,14 +28,16 @@ class RetryDataSyncWorkerTest {
 
         appContext = InstrumentationRegistry.getInstrumentation().context
 
+        val factory = workerFactory { context, params ->
+            RetryDataSyncWorker(
+                applicationContext = context,
+                workerParameters = params,
+                retryDataSyncRepository = retryDataSyncRepositoryMock,
+            )
+        }
+
         sut = TestListenableWorkerBuilder<RetryDataSyncWorker>(appContext)
-            .setWorkerFactory(workerFactory { context, params ->
-                RetryDataSyncWorker(
-                    applicationContext = context,
-                    workerParameters = params,
-                    retryDataSyncRepository = retryDataSyncRepositoryMock,
-                )
-            })
+            .setWorkerFactory(factory)
             .build()
     }
 

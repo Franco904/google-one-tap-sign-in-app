@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.Packaging
-
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
@@ -115,6 +113,7 @@ dependencies {
     implementation(libs.workmanager.runtime)
 
     // Testing
+    androidTestImplementation(libs.core.ktx)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.workmanager.testing)
     androidTestImplementation(libs.kluent.android)

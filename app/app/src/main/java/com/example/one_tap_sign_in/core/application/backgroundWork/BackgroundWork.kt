@@ -20,7 +20,7 @@ private fun WorkManager.configureRetryDataSyncWorker() {
         .setRequiredNetworkType(NetworkType.UNMETERED) // only runs when connected to Wi-Fi
         .build()
 
-    val workerRequest = PeriodicWorkRequestBuilder<RetryDataSyncWorker>(
+    val workRequest = PeriodicWorkRequestBuilder<RetryDataSyncWorker>(
         /* repeatInterval = */ 15, TimeUnit.MINUTES,
     )
         .setConstraints(workerConstraints)
@@ -29,6 +29,6 @@ private fun WorkManager.configureRetryDataSyncWorker() {
     enqueueUniquePeriodicWork(
         RetryDataSyncWorker.UNIQUE_NAME,
         ExistingPeriodicWorkPolicy.KEEP,
-        workerRequest,
+        workRequest,
     )
 }

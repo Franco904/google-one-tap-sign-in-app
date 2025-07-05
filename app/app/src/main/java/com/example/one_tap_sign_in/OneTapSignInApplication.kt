@@ -1,4 +1,4 @@
-package com.example.one_tap_sign_in.core.application
+package com.example.one_tap_sign_in
 
 import android.app.Application
 import com.example.one_tap_sign_in.core.application.backgroundWork.configureBackgroundWork

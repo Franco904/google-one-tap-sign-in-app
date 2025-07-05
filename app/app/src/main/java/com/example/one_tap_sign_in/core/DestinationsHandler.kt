@@ -1,4 +1,4 @@
-package com.example.one_tap_sign_in.core.application.navigation
+package com.example.one_tap_sign_in.core
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder

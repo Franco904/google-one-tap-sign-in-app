@@ -33,7 +33,6 @@ import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.DataSourceE
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.DeleteUserSuccess
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.EditUserSuccess
 import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.RedirectToSignIn
-import com.example.one_tap_sign_in.profile.ProfileViewModel.UiEvents.SignOutUserSuccess
 import com.example.one_tap_sign_in.profile.composables.ConfirmDeleteUserDialog
 import com.example.one_tap_sign_in.profile.composables.ConfirmSignOutUserDialog
 import com.example.one_tap_sign_in.profile.composables.EditUserDialog
@@ -91,12 +90,6 @@ fun ProfileScreen(
                     onSignOutSuccess()
 
                     isDeletingUser = false
-                }
-
-                is SignOutUserSuccess -> {
-                    onSignOutSuccess()
-
-                    isSigningOut = false
                 }
 
                 is RedirectToSignIn -> {

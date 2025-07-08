@@ -130,7 +130,7 @@ class ProfileViewModel(
                     _uiEvents.send(UiEvents.DataSourceError(messageId = error.toUiMessage()))
                 }
                 .onSuccess {
-                    _uiEvents.send(UiEvents.SignOutUserSuccess)
+                    _uiEvents.send(UiEvents.RedirectToSignIn)
                 }
         }
     }
@@ -141,8 +141,6 @@ class ProfileViewModel(
         data class EditUserSuccess(@StringRes val messageId: Int) : UiEvents
 
         data object DeleteUserSuccess : UiEvents
-
-        data object SignOutUserSuccess : UiEvents
 
         data object RedirectToSignIn : UiEvents
     }

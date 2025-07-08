@@ -5,8 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="88210e25-2eed-4520-8a4c-de60a5aaba4a" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/ProfileScreen.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/ProfileScreen.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/ProfileViewModel.kt" beforeDir="false" afterPath="$PROJECT_DIR$/../app/app/src/main/java/com/example/one_tap_sign_in/profile/ProfileViewModel.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -63,18 +63,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "Franco904"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Franco904&quot;
   }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Franco904/google-one-tap-sign-in-app.git",
-    "accountId": "533611e4-ad14-4b27-a298-9976730c8610"
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Franco904/google-one-tap-sign-in-app.git&quot;,
+    &quot;accountId&quot;: &quot;533611e4-ad14-4b27-a298-9976730c8610&quot;
   }
-}]]></component>
+}</component>
   <component name="GradleScriptDefinitionsStorage" workingDir="$PROJECT_DIR$" gradleHome="$USER_HOME$/.gradle/wrapper/dists/gradle-8.4-bin/1w5dpkrfk8irigvoxmyhowfim/gradle-8.4" javaHome="$USER_HOME$/Library/Java/JavaVirtualMachines/jbr-17.0.12/Contents/Home" gradleVersion="8.4" />
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -91,6 +91,7 @@
   "keyToString": {
     "Gradle.Build back-end.executor": "Run",
     "Gradle.Download Sources.executor": "Run",
+    "Gradle.back-end [:com.example.ApplicationKt.main()].executor": "Run",
     "Gradle.back-end [:com.example.user.ObserverPatternKotlinKt.main()].executor": "Run",
     "Gradle.back-end [build].executor": "Run",
     "Gradle.back-end [run].executor": "Run",
@@ -124,7 +125,7 @@
       <recent name="com.example.core.di.modules" />
     </key>
   </component>
-  <component name="RunManager" selected="Kotlin.ObserverPatternKotlinKt">
+  <component name="RunManager" selected="Kotlin.ApplicationKt">
     <configuration name="back-end [build]" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />

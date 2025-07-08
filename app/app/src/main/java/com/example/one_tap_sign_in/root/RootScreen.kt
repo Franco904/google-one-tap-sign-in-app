@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.example.one_tap_sign_in.core.application.navigation.Destinations
+import com.example.one_tap_sign_in.core.Destinations
 import com.example.one_tap_sign_in.core.presentation.composables.AppCircularProgressIndicator
 import com.example.one_tap_sign_in.root.RootViewModel.UiEvents.DataSourceError
 import com.example.one_tap_sign_in.root.RootViewModel.UiEvents.SignInState
